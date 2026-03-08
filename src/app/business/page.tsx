@@ -13,66 +13,68 @@ import {
   Heart,
 } from "lucide-react";
 import Link from "next/link";
-
-const PLANS = [
-  {
-    name: "Neighborhood Pin",
-    price: 200,
-    period: "/mo",
-    description: "Your business appears on art walks near your location",
-    features: [
-      "Pin on walk maps within 500m",
-      "Business card shown during nearby stops",
-      "Monthly foot traffic report",
-      "Listing in Bembe business directory",
-    ],
-    cta: "Start Sponsoring",
-    popular: false,
-  },
-  {
-    name: "Walk Sponsor",
-    price: 500,
-    period: "/mo",
-    description: "Sponsor entire walks and get premium placement",
-    features: [
-      "Everything in Neighborhood Pin",
-      'Branded "Sponsored by" on 3 walks',
-      "Audio mention during walk intro",
-      "Featured in walk discovery page",
-      "QR code kit for your venue",
-      "Priority customer support",
-    ],
-    cta: "Become a Sponsor",
-    popular: true,
-  },
-  {
-    name: "Cultural Partner",
-    price: 1500,
-    period: "/mo",
-    description: "Full partnership with co-created art experiences",
-    features: [
-      "Everything in Walk Sponsor",
-      "Custom-branded art walk for your business",
-      "Artist collaboration events at your venue",
-      "API access for guest app integration",
-      "Dedicated account manager",
-      "Monthly impact report for ESG",
-      "Logo on Bembe homepage",
-    ],
-    cta: "Contact Us",
-    popular: false,
-  },
-];
-
-const STATS = [
-  { label: "Monthly Walk Plays", value: "12,000+", icon: Footprints },
-  { label: "Active Artists", value: "500+", icon: Heart },
-  { label: "Avg. Walk Duration", value: "45 min", icon: Eye },
-  { label: "Tourist Reach", value: "85%", icon: Users },
-];
+import { useI18n } from "@/lib/i18n/context";
 
 export default function BusinessPage() {
   const [selectedPlan, setSelectedPlan] = useState<number | null>(null);
+  const { t } = useI18n();
+
+  const PLANS = [
+    {
+      name: t.business.plan1_name,
+      price: 200,
+      period: t.business.mo,
+      description: t.business.plan1_desc,
+      features: [
+        "Pin on walk maps within 500m",
+        "Business card shown during nearby stops",
+        "Monthly foot traffic report",
+        "Listing in Bembe business directory",
+      ],
+      cta: t.business.plan1_cta,
+      popular: false,
+    },
+    {
+      name: t.business.plan2_name,
+      price: 500,
+      period: t.business.mo,
+      description: t.business.plan2_desc,
+      features: [
+        "Everything in Neighborhood Pin",
+        'Branded "Sponsored by" on 3 walks',
+        "Audio mention during walk intro",
+        "Featured in walk discovery page",
+        "QR code kit for your venue",
+        "Priority customer support",
+      ],
+      cta: t.business.plan2_cta,
+      popular: true,
+    },
+    {
+      name: t.business.plan3_name,
+      price: 1500,
+      period: t.business.mo,
+      description: t.business.plan3_desc,
+      features: [
+        "Everything in Walk Sponsor",
+        "Custom-branded art walk for your business",
+        "Artist collaboration events at your venue",
+        "API access for guest app integration",
+        "Dedicated account manager",
+        "Monthly impact report for ESG",
+        "Logo on Bembe homepage",
+      ],
+      cta: t.business.plan3_cta,
+      popular: false,
+    },
+  ];
+
+  const STATS = [
+    { label: t.business.monthly_plays, value: "12,000+", icon: Footprints },
+    { label: t.business.active_artists, value: "500+", icon: Heart },
+    { label: t.business.avg_duration, value: "45 min", icon: Eye },
+    { label: t.business.tourist_reach, value: "85%", icon: Users },
+  ];
 
   return (
     <div className="min-h-screen bg-bembe-sand">
@@ -86,26 +88,25 @@ export default function BusinessPage() {
             Bembe
           </Link>
           <h1 className="text-3xl md:text-5xl font-bold mb-4 leading-tight">
-            Drive foot traffic
+            {t.business.hero_title_1}
             <br />
-            through art.
+            {t.business.hero_title_2}
           </h1>
           <p className="text-lg md:text-xl text-white/70 max-w-xl mb-8">
-            Reach tourists and locals while they explore Puerto Rico&apos;s
-            culture. Your business becomes part of the art walk experience.
+            {t.business.hero_subtitle}
           </p>
           <div className="flex flex-wrap gap-4">
             <a
               href="#plans"
               className="inline-flex items-center gap-2 px-6 py-3 bg-bembe-gold text-bembe-night font-semibold rounded-xl hover:bg-bembe-gold/90 transition-colors"
             >
-              See Plans <ArrowRight className="w-4 h-4" />
+              {t.business.see_plans} <ArrowRight className="w-4 h-4" />
             </a>
             <a
               href="mailto:partners@bembe.pr"
               className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 text-white font-semibold rounded-xl hover:bg-white/20 transition-colors"
             >
-              Talk to Sales
+              {t.business.talk_sales}
             </a>
           </div>
         </div>
@@ -132,24 +133,24 @@ export default function BusinessPage() {
       {/* How It Works */}
       <div className="max-w-5xl mx-auto px-4 py-16">
         <h2 className="text-2xl font-bold text-center mb-10">
-          How Business Sponsorship Works
+          {t.business.how_title}
         </h2>
         <div className="grid md:grid-cols-3 gap-6">
           {[
             {
               icon: MapPin,
-              title: "1. Choose Your Zone",
-              desc: "Select the neighborhoods and art walks near your business. Your pin appears on the map for all walk participants.",
+              title: t.business.how_step1_title,
+              desc: t.business.how_step1_desc,
             },
             {
               icon: Eye,
-              title: "2. Get Seen by Walkers",
-              desc: "As tourists and locals explore art walks, your business card appears when they're nearby. Seamless, non-intrusive exposure.",
+              title: t.business.how_step2_title,
+              desc: t.business.how_step2_desc,
             },
             {
               icon: TrendingUp,
-              title: "3. Track Your Impact",
-              desc: "See real-time analytics on foot traffic, impressions, and walk-ins. Plus, you're supporting local artists — great for ESG reporting.",
+              title: t.business.how_step3_title,
+              desc: t.business.how_step3_desc,
             },
           ].map((step) => (
             <div
@@ -167,10 +168,10 @@ export default function BusinessPage() {
       {/* Pricing */}
       <div id="plans" className="max-w-5xl mx-auto px-4 pb-20">
         <h2 className="text-2xl font-bold text-center mb-2">
-          Sponsorship Plans
+          {t.business.plans_title}
         </h2>
         <p className="text-center text-bembe-night/50 mb-10">
-          Support local artists. Reach new customers. Make an impact.
+          {t.business.plans_subtitle}
         </p>
         <div className="grid md:grid-cols-3 gap-6">
           {PLANS.map((plan, i) => (
@@ -185,7 +186,7 @@ export default function BusinessPage() {
             >
               {plan.popular && (
                 <span className="inline-block px-3 py-1 bg-bembe-teal text-white text-xs font-bold rounded-full mb-3">
-                  MOST POPULAR
+                  {t.business.most_popular}
                 </span>
               )}
               <h3 className="font-bold text-lg">{plan.name}</h3>
@@ -228,17 +229,16 @@ export default function BusinessPage() {
         <div className="max-w-3xl mx-auto px-4 text-center">
           <Building2 className="w-10 h-10 mx-auto mb-4 text-bembe-gold" />
           <h2 className="text-2xl font-bold mb-3">
-            Hotels & Cruise Lines
+            {t.business.enterprise_title}
           </h2>
           <p className="text-white/60 mb-6">
-            Looking for a custom partnership? We offer API integration,
-            white-label art walks for your guests, and volume pricing.
+            {t.business.enterprise_desc}
           </p>
           <a
             href="mailto:enterprise@bembe.pr"
             className="inline-flex items-center gap-2 px-6 py-3 bg-bembe-gold text-bembe-night font-semibold rounded-xl hover:bg-bembe-gold/90 transition-colors"
           >
-            Contact Enterprise Sales <ArrowRight className="w-4 h-4" />
+            {t.business.enterprise_cta} <ArrowRight className="w-4 h-4" />
           </a>
         </div>
       </div>

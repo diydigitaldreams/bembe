@@ -2,6 +2,7 @@
 
 import { use } from "react";
 import Link from "next/link";
+import { useI18n } from "@/lib/i18n/context";
 import {
   ChevronLeft,
   MapPin,
@@ -87,6 +88,7 @@ export default function ArtistProfilePage({
   params: Promise<{ artistId: string }>;
 }) {
   const { artistId } = use(params);
+  const { t } = useI18n();
   const artist = MOCK_ARTIST;
 
   return (
@@ -141,18 +143,18 @@ export default function ArtistProfilePage({
               <div className="font-bold text-lg">
                 {artist.total_plays.toLocaleString()}
               </div>
-              <div className="text-xs text-white/50">Total Plays</div>
+              <div className="text-xs text-white/50">{t.artist.total_plays}</div>
             </div>
             <div className="bg-white/10 rounded-xl p-3 text-center">
               <div className="font-bold text-lg">{artist.total_walks}</div>
-              <div className="text-xs text-white/50">Walks</div>
+              <div className="text-xs text-white/50">{t.artist.walks}</div>
             </div>
             <div className="bg-white/10 rounded-xl p-3 text-center">
               <div className="font-bold text-lg flex items-center justify-center gap-1">
                 <Star className="w-4 h-4 text-bembe-gold fill-bembe-gold" />
                 {artist.avg_rating}
               </div>
-              <div className="text-xs text-white/50">Rating</div>
+              <div className="text-xs text-white/50">{t.artist.rating}</div>
             </div>
           </div>
         </div>
@@ -161,7 +163,7 @@ export default function ArtistProfilePage({
       {/* Walks */}
       <div className="max-w-3xl mx-auto px-4 py-6">
         <h2 className="font-bold text-lg mb-4">
-          Art Walks ({MOCK_WALKS.length})
+          {t.artist.art_walks} ({MOCK_WALKS.length})
         </h2>
 
         <div className="space-y-3">
@@ -199,7 +201,7 @@ export default function ArtistProfilePage({
                     </span>
                     <span className="ml-auto font-medium text-bembe-teal">
                       {walk.price_cents === 0
-                        ? "Free"
+                        ? t.discover.free
                         : `$${(walk.price_cents / 100).toFixed(0)}`}
                     </span>
                   </div>
@@ -212,18 +214,17 @@ export default function ArtistProfilePage({
         {/* Support Card */}
         <div className="mt-8 bg-gradient-to-br from-bembe-teal to-emerald-600 rounded-2xl p-6 text-white">
           <h3 className="font-bold text-lg mb-2">
-            Support {artist.full_name.split(" ")[0]}
+            {t.artist.support} {artist.full_name.split(" ")[0]}
           </h3>
           <p className="text-white/70 text-sm mb-4">
-            Every walk played sends royalties directly to the artist. You can
-            also leave a tip or buy a walk as a gift.
+            {t.artist.support_desc}
           </p>
           <div className="flex gap-3">
             <button className="px-4 py-2 bg-white text-bembe-teal font-medium rounded-xl text-sm hover:bg-white/90 transition-colors">
-              Send a Tip
+              {t.artist.send_tip}
             </button>
             <button className="px-4 py-2 bg-white/10 text-white font-medium rounded-xl text-sm hover:bg-white/20 transition-colors">
-              Gift a Walk
+              {t.artist.gift_walk}
             </button>
           </div>
         </div>

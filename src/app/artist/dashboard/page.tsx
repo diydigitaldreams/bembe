@@ -11,29 +11,30 @@ import {
   MoreVertical,
 } from "lucide-react";
 import Link from "next/link";
+import { useI18n } from "@/lib/i18n/context";
 
 // Mock data
 const stats = [
   {
-    label: "Total Plays",
+    key: "total_plays" as const,
     value: "1,247",
     icon: Headphones,
     color: "bg-bembe-teal/10 text-bembe-teal",
   },
   {
-    label: "Revenue This Month",
+    key: "revenue" as const,
     value: "$3,420",
     icon: DollarSign,
     color: "bg-bembe-gold/10 text-bembe-gold",
   },
   {
-    label: "Active Walks",
+    key: "active_walks" as const,
     value: "8",
     icon: MapPin,
     color: "bg-bembe-coral/10 text-bembe-coral",
   },
   {
-    label: "Avg Rating",
+    key: "avg_rating" as const,
     value: "4.8",
     icon: Star,
     color: "bg-bembe-night/10 text-bembe-night",
@@ -92,6 +93,7 @@ const walks = [
 ];
 
 export default function ArtistDashboardPage() {
+  const { t } = useI18n();
   return (
     <div className="min-h-screen bg-bembe-sand">
       {/* Header */}
@@ -99,7 +101,7 @@ export default function ArtistDashboardPage() {
         <div className="max-w-5xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-bembe-night/50">Welcome back</p>
+              <p className="text-sm text-bembe-night/50">{t.dashboard.welcome}</p>
               <h1 className="text-2xl font-bold text-bembe-night">
                 Maria del Carmen
               </h1>
@@ -109,8 +111,8 @@ export default function ArtistDashboardPage() {
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-bembe-teal text-white font-semibold hover:bg-bembe-teal/90 active:scale-[0.98] transition shadow-lg shadow-bembe-teal/20"
             >
               <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">Create New Walk</span>
-              <span className="sm:hidden">New Walk</span>
+              <span className="hidden sm:inline">{t.dashboard.create_walk}</span>
+              <span className="sm:hidden">{t.dashboard.create_walk}</span>
             </Link>
           </div>
         </div>
@@ -121,7 +123,7 @@ export default function ArtistDashboardPage() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {stats.map((stat) => (
             <div
-              key={stat.label}
+              key={stat.key}
               className="bg-white rounded-2xl p-5 shadow-sm"
             >
               <div
@@ -133,7 +135,7 @@ export default function ArtistDashboardPage() {
                 {stat.value}
               </p>
               <p className="text-sm text-bembe-night/50 mt-0.5">
-                {stat.label}
+                {t.dashboard[stat.key]}
               </p>
             </div>
           ))}
@@ -149,14 +151,12 @@ export default function ArtistDashboardPage() {
                 AI-Powered
               </span>
             </div>
-            <h3 className="text-xl font-bold mb-1">Grant Assistant</h3>
+            <h3 className="text-xl font-bold mb-1">{t.dashboard.ai_grant_title}</h3>
             <p className="text-white/60 text-sm mb-4 max-w-md">
-              Find and apply for arts grants automatically. Our AI matches your
-              profile with available funding from NEA, local foundations, and
-              Act 60 programs.
+              {t.dashboard.ai_grant_desc}
             </p>
             <button className="px-5 py-2.5 rounded-xl bg-bembe-gold text-bembe-night font-semibold hover:bg-bembe-gold/90 active:scale-[0.98] transition text-sm">
-              Explore Grants
+              {t.dashboard.ai_grant_cta}
             </button>
           </div>
         </div>
@@ -164,7 +164,7 @@ export default function ArtistDashboardPage() {
         {/* Walks List */}
         <div>
           <h2 className="text-lg font-semibold text-bembe-night mb-4">
-            Your Walks
+            {t.dashboard.my_walks}
           </h2>
           <div className="bg-white rounded-2xl shadow-sm divide-y divide-bembe-night/5 overflow-hidden">
             {walks.map((walk) => (
@@ -190,7 +190,7 @@ export default function ArtistDashboardPage() {
                           : "bg-bembe-night/10 text-bembe-night/50"
                       }`}
                     >
-                      {walk.status}
+                      {walk.status === "published" ? t.dashboard.published : t.dashboard.draft}
                     </span>
                   </div>
                   <p className="text-sm text-bembe-night/50">
@@ -204,13 +204,13 @@ export default function ArtistDashboardPage() {
                     <p className="font-semibold text-bembe-night">
                       {walk.plays}
                     </p>
-                    <p className="text-bembe-night/40 text-xs">plays</p>
+                    <p className="text-bembe-night/40 text-xs">{t.dashboard.plays}</p>
                   </div>
                   <div className="text-right">
                     <p className="font-semibold text-bembe-night">
                       {walk.revenue}
                     </p>
-                    <p className="text-bembe-night/40 text-xs">revenue</p>
+                    <p className="text-bembe-night/40 text-xs">{t.dashboard.revenue}</p>
                   </div>
                 </div>
 

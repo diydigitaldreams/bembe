@@ -12,6 +12,7 @@ import {
   Filter,
 } from "lucide-react";
 import Link from "next/link";
+import { useI18n } from "@/lib/i18n/context";
 
 interface MockEvent {
   id: string;
@@ -107,6 +108,7 @@ const MOCK_EVENTS: MockEvent[] = [
 ];
 
 export default function EventsPage() {
+  const { t } = useI18n();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<string>("all");
 
@@ -136,14 +138,14 @@ export default function EventsPage() {
             >
               <ChevronLeft className="w-5 h-5" />
             </Link>
-            <h1 className="text-xl font-bold">Events</h1>
+            <h1 className="text-xl font-bold">{t.events.title}</h1>
           </div>
 
           <div className="relative mb-3">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-bembe-night/40" />
             <input
               type="text"
-              placeholder="Search events..."
+              placeholder={t.events.search_placeholder}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 bg-white rounded-xl border border-bembe-night/10 text-sm focus:outline-none focus:ring-2 focus:ring-bembe-teal/30"
@@ -161,7 +163,7 @@ export default function EventsPage() {
                     : "bg-white text-bembe-night/60 border border-bembe-night/10"
                 }`}
               >
-                {n === "all" ? "All Events" : n}
+                {n === "all" ? t.events.all_events : n}
               </button>
             ))}
           </div>
@@ -217,13 +219,13 @@ export default function EventsPage() {
 
               <div className="flex items-center justify-between">
                 <span className="text-xs text-bembe-night/40">
-                  by {event.organizer}
+                  {t.events.by} {event.organizer}
                 </span>
                 <button className="inline-flex items-center gap-1.5 px-4 py-2 bg-bembe-teal text-white rounded-xl text-sm font-medium hover:bg-bembe-teal/90 transition-colors">
                   <Ticket className="w-4 h-4" />
                   {event.price === 0
-                    ? "RSVP Free"
-                    : `$${event.price} — Get Ticket`}
+                    ? t.events.rsvp_free
+                    : `$${event.price} — ${t.events.get_ticket}`}
                 </button>
               </div>
             </div>
@@ -233,8 +235,8 @@ export default function EventsPage() {
         {filtered.length === 0 && (
           <div className="text-center py-12 text-bembe-night/40">
             <Calendar className="w-12 h-12 mx-auto mb-3 opacity-30" />
-            <p className="font-medium">No events found</p>
-            <p className="text-sm mt-1">Try a different search or filter</p>
+            <p className="font-medium">{t.events.empty_title}</p>
+            <p className="text-sm mt-1">{t.events.empty_subtitle}</p>
           </div>
         )}
       </div>

@@ -5,8 +5,10 @@ import { createClient } from "@/lib/supabase/client";
 import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/lib/i18n/context";
 
 export default function LoginPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -60,7 +62,7 @@ export default function LoginPage() {
         {/* Card */}
         <div className="bg-white rounded-2xl shadow-lg shadow-bembe-night/5 p-8">
           <h2 className="text-xl font-semibold text-bembe-night mb-6">
-            Welcome back
+            {t.auth.login_title}
           </h2>
 
           {error && (
@@ -76,7 +78,7 @@ export default function LoginPage() {
                 htmlFor="email"
                 className="block text-sm font-medium text-bembe-night/70 mb-1.5"
               >
-                Email
+                {t.auth.email}
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-bembe-night/30" />
@@ -98,7 +100,7 @@ export default function LoginPage() {
                 htmlFor="password"
                 className="block text-sm font-medium text-bembe-night/70 mb-1.5"
               >
-                Password
+                {t.auth.password}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-bembe-night/30" />
@@ -132,7 +134,7 @@ export default function LoginPage() {
               className="w-full py-3 rounded-xl bg-bembe-teal text-white font-semibold hover:bg-bembe-teal/90 active:scale-[0.98] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-              Sign In
+              {t.auth.sign_in}
             </button>
           </form>
 
@@ -140,7 +142,7 @@ export default function LoginPage() {
           <div className="flex items-center gap-3 my-6">
             <div className="flex-1 h-px bg-bembe-night/10" />
             <span className="text-xs text-bembe-night/40 uppercase tracking-wider">
-              or
+              {t.auth.or}
             </span>
             <div className="flex-1 h-px bg-bembe-night/10" />
           </div>
@@ -168,13 +170,13 @@ export default function LoginPage() {
                 fill="#EA4335"
               />
             </svg>
-            Sign in with Google
+            {t.auth.sign_in_google}
           </button>
         </div>
 
         {/* Footer link */}
         <p className="text-center mt-6 text-sm text-bembe-night/50">
-          Don&apos;t have an account?{" "}
+          {t.auth.no_account}{" "}
           <Link
             href="/signup"
             className="text-bembe-teal font-semibold hover:underline"

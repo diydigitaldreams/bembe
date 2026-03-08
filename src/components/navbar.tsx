@@ -3,15 +3,18 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-
-const navLinks = [
-  { href: "/discover", label: "Discover" },
-  { href: "/map", label: "Map" },
-  { href: "/events", label: "Events" },
-];
+import { useI18n } from "@/lib/i18n/context";
+import { LanguageToggle } from "@/components/language-toggle";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { t } = useI18n();
+
+  const navLinks = [
+    { href: "/discover", label: t.nav.discover },
+    { href: "/map", label: t.nav.map },
+    { href: "/events", label: t.nav.events },
+  ];
 
   return (
     <header className="sticky top-0 z-50 bg-bembe-sand/90 backdrop-blur-md border-b border-bembe-night/5">
@@ -35,13 +38,16 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* Desktop login */}
-        <Link
-          href="/login"
-          className="hidden rounded-full bg-bembe-teal px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-bembe-teal/90 md:inline-flex"
-        >
-          Log In
-        </Link>
+        {/* Desktop login + language toggle */}
+        <div className="hidden items-center gap-3 md:flex">
+          <LanguageToggle />
+          <Link
+            href="/login"
+            className="rounded-full bg-bembe-teal px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-bembe-teal/90"
+          >
+            {t.nav.login}
+          </Link>
+        </div>
 
         {/* Mobile hamburger */}
         <button
@@ -74,8 +80,11 @@ export default function Navbar() {
                 onClick={() => setMobileOpen(false)}
                 className="mt-1 block rounded-full bg-bembe-teal px-5 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-bembe-teal/90"
               >
-                Log In
+                {t.nav.login}
               </Link>
+            </li>
+            <li className="flex justify-center pt-1">
+              <LanguageToggle />
             </li>
           </ul>
         </div>

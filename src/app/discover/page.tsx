@@ -6,6 +6,7 @@ import { Search, MapPinned, X } from "lucide-react";
 import Navbar from "@/components/navbar";
 import WalkCard from "@/components/walk-card";
 import type { ArtWalk } from "@/types";
+import { useI18n } from "@/lib/i18n/context";
 
 const mockWalks: ArtWalk[] = [
   {
@@ -194,16 +195,18 @@ const mockWalks: ArtWalk[] = [
   },
 ];
 
-const filterChips = [
-  { key: "free", label: "Free" },
-  { key: "santurce", label: "Santurce" },
-  { key: "old-san-juan", label: "Old San Juan" },
-  { key: "ponce", label: "Ponce" },
-  { key: "rincon", label: "Rincon" },
-  { key: "music", label: "Music" },
-  { key: "visual-art", label: "Visual Art" },
-  { key: "history", label: "History" },
-];
+function getFilterChips(t: ReturnType<typeof useI18n>["t"]) {
+  return [
+    { key: "free", label: t.discover.filter_free },
+    { key: "santurce", label: "Santurce" },
+    { key: "old-san-juan", label: "Old San Juan" },
+    { key: "ponce", label: "Ponce" },
+    { key: "rincon", label: "Rincon" },
+    { key: "music", label: t.discover.filter_music },
+    { key: "visual-art", label: t.discover.filter_visual },
+    { key: "history", label: t.discover.filter_history },
+  ];
+}
 
 function matchesFilter(walk: ArtWalk, filter: string): boolean {
   switch (filter) {
@@ -229,8 +232,10 @@ function matchesFilter(walk: ArtWalk, filter: string): boolean {
 }
 
 export default function DiscoverPage() {
+  const { t } = useI18n();
   const [search, setSearch] = useState("");
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const filterChips = getFilterChips(t);
 
   function toggleFilter(key: string) {
     setActiveFilters((prev) =>
@@ -269,10 +274,10 @@ export default function DiscoverPage() {
         {/* Page header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-bembe-night sm:text-4xl">
-            Discover Walks
+            {t.discover.title}
           </h1>
           <p className="mt-2 text-bembe-night/50">
-            Audio art experiences across Puerto Rico.
+            {t.discover.subtitle}
           </p>
         </div>
 
@@ -283,7 +288,7 @@ export default function DiscoverPage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search walks, artists, neighborhoods..."
+            placeholder={t.discover.search_placeholder}
             className="w-full rounded-xl border border-bembe-night/10 bg-white py-3.5 pl-12 pr-10 text-sm text-bembe-night placeholder:text-bembe-night/30 focus:border-bembe-teal/40 focus:outline-none focus:ring-2 focus:ring-bembe-teal/20"
           />
           {search && (
@@ -319,14 +324,14 @@ export default function DiscoverPage() {
               onClick={() => setActiveFilters([])}
               className="rounded-full px-4 py-2 text-sm font-medium text-bembe-coral hover:text-bembe-coral/80 transition-colors"
             >
-              Clear all
+              {t.discover.clear_filters}
             </button>
           )}
         </div>
 
         {/* Results count */}
         <p className="mb-6 text-sm text-bembe-night/40">
-          {filteredWalks.length} walk{filteredWalks.length !== 1 ? "s" : ""} found
+          {filteredWalks.length} {t.discover.walks_found}
         </p>
 
         {/* Walk grid */}
@@ -340,10 +345,10 @@ export default function DiscoverPage() {
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <Search className="mb-4 h-12 w-12 text-bembe-night/15" />
             <h3 className="text-lg font-semibold text-bembe-night/60">
-              No walks found
+              {t.discover.empty_title}
             </h3>
             <p className="mt-1 text-sm text-bembe-night/40">
-              Try a different search term or clear your filters.
+              {t.discover.empty_subtitle}
             </p>
           </div>
         )}
@@ -355,7 +360,7 @@ export default function DiscoverPage() {
         className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-bembe-night px-6 py-3.5 text-sm font-semibold text-white shadow-xl transition-all hover:bg-bembe-night/90 hover:shadow-2xl"
       >
         <MapPinned className="h-4 w-4" />
-        View on Map
+        {t.discover.view_map}
       </Link>
     </div>
   );

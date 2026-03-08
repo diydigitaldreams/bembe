@@ -1,18 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Mail, Lock, User, Loader2, Check } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { UserRole } from "@/types";
+import { useI18n } from "@/lib/i18n/context";
 
 export default function SignupPage() {
+  return (
+    <Suspense>
+      <SignupForm />
+    </Suspense>
+  );
+}
+
+function SignupForm() {
+  const { t } = useI18n();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const defaultRole = searchParams.get("role") === "artist" ? "artist" : "patron";
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<UserRole>("patron");
+  const [role, setRole] = useState<UserRole>(defaultRole as UserRole);
   const [isAct60, setIsAct60] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -65,15 +77,15 @@ export default function SignupPage() {
   const roles: { value: UserRole; label: string; desc: string }[] = [
     {
       value: "artist",
-      label: "I'm an Artist",
-      desc: "Create walks & share your art",
+      label: t.auth.role_artist,
+      desc: t.auth.role_artist_desc,
     },
     {
       value: "patron",
-      label: "I'm a Patron",
-      desc: "Support artists & explore PR",
+      label: t.auth.role_patron,
+      desc: t.auth.role_patron_desc,
     },
-    { value: "both", label: "Both", desc: "Create and support" },
+    { value: "both", label: t.auth.role_both, desc: t.auth.role_both_desc },
   ];
 
   return (
@@ -84,13 +96,13 @@ export default function SignupPage() {
           <h1 className="text-4xl font-bold text-bembe-night tracking-tight">
             Bembe
           </h1>
-          <p className="mt-2 text-bembe-night/60">Join the movement</p>
+          <p className="mt-2 text-bembe-night/60">{t.auth.signup_subtitle}</p>
         </div>
 
         {/* Card */}
         <div className="bg-white rounded-2xl shadow-lg shadow-bembe-night/5 p-8">
           <h2 className="text-xl font-semibold text-bembe-night mb-6">
-            Create your account
+            {t.auth.signup_title}
           </h2>
 
           {error && (
@@ -106,7 +118,7 @@ export default function SignupPage() {
                 htmlFor="fullName"
                 className="block text-sm font-medium text-bembe-night/70 mb-1.5"
               >
-                Full Name
+                {t.auth.full_name}
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-bembe-night/30" />
@@ -128,7 +140,7 @@ export default function SignupPage() {
                 htmlFor="email"
                 className="block text-sm font-medium text-bembe-night/70 mb-1.5"
               >
-                Email
+                {t.auth.email}
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-bembe-night/30" />
@@ -150,7 +162,7 @@ export default function SignupPage() {
                 htmlFor="password"
                 className="block text-sm font-medium text-bembe-night/70 mb-1.5"
               >
-                Password
+                {t.auth.password}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-bembe-night/30" />
@@ -215,10 +227,10 @@ export default function SignupPage() {
                 />
                 <div>
                   <span className="text-sm font-medium text-bembe-night">
-                    I&apos;m an Act 60 decree holder
+                    {t.auth.act60}
                   </span>
                   <span className="block text-xs text-bembe-night/50 mt-0.5">
-                    Tax incentive benefits for supporting local art
+                    {t.auth.act60_desc}
                   </span>
                 </div>
               </label>
@@ -233,20 +245,7 @@ export default function SignupPage() {
                 className="mt-0.5 w-4 h-4 rounded border-bembe-night/20 text-bembe-teal focus:ring-bembe-teal accent-bembe-teal"
               />
               <span className="text-sm text-bembe-night/60">
-                I agree to the{" "}
-                <Link
-                  href="/terms"
-                  className="text-bembe-teal hover:underline"
-                >
-                  Terms of Service
-                </Link>{" "}
-                and{" "}
-                <Link
-                  href="/privacy"
-                  className="text-bembe-teal hover:underline"
-                >
-                  Privacy Policy
-                </Link>
+                {t.auth.terms}
               </span>
             </label>
 
@@ -257,7 +256,7 @@ export default function SignupPage() {
               className="w-full py-3 rounded-xl bg-bembe-teal text-white font-semibold hover:bg-bembe-teal/90 active:scale-[0.98] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-              Create Account
+              {t.auth.sign_up}
             </button>
           </form>
 
@@ -265,7 +264,7 @@ export default function SignupPage() {
           <div className="flex items-center gap-3 my-6">
             <div className="flex-1 h-px bg-bembe-night/10" />
             <span className="text-xs text-bembe-night/40 uppercase tracking-wider">
-              or
+              {t.auth.or}
             </span>
             <div className="flex-1 h-px bg-bembe-night/10" />
           </div>
@@ -293,13 +292,13 @@ export default function SignupPage() {
                 fill="#EA4335"
               />
             </svg>
-            Sign up with Google
+            {t.auth.sign_in_google}
           </button>
         </div>
 
         {/* Footer link */}
         <p className="text-center mt-6 text-sm text-bembe-night/50">
-          Already have an account?{" "}
+          {t.auth.have_account}{" "}
           <Link
             href="/login"
             className="text-bembe-teal font-semibold hover:underline"

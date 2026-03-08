@@ -1,7 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { Headphones, MapPin, Heart, ArrowRight } from "lucide-react";
 import Navbar from "@/components/navbar";
 import WalkCard from "@/components/walk-card";
+import { useI18n } from "@/lib/i18n/context";
+import { LanguageToggle } from "@/components/language-toggle";
 import type { ArtWalk } from "@/types";
 
 const featuredWalks: ArtWalk[] = [
@@ -103,31 +107,38 @@ const featuredWalks: ArtWalk[] = [
   },
 ];
 
-const steps = [
-  {
-    icon: MapPin,
-    title: "Browse Walks",
-    description: "Explore audio art walks by neighborhood, theme, or artist. Find the perfect route for your mood.",
-  },
-  {
-    icon: Headphones,
-    title: "Walk & Listen",
-    description: "Hit play and let local artists guide you through hidden stories, murals, music, and culture.",
-  },
-  {
-    icon: Heart,
-    title: "Support Artists",
-    description: "Your ticket goes directly to Puerto Rican creators. Tip, subscribe, or share their work.",
-  },
-];
-
 export default function Home() {
+  const { t } = useI18n();
+
+  const steps = [
+    {
+      icon: MapPin,
+      title: t.landing.how_step1_title,
+      description: t.landing.how_step1_desc,
+    },
+    {
+      icon: Headphones,
+      title: t.landing.how_step2_title,
+      description: t.landing.how_step2_desc,
+    },
+    {
+      icon: Heart,
+      title: t.landing.how_step3_title,
+      description: t.landing.how_step3_desc,
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-bembe-sand">
       <Navbar />
 
       {/* Hero */}
       <section className="relative overflow-hidden">
+        {/* Language Toggle */}
+        <div className="absolute right-4 top-4 z-10 sm:right-6 lg:right-8">
+          <LanguageToggle />
+        </div>
+
         {/* Decorative background */}
         <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-bembe-teal/10 blur-3xl" />
         <div className="pointer-events-none absolute -left-32 bottom-0 h-80 w-80 rounded-full bg-bembe-coral/10 blur-3xl" />
@@ -135,25 +146,25 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 pb-20 pt-24 sm:px-6 sm:pb-28 sm:pt-32 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
             <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-bembe-night sm:text-5xl md:text-6xl lg:text-7xl">
-              Puerto Rico Is{" "}
-              <span className="text-bembe-teal">the Museum</span>
+              {t.landing.hero_title_1}{" "}
+              <span className="text-bembe-teal">{t.landing.hero_title_2}</span>
             </h1>
             <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-bembe-night/60 sm:text-xl">
-              Audio art walks created by local artists. Discover the island like never before.
+              {t.landing.hero_subtitle}
             </p>
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <Link
                 href="/discover"
                 className="inline-flex items-center gap-2 rounded-full bg-bembe-teal px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-bembe-teal/25 transition-all hover:bg-bembe-teal/90 hover:shadow-xl hover:shadow-bembe-teal/30"
               >
-                Explore Walks
+                {t.landing.cta_explore}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                href="/artist/signup"
+                href="/signup?role=artist"
                 className="inline-flex items-center gap-2 rounded-full border-2 border-bembe-night/10 bg-white px-8 py-3.5 text-base font-semibold text-bembe-night transition-all hover:border-bembe-coral/30 hover:text-bembe-coral"
               >
-                I&apos;m an Artist
+                {t.landing.cta_artist}
               </Link>
             </div>
           </div>
@@ -164,9 +175,9 @@ export default function Home() {
       <section className="border-y border-bembe-night/5 bg-white/50">
         <div className="mx-auto grid max-w-4xl grid-cols-3 divide-x divide-bembe-night/5 px-4 py-10 sm:py-14">
           {[
-            { value: "500+", label: "Artists" },
-            { value: "100+", label: "Walks" },
-            { value: "20+", label: "Neighborhoods" },
+            { value: "500+", label: t.landing.stats_artists },
+            { value: "100+", label: t.landing.stats_walks },
+            { value: "20+", label: t.landing.stats_neighborhoods },
           ].map((stat) => (
             <div key={stat.label} className="flex flex-col items-center gap-1">
               <span className="text-2xl font-extrabold text-bembe-teal sm:text-3xl md:text-4xl">
@@ -185,17 +196,14 @@ export default function Home() {
         <div className="mb-10 flex items-end justify-between">
           <div>
             <h2 className="text-2xl font-bold text-bembe-night sm:text-3xl">
-              Featured Walks
+              {t.landing.featured_title}
             </h2>
-            <p className="mt-2 text-bembe-night/50">
-              Curated experiences from Puerto Rico&apos;s finest artists.
-            </p>
           </div>
           <Link
             href="/discover"
             className="hidden items-center gap-1 text-sm font-semibold text-bembe-teal transition-colors hover:text-bembe-teal/80 sm:inline-flex"
           >
-            View all
+            {t.landing.featured_view_all}
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
@@ -211,7 +219,7 @@ export default function Home() {
             href="/discover"
             className="inline-flex items-center gap-1 text-sm font-semibold text-bembe-teal"
           >
-            View all walks
+            {t.landing.featured_view_all}
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
@@ -222,11 +230,8 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-2xl font-bold text-bembe-night sm:text-3xl">
-              How It Works
+              {t.landing.how_title}
             </h2>
-            <p className="mt-3 text-bembe-night/50">
-              Three simple steps to experience Puerto Rico&apos;s living culture.
-            </p>
           </div>
 
           <div className="mt-14 grid gap-10 sm:grid-cols-3 sm:gap-8">
@@ -254,16 +259,16 @@ export default function Home() {
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-bembe-teal to-emerald-600 px-6 py-14 text-center shadow-xl sm:px-12 sm:py-20">
           <h2 className="text-2xl font-extrabold text-white sm:text-3xl md:text-4xl">
-            Are You an Artist in Puerto Rico?
+            {t.landing.artist_cta_title}
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-base text-white/80">
-            Share your stories with the world. Create audio walks, earn money, and become part of the living museum.
+            {t.landing.artist_cta_desc}
           </p>
           <Link
-            href="/artist/signup"
+            href="/signup?role=artist"
             className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-8 py-3.5 text-base font-bold text-bembe-teal shadow-lg transition-all hover:shadow-xl"
           >
-            Start Creating
+            {t.landing.artist_cta_button}
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
@@ -277,21 +282,20 @@ export default function Home() {
             <div className="sm:col-span-2 lg:col-span-1">
               <span className="text-xl font-bold text-bembe-gold">Bembe</span>
               <p className="mt-3 max-w-xs text-sm leading-relaxed text-bembe-night/50">
-                Puerto Rico&apos;s living art museum. Audio walks by local artists that turn the island into a gallery.
+                {t.landing.footer_copyright}
               </p>
             </div>
 
             {/* Explore */}
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-bembe-night/40">
-                Explore
+                {t.landing.footer_explore}
               </h4>
               <ul className="mt-4 flex flex-col gap-2.5">
                 {[
-                  { href: "/discover", label: "Discover Walks" },
-                  { href: "/map", label: "Map" },
-                  { href: "/events", label: "Events" },
-                  { href: "/artists", label: "Artists" },
+                  { href: "/discover", label: t.landing.footer_all_walks },
+                  { href: "/neighborhoods", label: t.landing.footer_neighborhoods },
+                  { href: "/free", label: t.landing.footer_free_walks },
                 ].map((link) => (
                   <li key={link.href}>
                     <Link
@@ -308,13 +312,13 @@ export default function Home() {
             {/* For Artists */}
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-bembe-night/40">
-                For Artists
+                {t.landing.footer_artists}
               </h4>
               <ul className="mt-4 flex flex-col gap-2.5">
                 {[
-                  { href: "/artist/signup", label: "Join as Artist" },
-                  { href: "/artist/dashboard", label: "Dashboard" },
-                  { href: "/pricing", label: "Pricing" },
+                  { href: "/artist/create", label: t.landing.footer_create_walk },
+                  { href: "/artist/dashboard", label: t.landing.footer_artist_dashboard },
+                  { href: "/grants", label: t.landing.footer_grant_assistant },
                 ].map((link) => (
                   <li key={link.href}>
                     <Link
@@ -331,14 +335,14 @@ export default function Home() {
             {/* Company */}
             <div>
               <h4 className="text-xs font-bold uppercase tracking-wider text-bembe-night/40">
-                Company
+                {t.landing.footer_company}
               </h4>
               <ul className="mt-4 flex flex-col gap-2.5">
                 {[
-                  { href: "/about", label: "About" },
-                  { href: "/privacy", label: "Privacy" },
-                  { href: "/terms", label: "Terms" },
-                  { href: "/contact", label: "Contact" },
+                  { href: "/about", label: t.landing.footer_about },
+                  { href: "/privacy", label: t.landing.footer_privacy },
+                  { href: "/terms", label: t.landing.footer_terms },
+                  { href: "/contact", label: t.landing.footer_contact },
                 ].map((link) => (
                   <li key={link.href}>
                     <Link
@@ -354,7 +358,7 @@ export default function Home() {
           </div>
 
           <div className="mt-12 border-t border-bembe-night/5 pt-8 text-center text-xs text-bembe-night/40">
-            &copy; {new Date().getFullYear()} Bembe. Hecho en Puerto Rico.
+            &copy; {new Date().getFullYear()} Bembe. {t.landing.footer_copyright}
           </div>
         </div>
       </footer>

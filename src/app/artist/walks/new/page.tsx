@@ -18,6 +18,7 @@ import {
   GripVertical,
 } from "lucide-react";
 import Link from "next/link";
+import { useI18n } from "@/lib/i18n/context";
 
 const NEIGHBORHOODS = [
   "Viejo San Juan",
@@ -53,8 +54,6 @@ interface WalkStop {
   lng: number;
 }
 
-const STEPS = ["Basics", "Stops", "Pricing", "Review"];
-
 function createEmptyStop(): WalkStop {
   return {
     id: crypto.randomUUID(),
@@ -69,7 +68,10 @@ function createEmptyStop(): WalkStop {
 }
 
 export default function CreateWalkPage() {
+  const { t } = useI18n();
   const [currentStep, setCurrentStep] = useState(0);
+
+  const STEPS = [t.creator.step_basics, t.creator.step_stops, t.creator.step_pricing, t.creator.step_review];
 
   // Step 1: Basics
   const [title, setTitle] = useState("");
@@ -179,10 +181,10 @@ export default function CreateWalkPage() {
               className="flex items-center gap-2 text-bembe-night/50 hover:text-bembe-night transition text-sm"
             >
               <ArrowLeft className="w-4 h-4" />
-              Dashboard
+              {t.nav.dashboard}
             </Link>
             <span className="text-sm text-bembe-night/40">
-              Step {currentStep + 1} of {STEPS.length}
+              {currentStep + 1} / {STEPS.length}
             </span>
           </div>
 
@@ -240,10 +242,10 @@ export default function CreateWalkPage() {
           <div className="space-y-6">
             <div>
               <h2 className="text-2xl font-bold text-bembe-night">
-                Walk Basics
+                {t.creator.step_basics}
               </h2>
               <p className="text-bembe-night/50 mt-1">
-                Tell us about your art walk
+                {t.creator.description_placeholder}
               </p>
             </div>
 
@@ -254,14 +256,14 @@ export default function CreateWalkPage() {
                   htmlFor="title"
                   className="block text-sm font-medium text-bembe-night/70 mb-1.5"
                 >
-                  Walk Title
+                  {t.creator.walk_title}
                 </label>
                 <input
                   id="title"
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. Santurce Street Murals Tour"
+                  placeholder={t.creator.walk_title_placeholder}
                   className="w-full px-4 py-3 rounded-xl border border-bembe-night/10 bg-bembe-sand/50 text-bembe-night placeholder:text-bembe-night/30 focus:outline-none focus:ring-2 focus:ring-bembe-teal/30 focus:border-bembe-teal transition"
                 />
               </div>
@@ -272,14 +274,14 @@ export default function CreateWalkPage() {
                   htmlFor="description"
                   className="block text-sm font-medium text-bembe-night/70 mb-1.5"
                 >
-                  Description
+                  {t.creator.description}
                 </label>
                 <textarea
                   id="description"
                   rows={4}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Describe your walk in a few sentences..."
+                  placeholder={t.creator.description_placeholder}
                   className="w-full px-4 py-3 rounded-xl border border-bembe-night/10 bg-bembe-sand/50 text-bembe-night placeholder:text-bembe-night/30 focus:outline-none focus:ring-2 focus:ring-bembe-teal/30 focus:border-bembe-teal transition resize-none"
                 />
               </div>
@@ -290,7 +292,7 @@ export default function CreateWalkPage() {
                   htmlFor="neighborhood"
                   className="block text-sm font-medium text-bembe-night/70 mb-1.5"
                 >
-                  Neighborhood
+                  {t.creator.neighborhood}
                 </label>
                 <select
                   id="neighborhood"
@@ -298,7 +300,7 @@ export default function CreateWalkPage() {
                   onChange={(e) => setNeighborhood(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-bembe-night/10 bg-bembe-sand/50 text-bembe-night focus:outline-none focus:ring-2 focus:ring-bembe-teal/30 focus:border-bembe-teal transition appearance-none"
                 >
-                  <option value="">Select a neighborhood</option>
+                  <option value="">{t.creator.select_neighborhood}</option>
                   {NEIGHBORHOODS.map((n) => (
                     <option key={n} value={n}>
                       {n}
@@ -310,7 +312,7 @@ export default function CreateWalkPage() {
               {/* Cover Image */}
               <div>
                 <label className="block text-sm font-medium text-bembe-night/70 mb-1.5">
-                  Cover Image
+                  {t.creator.cover_image}
                 </label>
                 {coverPreview ? (
                   <div className="relative rounded-xl overflow-hidden">
@@ -333,10 +335,10 @@ export default function CreateWalkPage() {
                   <label className="flex flex-col items-center justify-center w-full h-48 rounded-xl border-2 border-dashed border-bembe-night/15 bg-bembe-sand/30 cursor-pointer hover:border-bembe-teal/40 hover:bg-bembe-teal/5 transition">
                     <ImageIcon className="w-8 h-8 text-bembe-night/20 mb-2" />
                     <span className="text-sm text-bembe-night/40 font-medium">
-                      Click to upload cover image
+                      {t.creator.upload_image}
                     </span>
                     <span className="text-xs text-bembe-night/30 mt-1">
-                      JPG, PNG up to 10MB
+                      {t.creator.image_formats}
                     </span>
                     <input
                       type="file"
@@ -356,10 +358,10 @@ export default function CreateWalkPage() {
           <div className="space-y-6">
             <div>
               <h2 className="text-2xl font-bold text-bembe-night">
-                Add Stops
+                {t.creator.step_stops}
               </h2>
               <p className="text-bembe-night/50 mt-1">
-                Each stop is a point of interest on your walk
+                {t.creator.your_description_placeholder}
               </p>
             </div>
 
@@ -376,7 +378,7 @@ export default function CreateWalkPage() {
                   }`}
                 >
                   <GripVertical className="w-3 h-3 opacity-40" />
-                  Stop {i + 1}
+                  {t.walk.stop} {i + 1}
                   {stop.title && (
                     <span className="max-w-[80px] truncate opacity-70">
                       : {stop.title}
@@ -389,7 +391,7 @@ export default function CreateWalkPage() {
                 className="flex-shrink-0 flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-medium bg-bembe-teal/10 text-bembe-teal hover:bg-bembe-teal/20 transition"
               >
                 <Plus className="w-3.5 h-3.5" />
-                Add Stop
+                {t.creator.add_stop}
               </button>
             </div>
 
@@ -398,7 +400,7 @@ export default function CreateWalkPage() {
               <div className="bg-white rounded-2xl p-6 shadow-sm space-y-5">
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-bembe-night">
-                    Stop {activeStopIndex + 1}
+                    {t.walk.stop} {activeStopIndex + 1}
                   </h3>
                   {stops.length > 1 && (
                     <button
@@ -406,7 +408,7 @@ export default function CreateWalkPage() {
                       className="flex items-center gap-1 text-sm text-bembe-coral hover:text-bembe-coral/80 transition"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
-                      Remove
+                      {t.creator.remove_stop}
                     </button>
                   )}
                 </div>
@@ -414,7 +416,7 @@ export default function CreateWalkPage() {
                 {/* Stop Title */}
                 <div>
                   <label className="block text-sm font-medium text-bembe-night/70 mb-1.5">
-                    Stop Title
+                    {t.creator.stop_title}
                   </label>
                   <input
                     type="text"
@@ -422,7 +424,7 @@ export default function CreateWalkPage() {
                     onChange={(e) =>
                       updateStop(activeStopIndex, { title: e.target.value })
                     }
-                    placeholder="e.g. Calle Cerra Murals"
+                    placeholder={t.creator.stop_title_placeholder}
                     className="w-full px-4 py-3 rounded-xl border border-bembe-night/10 bg-bembe-sand/50 text-bembe-night placeholder:text-bembe-night/30 focus:outline-none focus:ring-2 focus:ring-bembe-teal/30 focus:border-bembe-teal transition"
                   />
                 </div>
@@ -430,13 +432,13 @@ export default function CreateWalkPage() {
                 {/* Location */}
                 <div>
                   <label className="block text-sm font-medium text-bembe-night/70 mb-1.5">
-                    Location
+                    {t.creator.location}
                   </label>
                   <div className="w-full h-40 rounded-xl bg-bembe-sand/50 border border-bembe-night/10 flex items-center justify-center">
                     <div className="text-center">
                       <MapPin className="w-6 h-6 text-bembe-night/20 mx-auto mb-1" />
                       <p className="text-sm text-bembe-night/40">
-                        Map picker - tap to set location
+                        {t.creator.pick_on_map}
                       </p>
                       <p className="text-xs text-bembe-night/30 mt-0.5">
                         {activeStop.lat.toFixed(4)},{" "}
@@ -451,7 +453,7 @@ export default function CreateWalkPage() {
                   <div className="flex items-center gap-2 mb-3">
                     <Sparkles className="w-4 h-4 text-bembe-gold" />
                     <span className="text-sm font-semibold text-bembe-night">
-                      Describe this stop in your own words
+                      {t.creator.your_description}
                     </span>
                   </div>
                   <textarea
@@ -462,7 +464,7 @@ export default function CreateWalkPage() {
                         artistNotes: e.target.value,
                       })
                     }
-                    placeholder="Tell us about this place in your own words... What makes it special? What should visitors notice? Any personal stories?"
+                    placeholder={t.creator.your_description_placeholder}
                     className="w-full px-4 py-3 rounded-xl border border-bembe-gold/20 bg-white text-bembe-night placeholder:text-bembe-night/30 focus:outline-none focus:ring-2 focus:ring-bembe-gold/30 focus:border-bembe-gold transition resize-none"
                   />
                   <button
@@ -476,12 +478,12 @@ export default function CreateWalkPage() {
                     {aiLoading === activeStop.id ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        Polishing...
+                        {t.creator.polishing}
                       </>
                     ) : (
                       <>
                         <Sparkles className="w-4 h-4" />
-                        Polish with AI
+                        {t.creator.polish_with_ai}
                       </>
                     )}
                   </button>
@@ -490,7 +492,7 @@ export default function CreateWalkPage() {
                 {/* Polished Description */}
                 <div>
                   <label className="block text-sm font-medium text-bembe-night/70 mb-1.5">
-                    Stop Description
+                    {t.creator.polished_description}
                     {activeStop.aiGenerated && (
                       <span className="ml-2 text-xs text-bembe-gold font-normal">
                         AI-polished
@@ -505,7 +507,7 @@ export default function CreateWalkPage() {
                         description: e.target.value,
                       })
                     }
-                    placeholder="Final description for this stop (write manually or use AI polish above)"
+                    placeholder={t.creator.your_description_placeholder}
                     className="w-full px-4 py-3 rounded-xl border border-bembe-night/10 bg-bembe-sand/50 text-bembe-night placeholder:text-bembe-night/30 focus:outline-none focus:ring-2 focus:ring-bembe-teal/30 focus:border-bembe-teal transition resize-none"
                   />
                 </div>
@@ -513,7 +515,7 @@ export default function CreateWalkPage() {
                 {/* Audio Upload */}
                 <div>
                   <label className="block text-sm font-medium text-bembe-night/70 mb-1.5">
-                    Audio Narration
+                    {t.creator.upload_audio}
                   </label>
                   {activeStop.audioFile ? (
                     <div className="flex items-center gap-3 p-3 rounded-xl bg-bembe-teal/5 border border-bembe-teal/20">
@@ -534,7 +536,7 @@ export default function CreateWalkPage() {
                     <label className="flex items-center justify-center gap-2 w-full py-4 rounded-xl border-2 border-dashed border-bembe-night/15 bg-bembe-sand/30 cursor-pointer hover:border-bembe-teal/40 hover:bg-bembe-teal/5 transition">
                       <Upload className="w-4 h-4 text-bembe-night/30" />
                       <span className="text-sm text-bembe-night/40 font-medium">
-                        Upload audio file (MP3, WAV)
+                        {t.creator.upload_audio} (MP3, WAV)
                       </span>
                       <input
                         type="file"
@@ -559,9 +561,11 @@ export default function CreateWalkPage() {
         {currentStep === 2 && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-2xl font-bold text-bembe-night">Pricing</h2>
+              <h2 className="text-2xl font-bold text-bembe-night">
+                {t.creator.step_pricing}
+              </h2>
               <p className="text-bembe-night/50 mt-1">
-                Set your walk price
+                {t.creator.set_price}
               </p>
             </div>
 
@@ -590,10 +594,10 @@ export default function CreateWalkPage() {
                         : "text-bembe-night"
                     }`}
                   >
-                    Free
+                    {t.creator.pricing_free}
                   </span>
                   <span className="block text-xs text-bembe-night/50 mt-1">
-                    Open to everyone
+                    {t.creator.free_desc}
                   </span>
                 </button>
                 <button
@@ -618,10 +622,10 @@ export default function CreateWalkPage() {
                         : "text-bembe-night"
                     }`}
                   >
-                    Set a Price
+                    {t.creator.pricing_paid}
                   </span>
                   <span className="block text-xs text-bembe-night/50 mt-1">
-                    Earn from your art
+                    {t.creator.earnings_desc}
                   </span>
                 </button>
               </div>
@@ -631,7 +635,7 @@ export default function CreateWalkPage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-bembe-night/70">
-                      Walk Price
+                      {t.creator.set_price}
                     </span>
                     <span className="text-3xl font-bold text-bembe-night">
                       ${price}
@@ -653,9 +657,9 @@ export default function CreateWalkPage() {
                   <div className="p-4 rounded-xl bg-bembe-gold/10 border border-bembe-gold/20">
                     <p className="text-sm text-bembe-night/70">
                       <span className="font-semibold">
-                        You earn ${(price * 0.85).toFixed(2)}
+                        {t.creator.earnings_label}: ${(price * 0.85).toFixed(2)}
                       </span>{" "}
-                      per walk (85% after platform fee)
+                      {t.creator.earnings_desc}
                     </p>
                   </div>
                 </div>
@@ -669,10 +673,10 @@ export default function CreateWalkPage() {
           <div className="space-y-6">
             <div>
               <h2 className="text-2xl font-bold text-bembe-night">
-                Review & Publish
+                {t.creator.review_title}
               </h2>
               <p className="text-bembe-night/50 mt-1">
-                Everything look good?
+                {t.creator.step_review}
               </p>
             </div>
 
@@ -695,14 +699,14 @@ export default function CreateWalkPage() {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-bembe-night">
-                    {title || "Untitled Walk"}
+                    {title || t.creator.walk_title}
                   </h3>
                   <p className="text-sm text-bembe-night/50 mt-0.5">
-                    {neighborhood || "No neighborhood set"}
+                    {neighborhood || t.creator.select_neighborhood}
                   </p>
                   <p className="text-sm font-semibold text-bembe-teal mt-1">
                     {pricingType === "free"
-                      ? "Free"
+                      ? t.creator.pricing_free
                       : `$${price}`}
                   </p>
                 </div>
@@ -715,7 +719,7 @@ export default function CreateWalkPage() {
               {/* Stops Summary */}
               <div>
                 <h4 className="text-sm font-semibold text-bembe-night/70 mb-3">
-                  {stops.length} Stop{stops.length !== 1 ? "s" : ""}
+                  {stops.length} {t.creator.stops_label}
                 </h4>
                 <div className="space-y-2">
                   {stops.map((stop, i) => (
@@ -728,7 +732,7 @@ export default function CreateWalkPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-bembe-night truncate">
-                          {stop.title || `Stop ${i + 1}`}
+                          {stop.title || `${t.walk.stop} ${i + 1}`}
                         </p>
                         {stop.description && (
                           <p className="text-xs text-bembe-night/40 truncate">
@@ -759,12 +763,12 @@ export default function CreateWalkPage() {
               {publishing ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Publishing...
+                  {t.creator.publishing}
                 </>
               ) : (
                 <>
                   <Eye className="w-5 h-5" />
-                  Publish Walk
+                  {t.creator.publish}
                 </>
               )}
             </button>
@@ -780,7 +784,7 @@ export default function CreateWalkPage() {
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-bembe-night/60 font-medium hover:text-bembe-night hover:bg-white transition disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back
+              {t.creator.back}
             </button>
             <button
               onClick={() =>
@@ -789,7 +793,7 @@ export default function CreateWalkPage() {
               disabled={!canProceed()}
               className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-bembe-night text-white font-semibold hover:bg-bembe-night/90 active:scale-[0.98] transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Next
+              {t.creator.next}
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
