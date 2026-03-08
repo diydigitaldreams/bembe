@@ -10,6 +10,7 @@ import {
   Route,
 } from "lucide-react";
 import type { ArtWalk, WalkStop, Profile } from "@/types";
+import GiftButton from "@/components/gift-button";
 
 const MOCK_ARTIST: Profile = {
   id: "artist-1",
@@ -308,6 +309,11 @@ export default async function WalkDetailPage({
               {formatPrice(walk.price_cents)}
             </p>
           </div>
+          <GiftButton
+            walkId={walk.id}
+            walkTitle={walk.title}
+            priceCents={walk.price_cents}
+          />
           <Link
             href={`/walk/${walk.id}/play`}
             className="flex items-center gap-2 h-14 px-8 rounded-2xl bg-bembe-teal text-white font-semibold transition-all hover:bg-bembe-teal/90 active:scale-[0.98]"

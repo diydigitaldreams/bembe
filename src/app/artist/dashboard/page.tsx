@@ -9,6 +9,7 @@ import {
   Sparkles,
   Eye,
   MoreVertical,
+  BarChart3,
 } from "lucide-react";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/context";
@@ -106,14 +107,23 @@ export default function ArtistDashboardPage() {
                 Maria del Carmen
               </h1>
             </div>
-            <Link
-              href="/artist/walks/new"
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-bembe-teal text-white font-semibold hover:bg-bembe-teal/90 active:scale-[0.98] transition shadow-lg shadow-bembe-teal/20"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">{t.dashboard.create_walk}</span>
-              <span className="sm:hidden">{t.dashboard.create_walk}</span>
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link
+                href="/artist/analytics"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-bembe-night/10 text-bembe-night font-semibold hover:bg-bembe-night/20 active:scale-[0.98] transition"
+              >
+                <BarChart3 className="w-4 h-4" />
+                <span className="hidden sm:inline">{t.analytics.view_analytics}</span>
+              </Link>
+              <Link
+                href="/artist/walks/new"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-bembe-teal text-white font-semibold hover:bg-bembe-teal/90 active:scale-[0.98] transition shadow-lg shadow-bembe-teal/20"
+              >
+                <Plus className="w-4 h-4" />
+                <span className="hidden sm:inline">{t.dashboard.create_walk}</span>
+                <span className="sm:hidden">{t.dashboard.create_walk}</span>
+              </Link>
+            </div>
           </div>
         </div>
       </header>

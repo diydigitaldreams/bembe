@@ -8,6 +8,7 @@ export const translations = {
       map: "Map",
       events: "Events",
       business: "For Business",
+      messages: "Messages",
       login: "Log In",
       signup: "Sign Up",
       dashboard: "Dashboard",
@@ -277,6 +278,87 @@ export const translations = {
       mo: "/mo",
     },
 
+    // Analytics
+    analytics: {
+      title: "Analytics",
+      total_plays: "Total Plays",
+      total_revenue: "Total Revenue",
+      unique_listeners: "Unique Listeners",
+      avg_completion: "Avg Completion",
+      revenue_over_time: "Revenue Over Time",
+      top_walks: "Top Walks",
+      popular_stops: "Popular Stops",
+      listener_locations: "Listener Locations",
+      last_7: "Last 7 days",
+      last_30: "Last 30 days",
+      last_90: "Last 90 days",
+      all_time: "All Time",
+      plays: "Plays",
+      revenue: "Revenue",
+      completion_rate: "Completion",
+      listeners: "Listeners",
+      avg_listen_time: "Avg Listen Time",
+      view_analytics: "View Analytics",
+      back_to_dashboard: "Back to Dashboard",
+      rating: "Rating",
+    },
+
+    // Tips
+    tips: {
+      title: "Send a Tip",
+      subtitle: "Show your appreciation for",
+      custom: "Custom",
+      message_placeholder: "Add a message (optional)",
+      send: "Send Tip",
+      success: "Tip sent! Thank you for supporting",
+      processing: "Processing...",
+    },
+
+    // Subscriptions
+    subscription: {
+      subscribe: "Subscribe",
+      subscribed: "Subscribed",
+      price: "$5/mo",
+      perks: "Early access to new walks & exclusive content",
+      manage: "Manage Subscription",
+      success: "You're now subscribed!",
+    },
+
+    gift: {
+      title: "Gift This Walk",
+      from: "From",
+      to_email: "Recipient Email (optional)",
+      message_placeholder: "Add a personal message",
+      send: "Send as Gift",
+      redeem: "Redeem Gift",
+      received: "You received a gift!",
+      login_to_redeem: "Sign in to redeem this walk",
+      processing: "Processing...",
+      your_name: "Your Name",
+    },
+
+    // Messages
+    messages: {
+      title: "Messages",
+      search: "Search conversations...",
+      empty: "No messages yet",
+      empty_desc: "Start a conversation with an artist",
+      type_message: "Type a message...",
+      send: "Send",
+      today: "Today",
+      yesterday: "Yesterday",
+    },
+
+    // Offline mode
+    offline: {
+      download: "Download for Offline",
+      downloaded: "Available Offline",
+      downloading: "Downloading...",
+      remove: "Remove Download",
+      offline_banner: "You're offline \u2014 showing downloaded walks",
+      storage_used: "Storage Used",
+    },
+
     common: {
       loading: "Loading...",
       error: "Something went wrong",
@@ -297,6 +379,7 @@ export const translations = {
       map: "Mapa",
       events: "Eventos",
       business: "Para Negocios",
+      messages: "Mensajes",
       login: "Entrar",
       signup: "Registrarse",
       dashboard: "Panel",
@@ -555,6 +638,86 @@ export const translations = {
         "Buscas una alianza personalizada? Ofrecemos integracion API, caminatas de arte de marca blanca para tus huespedes y precios por volumen.",
       enterprise_cta: "Contactar Ventas Empresariales",
       mo: "/mes",
+    },
+
+    analytics: {
+      title: "Analiticas",
+      total_plays: "Reproducciones Totales",
+      total_revenue: "Ingresos Totales",
+      unique_listeners: "Oyentes Unicos",
+      avg_completion: "Completado Promedio",
+      revenue_over_time: "Ingresos en el Tiempo",
+      top_walks: "Mejores Caminatas",
+      popular_stops: "Paradas Populares",
+      listener_locations: "Ubicacion de Oyentes",
+      last_7: "Ultimos 7 dias",
+      last_30: "Ultimos 30 dias",
+      last_90: "Ultimos 90 dias",
+      all_time: "Todo el Tiempo",
+      plays: "Reproducciones",
+      revenue: "Ingresos",
+      completion_rate: "Completado",
+      listeners: "Oyentes",
+      avg_listen_time: "Tiempo Promedio",
+      view_analytics: "Ver Analiticas",
+      back_to_dashboard: "Volver al Panel",
+      rating: "Calificacion",
+    },
+
+    // Tips
+    tips: {
+      title: "Enviar Propina",
+      subtitle: "Muestra tu aprecio por",
+      custom: "Personalizado",
+      message_placeholder: "Agrega un mensaje (opcional)",
+      send: "Enviar Propina",
+      success: "Propina enviada! Gracias por apoyar",
+      processing: "Procesando...",
+    },
+
+    // Subscriptions
+    subscription: {
+      subscribe: "Suscribirse",
+      subscribed: "Suscrito",
+      price: "$5/mes",
+      perks: "Acceso anticipado a nuevas caminatas y contenido exclusivo",
+      manage: "Gestionar Suscripcion",
+      success: "Ya estas suscrito!",
+    },
+
+    gift: {
+      title: "Regalar Esta Caminata",
+      from: "De",
+      to_email: "Email del Destinatario (opcional)",
+      message_placeholder: "Agrega un mensaje personal",
+      send: "Enviar como Regalo",
+      redeem: "Canjear Regalo",
+      received: "Recibiste un regalo!",
+      login_to_redeem: "Inicia sesion para canjear esta caminata",
+      processing: "Procesando...",
+      your_name: "Tu Nombre",
+    },
+
+    // Messages
+    messages: {
+      title: "Mensajes",
+      search: "Buscar conversaciones...",
+      empty: "No hay mensajes aun",
+      empty_desc: "Inicia una conversacion con un artista",
+      type_message: "Escribe un mensaje...",
+      send: "Enviar",
+      today: "Hoy",
+      yesterday: "Ayer",
+    },
+
+    // Offline mode
+    offline: {
+      download: "Descargar para Offline",
+      downloaded: "Disponible Offline",
+      downloading: "Descargando...",
+      remove: "Eliminar Descarga",
+      offline_banner: "Estas sin conexion \u2014 mostrando caminatas descargadas",
+      storage_used: "Almacenamiento Usado",
     },
 
     common: {

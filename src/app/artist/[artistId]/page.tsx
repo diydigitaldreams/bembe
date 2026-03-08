@@ -1,8 +1,11 @@
 "use client";
 
-import { use } from "react";
+import { use, useState, useEffect } from "react";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/context";
+import { useSearchParams } from "next/navigation";
+import { SubscribeButton } from "@/components/subscribe-button";
+import TipModal from "@/components/tip-modal";
 import {
   ChevronLeft,
   MapPin,
@@ -13,6 +16,7 @@ import {
   Share2,
   Clock,
   Route,
+  CheckCircle,
 } from "lucide-react";
 
 const MOCK_ARTIST = {
@@ -89,10 +93,39 @@ export default function ArtistProfilePage({
 }) {
   const { artistId } = use(params);
   const { t } = useI18n();
+  const searchParams = useSearchParams();
+  const justSubscribed = searchParams.get("subscribed") === "true";
   const artist = MOCK_ARTIST;
+
+  const [tipModalOpen, setTipModalOpen] = useState(false);
+  const [showTipToast, setShowTipToast] = useState(false);
+
+  // Show success toast when redirected back from Stripe after tipping
+  useEffect(() => {
+    if (searchParams.get("tipped") === "true") {
+      setShowTipToast(true);
+      const url = new URL(window.location.href);
+      url.searchParams.delete("tipped");
+      window.history.replaceState({}, "", url.toString());
+
+      const timer = setTimeout(() => setShowTipToast(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams]);
 
   return (
     <div className="min-h-screen bg-bembe-sand">
+      {/* Tip Success Toast */}
+      {showTipToast && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-top duration-300">
+          <div className="flex items-center gap-2 bg-emerald-600 text-white px-5 py-3 rounded-xl shadow-lg">
+            <CheckCircle className="w-5 h-5 shrink-0" />
+            <span className="text-sm font-medium">
+              {t.tips.success} {artist.full_name.split(" ")[0]}!
+            </span>
+          </div>
+        </div>
+      )}
       {/* Header */}
       <div className="bg-gradient-to-br from-bembe-night via-bembe-teal to-bembe-night text-white">
         <div className="max-w-3xl mx-auto px-4 pt-4 pb-8">
@@ -211,6 +244,15 @@ export default function ArtistProfilePage({
           ))}
         </div>
 
+        {/* Subscription Success Banner */}
+        {justSubscribed && (
+          <div className="mt-6 bg-bembe-gold/15 border border-bembe-gold/30 rounded-xl p-4 text-center">
+            <p className="text-sm font-medium text-bembe-night">
+              {t.subscription.success}
+            </p>
+          </div>
+        )}
+
         {/* Support Card */}
         <div className="mt-8 bg-gradient-to-br from-bembe-teal to-emerald-600 rounded-2xl p-6 text-white">
           <h3 className="font-bold text-lg mb-2">
@@ -219,16 +261,35 @@ export default function ArtistProfilePage({
           <p className="text-white/70 text-sm mb-4">
             {t.artist.support_desc}
           </p>
-          <div className="flex gap-3">
-            <button className="px-4 py-2 bg-white text-bembe-teal font-medium rounded-xl text-sm hover:bg-white/90 transition-colors">
+          <div className="flex flex-wrap gap-3">
+            <SubscribeButton
+              artistId={artistId}
+              artistName={artist.full_name}
+              isSubscribed={justSubscribed}
+            />
+            <button
+              onClick={() => setTipModalOpen(true)}
+              className="px-4 py-2 bg-white text-bembe-teal font-medium rounded-xl text-sm hover:bg-white/90 transition-colors"
+            >
               {t.artist.send_tip}
             </button>
             <button className="px-4 py-2 bg-white/10 text-white font-medium rounded-xl text-sm hover:bg-white/20 transition-colors">
               {t.artist.gift_walk}
             </button>
           </div>
+          <p className="text-white/50 text-xs mt-3">
+            {t.subscription.perks}
+          </p>
         </div>
       </div>
+
+      {/* Tip Modal */}
+      <TipModal
+        artistId={artistId}
+        artistName={artist.full_name.split(" ")[0]}
+        open={tipModalOpen}
+        onClose={() => setTipModalOpen(false)}
+      />
     </div>
   );
 }
