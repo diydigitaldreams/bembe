@@ -33,8 +33,8 @@ export async function seed(): Promise<SeedResult> {
     {
       id: "a1000000-0000-0000-0000-000000000001",
       email: "lourdes.pagan@bembe.app",
-      full_name: "Lourdes Pagán Rivera",
-      bio: "Artista multidisciplinaria de Santurce. Explora la memoria colectiva boricua a través de instalaciones sonoras y murales interactivos. Su trabajo ha sido exhibido en la Bienal de San Juan y el Museo de Arte de Puerto Rico.",
+      full_name: "Lourdes Pagán Rivera [Ejemplo]",
+      bio: "Perfil de ejemplo — Artista multidisciplinaria de Santurce. Explora la memoria colectiva boricua a través de instalaciones sonoras y murales interactivos. Su trabajo ha sido exhibido en la Bienal de San Juan y el Museo de Arte de Puerto Rico.",
       location: "Santurce, PR",
       role: "artist",
       avatar_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Lourdes",
@@ -44,8 +44,8 @@ export async function seed(): Promise<SeedResult> {
     {
       id: "a1000000-0000-0000-0000-000000000002",
       email: "carlos.melendez@bembe.app",
-      full_name: "Carlos Meléndez Ortiz",
-      bio: "Músico y historiador cultural de Ponce. Documenta las tradiciones orales y sonoras de Puerto Rico, desde la bomba y plena hasta los pregones del casco urbano. Fundador del colectivo Sonido Ancestral.",
+      full_name: "Carlos Meléndez Ortiz [Ejemplo]",
+      bio: "Perfil de ejemplo — Músico y historiador cultural de Ponce. Documenta las tradiciones orales y sonoras de Puerto Rico, desde la bomba y plena hasta los pregones del casco urbano. Fundador del colectivo Sonido Ancestral.",
       location: "Ponce, PR",
       role: "artist",
       avatar_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos",
@@ -70,10 +70,10 @@ export async function seed(): Promise<SeedResult> {
     {
       id: "w1000000-0000-0000-0000-000000000001",
       artist_id: artists[0].id,
-      title: "Murales Vivos de Santurce",
+      title: "Murales Vivos de Santurce [Ejemplo]",
       description:
-        "Recorre las calles de Santurce y descubre la vibrante escena de arte urbano. Desde los icónicos murales de la Calle Cerra hasta las galerías emergentes de la Placita, esta caminata te sumerge en la revolución artística del barrio más cool de San Juan.",
-      cover_image_url: "https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=800",
+        "🎧 Ejemplo de caminata — Recorre las calles de Santurce y descubre la vibrante escena de arte urbano. Desde los icónicos murales de la Calle Cerra hasta las galerías emergentes de la Placita, esta caminata te sumerge en la revolución artística del barrio más cool de San Juan.",
+      cover_image_url: "https://images.unsplash.com/photo-1579783928621-7a13d66a62b1?w=800&q=80",
       price_cents: 500,
       duration_minutes: 45,
       distance_km: 1.8,
@@ -87,10 +87,10 @@ export async function seed(): Promise<SeedResult> {
     {
       id: "w1000000-0000-0000-0000-000000000002",
       artist_id: artists[0].id,
-      title: "Ecos del Viejo San Juan",
+      title: "Ecos del Viejo San Juan [Ejemplo]",
       description:
-        "Camina por los adoquines azules del Viejo San Juan mientras escuchas las historias que guardan sus murallas. Desde El Morro hasta la Catedral, cada parada revela capas de historia colonial, resistencia y cultura viva.",
-      cover_image_url: "https://images.unsplash.com/photo-1580237072617-771c3ecc4a24?w=800",
+        "🎧 Ejemplo de caminata — Camina por los adoquines azules del Viejo San Juan mientras escuchas las historias que guardan sus murallas. Desde El Morro hasta la Catedral, cada parada revela capas de historia colonial, resistencia y cultura viva.",
+      cover_image_url: "https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?w=800&q=80",
       price_cents: 800,
       duration_minutes: 60,
       distance_km: 2.5,
@@ -104,10 +104,10 @@ export async function seed(): Promise<SeedResult> {
     {
       id: "w1000000-0000-0000-0000-000000000003",
       artist_id: artists[1].id,
-      title: "Ponce: La Perla del Sur",
+      title: "Ponce: La Perla del Sur [Ejemplo]",
       description:
-        "Explora la arquitectura criolla y neoclásica de Ponce. Desde el Parque de Bombas hasta el Museo de Arte de Ponce, esta caminata sonora celebra la elegancia y la historia de la Ciudad Señorial.",
-      cover_image_url: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=800",
+        "🎧 Ejemplo de caminata — Explora la arquitectura criolla y neoclásica de Ponce. Desde el Parque de Bombas hasta el Museo de Arte de Ponce, esta caminata sonora celebra la elegancia y la historia de la Ciudad Señorial.",
+      cover_image_url: "https://images.unsplash.com/photo-1564604985362-fbb6eae09796?w=800&q=80",
       price_cents: 0,
       duration_minutes: 50,
       distance_km: 2.0,
@@ -121,10 +121,10 @@ export async function seed(): Promise<SeedResult> {
     {
       id: "w1000000-0000-0000-0000-000000000004",
       artist_id: artists[1].id,
-      title: "Atardecer en Rincón",
+      title: "Atardecer en Rincón [Ejemplo]",
       description:
-        "Una experiencia inmersiva al atardecer por la costa de Rincón. Escucha las olas, los cuentos de pescadores y la música jíbara mientras caminas desde Domes Beach hasta el Faro de Punta Higüero.",
-      cover_image_url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800",
+        "🎧 Ejemplo de caminata — Una experiencia inmersiva al atardecer por la costa de Rincón. Escucha las olas, los cuentos de pescadores y la música jíbara mientras caminas desde Domes Beach hasta el Faro de Punta Higüero.",
+      cover_image_url: "https://images.unsplash.com/photo-1505228395891-9a51e7e86bf6?w=800&q=80",
       price_cents: 300,
       duration_minutes: 35,
       distance_km: 1.5,
@@ -138,10 +138,10 @@ export async function seed(): Promise<SeedResult> {
     {
       id: "w1000000-0000-0000-0000-000000000005",
       artist_id: artists[0].id,
-      title: "Condado: Brisa y Cultura",
+      title: "Condado: Brisa y Cultura [Ejemplo]",
       description:
-        "Pasea por el Condado y descubre cómo este barrio turístico esconde joyas culturales entre sus hoteles y playas. Arte público, arquitectura art deco y la energía del San Juan moderno en una sola caminata.",
-      cover_image_url: "https://images.unsplash.com/photo-1590523741831-ab7e8b8f9c7f?w=800",
+        "🎧 Ejemplo de caminata — Pasea por el Condado y descubre cómo este barrio turístico esconde joyas culturales entre sus hoteles y playas. Arte público, arquitectura art deco y la energía del San Juan moderno en una sola caminata.",
+      cover_image_url: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80",
       price_cents: 1000,
       duration_minutes: 40,
       distance_km: 1.6,
@@ -406,7 +406,7 @@ export async function seed(): Promise<SeedResult> {
     {
       id: "e1000000-0000-0000-0000-000000000001",
       organizer_id: artists[0].id,
-      title: "Noche de Galerías — Santurce es Ley",
+      title: "Noche de Galerías — Santurce es Ley [Ejemplo]",
       description:
         "La tradicional noche de galerías abiertas en Santurce. Más de 20 espacios abren sus puertas con arte, música en vivo y gastronomía local. Gratis y abierto al público.",
       location_name: "Calle Cerra, Santurce",
@@ -425,7 +425,7 @@ export async function seed(): Promise<SeedResult> {
     {
       id: "e1000000-0000-0000-0000-000000000002",
       organizer_id: artists[1].id,
-      title: "Festival de Bomba y Plena — Ponce",
+      title: "Festival de Bomba y Plena — Ponce [Ejemplo]",
       description:
         "Celebración de las raíces afro-boricuas con presentaciones de bomba y plena, talleres de percusión y comida típica en la Plaza Las Delicias.",
       location_name: "Plaza Las Delicias, Ponce",
@@ -444,7 +444,7 @@ export async function seed(): Promise<SeedResult> {
     {
       id: "e1000000-0000-0000-0000-000000000003",
       organizer_id: artists[0].id,
-      title: "Jazz en la Calle — Viejo San Juan",
+      title: "Jazz en la Calle — Viejo San Juan [Ejemplo]",
       description:
         "Noche de jazz al aire libre en las calles adoquinadas del Viejo San Juan. Artistas locales e invitados internacionales en un ambiente íntimo bajo las estrellas.",
       location_name: "Plaza de Armas, Viejo San Juan",
@@ -463,7 +463,7 @@ export async function seed(): Promise<SeedResult> {
     {
       id: "e1000000-0000-0000-0000-000000000004",
       organizer_id: artists[1].id,
-      title: "Exposición: Tierra y Memoria",
+      title: "Exposición: Tierra y Memoria [Ejemplo]",
       description:
         "Inauguración de la exposición colectiva 'Tierra y Memoria' en el MAC. Artistas boricuas exploran la relación entre la isla, la diáspora y la identidad cultural a través de instalaciones y multimedia.",
       location_name: "Museo de Arte Contemporáneo, Santurce",
