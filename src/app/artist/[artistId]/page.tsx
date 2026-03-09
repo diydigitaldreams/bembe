@@ -137,10 +137,24 @@ export default function ArtistProfilePage({
               <ChevronLeft className="w-5 h-5" />
             </Link>
             <div className="flex gap-2">
-              <button className="p-2 rounded-lg hover:bg-white/10">
+              <button
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({ title: artist.full_name, url: window.location.href });
+                  } else {
+                    navigator.clipboard.writeText(window.location.href);
+                  }
+                }}
+                className="p-2 rounded-lg hover:bg-white/10"
+              >
                 <Share2 className="w-5 h-5" />
               </button>
-              <button className="p-2 rounded-lg hover:bg-white/10">
+              <button
+                onClick={() => {
+                  // Future: save to favorites
+                }}
+                className="p-2 rounded-lg hover:bg-white/10"
+              >
                 <Heart className="w-5 h-5" />
               </button>
             </div>
@@ -273,9 +287,12 @@ export default function ArtistProfilePage({
             >
               {t.artist.send_tip}
             </button>
-            <button className="px-4 py-2 bg-white/10 text-white font-medium rounded-xl text-sm hover:bg-white/20 transition-colors">
+            <Link
+              href={`/gift/${artistId}`}
+              className="px-4 py-2 bg-white/10 text-white font-medium rounded-xl text-sm hover:bg-white/20 transition-colors"
+            >
               {t.artist.gift_walk}
-            </button>
+            </Link>
           </div>
           <p className="text-white/50 text-xs mt-3">
             {t.subscription.perks}

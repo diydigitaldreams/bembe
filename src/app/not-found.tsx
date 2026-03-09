@@ -6,7 +6,7 @@ export default function NotFound() {
       <p className="text-[120px] font-extrabold text-bembe-gold/20 leading-none mb-4">404</p>
       <h1 className="text-2xl font-bold text-white mb-2">Pagina no encontrada</h1>
       <p className="text-white/50 mb-8 max-w-sm">
-        The page you are looking for does not exist or has been moved.
+        La pagina que buscas no existe o ha sido movida.
       </p>
       <div className="flex flex-col sm:flex-row gap-3">
         <Link
@@ -19,7 +19,7 @@ export default function NotFound() {
           href="/discover"
           className="px-8 py-3 rounded-full border-2 border-bembe-gold/30 text-bembe-gold font-semibold hover:border-bembe-gold/60 transition"
         >
-          Explorar walks
+          Explorar caminatas
         </Link>
       </div>
     </div>

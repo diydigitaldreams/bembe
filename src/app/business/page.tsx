@@ -17,7 +17,8 @@ import { useI18n } from "@/lib/i18n/context";
 
 export default function BusinessPage() {
   const [selectedPlan, setSelectedPlan] = useState<number | null>(null);
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const es = locale === "es";
 
   const PLANS = [
     {
@@ -25,7 +26,12 @@ export default function BusinessPage() {
       price: 200,
       period: t.business.mo,
       description: t.business.plan1_desc,
-      features: [
+      features: es ? [
+        "Pin en mapas de caminatas dentro de 500m",
+        "Tarjeta de negocio visible en paradas cercanas",
+        "Reporte mensual de trafico peatonal",
+        "Listado en el directorio de negocios Bembe",
+      ] : [
         "Pin on walk maps within 500m",
         "Business card shown during nearby stops",
         "Monthly foot traffic report",
@@ -39,7 +45,14 @@ export default function BusinessPage() {
       price: 500,
       period: t.business.mo,
       description: t.business.plan2_desc,
-      features: [
+      features: es ? [
+        "Todo lo del Pin de Barrio",
+        "Marca \"Patrocinado por\" en 3 caminatas",
+        "Mencion de audio en la intro de caminatas",
+        "Destacado en la pagina de descubrimiento",
+        "Kit de codigo QR para tu local",
+        "Soporte prioritario",
+      ] : [
         "Everything in Neighborhood Pin",
         'Branded "Sponsored by" on 3 walks',
         "Audio mention during walk intro",
@@ -55,7 +68,15 @@ export default function BusinessPage() {
       price: 1500,
       period: t.business.mo,
       description: t.business.plan3_desc,
-      features: [
+      features: es ? [
+        "Todo lo del Patrocinador de Caminata",
+        "Caminata de arte personalizada para tu negocio",
+        "Eventos de colaboracion con artistas en tu local",
+        "Acceso API para integracion de app de huespedes",
+        "Gerente de cuenta dedicado",
+        "Reporte mensual de impacto para ESG",
+        "Logo en la pagina principal de Bembe",
+      ] : [
         "Everything in Walk Sponsor",
         "Custom-branded art walk for your business",
         "Artist collaboration events at your venue",
@@ -210,15 +231,16 @@ export default function BusinessPage() {
                   </li>
                 ))}
               </ul>
-              <button
-                className={`w-full py-2.5 rounded-xl font-medium text-sm transition-colors ${
+              <a
+                href={`mailto:partners@bembe.pr?subject=${encodeURIComponent(plan.name)}`}
+                className={`block w-full py-2.5 rounded-xl font-medium text-sm text-center transition-colors ${
                   plan.popular
                     ? "bg-bembe-teal text-white hover:bg-bembe-teal/90"
                     : "bg-bembe-night/5 text-bembe-night hover:bg-bembe-night/10"
                 }`}
               >
                 {plan.cta}
-              </button>
+              </a>
             </div>
           ))}
         </div>

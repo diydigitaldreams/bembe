@@ -289,8 +289,8 @@ export default function Home() {
               <ul className="mt-4 flex flex-col gap-2.5">
                 {[
                   { href: "/discover", label: t.landing.footer_all_walks },
-                  { href: "/neighborhoods", label: t.landing.footer_neighborhoods },
-                  { href: "/free", label: t.landing.footer_free_walks },
+                  { href: "/discover", label: t.landing.footer_neighborhoods },
+                  { href: "/discover", label: t.landing.footer_free_walks },
                 ].map((link) => (
                   <li key={link.href}>
                     <Link
@@ -311,7 +311,7 @@ export default function Home() {
               </h4>
               <ul className="mt-4 flex flex-col gap-2.5">
                 {[
-                  { href: "/artist/create", label: t.landing.footer_create_walk },
+                  { href: "/artist/walks/new", label: t.landing.footer_create_walk },
                   { href: "/artist/dashboard", label: t.landing.footer_artist_dashboard },
                   { href: "/grants", label: t.landing.footer_grant_assistant },
                 ].map((link) => (
@@ -334,10 +334,10 @@ export default function Home() {
               </h4>
               <ul className="mt-4 flex flex-col gap-2.5">
                 {[
-                  { href: "/about", label: t.landing.footer_about },
-                  { href: "/privacy", label: t.landing.footer_privacy },
-                  { href: "/terms", label: t.landing.footer_terms },
-                  { href: "/contact", label: t.landing.footer_contact },
+                  { href: "mailto:hola@bembe.pr", label: t.landing.footer_about },
+                  { href: "mailto:hola@bembe.pr", label: t.landing.footer_privacy },
+                  { href: "mailto:hola@bembe.pr", label: t.landing.footer_terms },
+                  { href: "mailto:hola@bembe.pr", label: t.landing.footer_contact },
                 ].map((link) => (
                   <li key={link.href}>
                     <Link

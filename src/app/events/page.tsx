@@ -27,6 +27,7 @@ interface MockEvent {
   organizer: string;
   neighborhood: string;
   gradient: string;
+  rsvp_url: string;
 }
 
 const MOCK_EVENTS: MockEvent[] = [
@@ -36,7 +37,7 @@ const MOCK_EVENTS: MockEvent[] = [
     description:
       "Una noche de tradicion afro-boricua con musicos y bailarines locales. Incluye recorrido de arte por las calles de Loiza.",
     location_name: "Plaza de Loiza",
-    date: "March 22, 2026",
+    date: "22 de marzo, 2026",
     time: "7:00 PM",
     price: 25,
     max_capacity: 150,
@@ -44,14 +45,15 @@ const MOCK_EVENTS: MockEvent[] = [
     organizer: "Colectivo Loiza Viva",
     neighborhood: "Loiza",
     gradient: "from-bembe-coral to-orange-400",
+    rsvp_url: "https://forms.gle/bembe-bomba-loiza",
   },
   {
     id: "2",
-    title: "Santurce Art Walk: After Dark",
+    title: "Caminata Nocturna por los Murales de Santurce",
     description:
-      "Guided night walk through Santurce's most iconic murals. Local artists share the stories behind their work. Drinks included.",
+      "Recorrido nocturno guiado por los murales mas iconicos de Santurce. Artistas locales comparten las historias detras de sus obras. Bebidas incluidas.",
     location_name: "Calle Cerra, Santurce",
-    date: "March 28, 2026",
+    date: "28 de marzo, 2026",
     time: "8:00 PM",
     price: 35,
     max_capacity: 40,
@@ -59,14 +61,15 @@ const MOCK_EVENTS: MockEvent[] = [
     organizer: "Santurce es Ley",
     neighborhood: "Santurce",
     gradient: "from-bembe-teal to-emerald-400",
+    rsvp_url: "https://forms.gle/bembe-santurce-night",
   },
   {
     id: "3",
     title: "Taller de Ceramica Taina",
     description:
-      "Workshop de ceramica inspirada en los Tainos, dirigido por la artesana Maria del Carmen. Materiales incluidos.",
+      "Taller de ceramica inspirada en los Tainos, dirigido por la artesana Maria del Carmen. Materiales incluidos.",
     location_name: "Centro de Bellas Artes, Ponce",
-    date: "April 5, 2026",
+    date: "5 de abril, 2026",
     time: "10:00 AM",
     price: 45,
     max_capacity: 20,
@@ -74,36 +77,39 @@ const MOCK_EVENTS: MockEvent[] = [
     organizer: "Maria del Carmen Ruiz",
     neighborhood: "Ponce",
     gradient: "from-bembe-gold to-yellow-400",
+    rsvp_url: "https://forms.gle/bembe-ceramica-ponce",
   },
   {
     id: "4",
-    title: "Sunset Sounds: Live Music at La Perla",
+    title: "Sonidos del Atardecer: Musica en Vivo en La Perla",
     description:
-      "Intimate acoustic session overlooking the ocean. Three local musicians perform original compositions inspired by Old San Juan.",
-    location_name: "La Perla Viewpoint",
-    date: "April 12, 2026",
+      "Sesion acustica intima con vista al oceano. Tres musicos locales interpretan composiciones originales inspiradas en el Viejo San Juan.",
+    location_name: "Mirador de La Perla",
+    date: "12 de abril, 2026",
     time: "5:30 PM",
     price: 0,
     max_capacity: 80,
     tickets_sold: 67,
     organizer: "Bembe Community",
-    neighborhood: "Old San Juan",
+    neighborhood: "Viejo San Juan",
     gradient: "from-purple-500 to-bembe-coral",
+    rsvp_url: "https://forms.gle/bembe-sunset-perla",
   },
   {
     id: "5",
-    title: "Mercado de Arte: Rincon Edition",
+    title: "Mercado de Arte: Edicion Rincon",
     description:
-      "Pop-up art market featuring 30+ local artists. Paintings, sculptures, jewelry, and prints. Live music and local food.",
+      "Mercado de arte pop-up con mas de 30 artistas locales. Pinturas, esculturas, joyeria e impresiones. Musica en vivo y comida local.",
     location_name: "Plaza de Rincon",
-    date: "April 19, 2026",
+    date: "19 de abril, 2026",
     time: "11:00 AM",
     price: 0,
     max_capacity: 500,
     tickets_sold: 203,
-    organizer: "Rincon Art Collective",
+    organizer: "Colectivo de Arte Rincon",
     neighborhood: "Rincon",
     gradient: "from-bembe-teal to-blue-400",
+    rsvp_url: "https://forms.gle/bembe-mercado-rincon",
   },
 ];
 
@@ -190,7 +196,7 @@ export default function EventsPage() {
               {event.price === 0 && (
                 <div className="absolute top-3 right-3">
                   <span className="px-2.5 py-1 bg-green-500 text-white rounded-full text-xs font-bold">
-                    FREE
+                    {t.discover.free.toUpperCase()}
                   </span>
                 </div>
               )}
@@ -221,12 +227,17 @@ export default function EventsPage() {
                 <span className="text-xs text-bembe-night/40">
                   {t.events.by} {event.organizer}
                 </span>
-                <button className="inline-flex items-center gap-1.5 px-4 py-2 bg-bembe-teal text-white rounded-xl text-sm font-medium hover:bg-bembe-teal/90 transition-colors">
+                <a
+                  href={event.rsvp_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-bembe-teal text-white rounded-xl text-sm font-medium hover:bg-bembe-teal/90 transition-colors"
+                >
                   <Ticket className="w-4 h-4" />
                   {event.price === 0
                     ? t.events.rsvp_free
                     : `$${event.price} — ${t.events.get_ticket}`}
-                </button>
+                </a>
               </div>
             </div>
           </div>

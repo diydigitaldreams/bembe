@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import mapboxgl from "mapbox-gl";
 import Link from "next/link";
 import { ChevronLeft, MapPin, Clock, Navigation, Star, DollarSign, X } from "lucide-react";
+import { useI18n } from "@/lib/i18n/context";
 import type { ArtWalk } from "@/types";
 
 const MOCK_WALKS: ArtWalk[] = [
@@ -216,12 +217,8 @@ const WALK_COORDS: Record<string, [number, number]> = {
   "walk-bayamon": [-66.1553, 18.3985],
 };
 
-function formatPrice(cents: number): string {
-  if (cents === 0) return "Free";
-  return `$${(cents / 100).toFixed(2)}`;
-}
-
 export default function MapPage() {
+  const { t } = useI18n();
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
@@ -336,7 +333,7 @@ export default function MapPage() {
           <ChevronLeft className="h-5 w-5" />
         </Link>
         <h1 className="text-lg font-semibold text-white drop-shadow">
-          Explore Walks
+          {t.map.title}
         </h1>
       </div>
 
@@ -349,10 +346,10 @@ export default function MapPage() {
           <div className="text-center px-8">
             <MapPin className="h-12 w-12 text-bembe-teal mx-auto mb-4" />
             <h2 className="text-xl font-bold text-bembe-night mb-2">
-              Map Unavailable
+              {t.map.no_token}
             </h2>
             <p className="text-bembe-night/60">
-              Set NEXT_PUBLIC_MAPBOX_TOKEN in your .env.local to enable the map.
+              {t.map.no_token_desc}
             </p>
           </div>
         </div>
@@ -394,7 +391,7 @@ export default function MapPage() {
                   {selectedWalk.artist?.full_name?.charAt(0) ?? "A"}
                 </div>
                 <span className="text-sm text-bembe-night/70">
-                  by{" "}
+                  {t.walk.by}{" "}
                   <span className="font-medium text-bembe-night">
                     {selectedWalk.artist?.full_name}
                   </span>
@@ -417,7 +414,7 @@ export default function MapPage() {
                 </span>
                 <span className="flex items-center gap-1">
                   <DollarSign className="h-3.5 w-3.5" />
-                  {formatPrice(selectedWalk.price_cents)}
+                  {selectedWalk.price_cents === 0 ? t.walk.free : `$${(selectedWalk.price_cents / 100).toFixed(2)}`}
                 </span>
               </div>
 
@@ -432,13 +429,13 @@ export default function MapPage() {
                   className="flex-1 flex items-center justify-center gap-2 h-12 rounded-xl bg-bembe-teal text-white font-semibold text-sm transition-colors hover:bg-bembe-teal/90"
                 >
                   <Navigation className="h-4 w-4" />
-                  Start Walk
+                  {t.map.start_walk}
                 </Link>
                 <Link
                   href={`/walk/${selectedWalk.id}`}
                   className="flex items-center justify-center h-12 px-4 rounded-xl border-2 border-bembe-night/10 text-bembe-night/70 font-medium text-sm transition-colors hover:bg-bembe-night/5"
                 >
-                  Details
+                  {t.map.details}
                 </Link>
               </div>
             </div>

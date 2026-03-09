@@ -165,9 +165,12 @@ export default function ArtistDashboardPage() {
             <p className="text-white/60 text-sm mb-4 max-w-md">
               {t.dashboard.ai_grant_desc}
             </p>
-            <button className="px-5 py-2.5 rounded-xl bg-bembe-gold text-bembe-night font-semibold hover:bg-bembe-gold/90 active:scale-[0.98] transition text-sm">
+            <a
+              href="mailto:grants@bembe.pr"
+              className="inline-block px-5 py-2.5 rounded-xl bg-bembe-gold text-bembe-night font-semibold hover:bg-bembe-gold/90 active:scale-[0.98] transition text-sm"
+            >
               {t.dashboard.ai_grant_cta}
-            </button>
+            </a>
           </div>
         </div>
 
@@ -226,12 +229,18 @@ export default function ArtistDashboardPage() {
 
                 {/* Actions */}
                 <div className="flex items-center gap-1">
-                  <button className="p-2 rounded-lg hover:bg-bembe-sand/50 text-bembe-night/40 hover:text-bembe-night transition">
+                  <Link
+                    href={`/walk/${walk.id}`}
+                    className="p-2 rounded-lg hover:bg-bembe-sand/50 text-bembe-night/40 hover:text-bembe-night transition"
+                  >
                     <Eye className="w-4 h-4" />
-                  </button>
-                  <button className="p-2 rounded-lg hover:bg-bembe-sand/50 text-bembe-night/40 hover:text-bembe-night transition">
+                  </Link>
+                  <Link
+                    href={`/artist/walks/new`}
+                    className="p-2 rounded-lg hover:bg-bembe-sand/50 text-bembe-night/40 hover:text-bembe-night transition"
+                  >
                     <MoreVertical className="w-4 h-4" />
-                  </button>
+                  </Link>
                 </div>
               </div>
             ))}
