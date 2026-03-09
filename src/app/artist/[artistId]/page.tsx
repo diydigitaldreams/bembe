@@ -6,6 +6,8 @@ import { useI18n } from "@/lib/i18n/context";
 import { useSearchParams } from "next/navigation";
 import { SubscribeButton } from "@/components/subscribe-button";
 import TipModal from "@/components/tip-modal";
+import { createClient } from "@/lib/supabase/client";
+import type { ArtWalk } from "@/types";
 import {
   ChevronLeft,
   MapPin,
@@ -17,73 +19,15 @@ import {
   Clock,
   Route,
   CheckCircle,
+  Loader2,
 } from "lucide-react";
 
-const MOCK_ARTIST = {
-  id: "1",
-  full_name: "Isabella Torres Rivera",
-  bio: "Muralista y narradora de historias de Santurce. Mis caminatas de arte te llevan por las calles que me criaron, compartiendo las voces de mi comunidad a traves del color y el sonido.",
-  location: "Santurce, San Juan",
-  avatar_gradient: "from-bembe-coral to-bembe-gold",
-  total_plays: 3420,
-  total_walks: 8,
-  avg_rating: 4.8,
-  joined: "January 2026",
-};
-
-const MOCK_WALKS = [
-  {
-    id: "1",
-    title: "Murales de Santurce: Colores que Hablan",
-    description:
-      "Un recorrido por los murales mas iconicos de Santurce. Cada pared cuenta una historia de resistencia, amor y orgullo boricua.",
-    duration_minutes: 45,
-    distance_km: 1.8,
-    price_cents: 1000,
-    total_plays: 1250,
-    avg_rating: 4.9,
-    neighborhood: "Santurce",
-    gradient: "from-bembe-coral to-orange-400",
-  },
-  {
-    id: "2",
-    title: "La Placita After Hours",
-    description:
-      "Experience La Placita's transformation from day market to nightlife hub through the eyes of the artists who painted its walls.",
-    duration_minutes: 30,
-    distance_km: 0.8,
-    price_cents: 800,
-    total_plays: 890,
-    avg_rating: 4.7,
-    neighborhood: "Santurce",
-    gradient: "from-bembe-teal to-emerald-400",
-  },
-  {
-    id: "3",
-    title: "Women of Santurce: Hidden Stories",
-    description:
-      "Descubre las historias de las mujeres que construyeron Santurce — artistas, activistas y visionarias que transformaron el barrio.",
-    duration_minutes: 55,
-    distance_km: 2.1,
-    price_cents: 1200,
-    total_plays: 670,
-    avg_rating: 4.9,
-    neighborhood: "Santurce",
-    gradient: "from-purple-500 to-bembe-coral",
-  },
-  {
-    id: "free-1",
-    title: "Mi Primer Santurce (Free Walk)",
-    description:
-      "A short intro to Santurce for first-time visitors. Perfect starting point before the deeper walks.",
-    duration_minutes: 15,
-    distance_km: 0.5,
-    price_cents: 0,
-    total_plays: 610,
-    avg_rating: 4.6,
-    neighborhood: "Santurce",
-    gradient: "from-bembe-gold to-yellow-400",
-  },
+const GRADIENTS = [
+  "from-bembe-coral to-orange-400",
+  "from-bembe-teal to-emerald-400",
+  "from-purple-500 to-bembe-coral",
+  "from-bembe-gold to-yellow-400",
+  "from-bembe-teal to-blue-400",
 ];
 
 export default function ArtistProfilePage({
@@ -95,10 +39,43 @@ export default function ArtistProfilePage({
   const { t } = useI18n();
   const searchParams = useSearchParams();
   const justSubscribed = searchParams.get("subscribed") === "true";
-  const artist = MOCK_ARTIST;
 
+  const [artist, setArtist] = useState<{
+    id: string;
+    full_name: string;
+    bio: string | null;
+    location: string | null;
+    avatar_url: string | null;
+  } | null>(null);
+  const [walks, setWalks] = useState<ArtWalk[]>([]);
+  const [loading, setLoading] = useState(true);
   const [tipModalOpen, setTipModalOpen] = useState(false);
   const [showTipToast, setShowTipToast] = useState(false);
+
+  useEffect(() => {
+    async function fetchArtist() {
+      const supabase = createClient();
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("id, full_name, bio, location, avatar_url")
+        .eq("id", artistId)
+        .single();
+
+      if (profile) setArtist(profile);
+
+      const { data: walksData } = await supabase
+        .from("art_walks")
+        .select("*")
+        .eq("artist_id", artistId)
+        .eq("is_published", true)
+        .order("created_at", { ascending: false });
+
+      if (walksData) setWalks(walksData);
+      setLoading(false);
+    }
+    fetchArtist();
+  }, [artistId]);
 
   // Show success toast when redirected back from Stripe after tipping
   useEffect(() => {
@@ -112,6 +89,28 @@ export default function ArtistProfilePage({
       return () => clearTimeout(timer);
     }
   }, [searchParams]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-bembe-sand flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-bembe-teal" />
+      </div>
+    );
+  }
+
+  if (!artist) {
+    return (
+      <div className="min-h-screen bg-bembe-sand flex flex-col items-center justify-center gap-4">
+        <p className="text-bembe-night/60">Artist not found</p>
+        <Link href="/discover" className="text-bembe-teal font-medium">{t.discover.title}</Link>
+      </div>
+    );
+  }
+
+  const totalPlays = walks.reduce((sum, w) => sum + w.total_plays, 0);
+  const avgRating = walks.length > 0
+    ? (walks.reduce((sum, w) => sum + Number(w.avg_rating), 0) / walks.length).toFixed(1)
+    : "0";
 
   return (
     <div className="min-h-screen bg-bembe-sand">
@@ -163,7 +162,7 @@ export default function ArtistProfilePage({
           {/* Avatar */}
           <div className="flex items-center gap-4 mb-4">
             <div
-              className={`w-20 h-20 rounded-full bg-gradient-to-br ${artist.avatar_gradient} flex items-center justify-center text-2xl font-bold`}
+              className="w-20 h-20 rounded-full bg-gradient-to-br from-bembe-coral to-bembe-gold flex items-center justify-center text-2xl font-bold"
             >
               {artist.full_name
                 .split(" ")
@@ -188,18 +187,18 @@ export default function ArtistProfilePage({
           <div className="grid grid-cols-3 gap-3">
             <div className="bg-white/10 rounded-xl p-3 text-center">
               <div className="font-bold text-lg">
-                {artist.total_plays.toLocaleString()}
+                {totalPlays.toLocaleString()}
               </div>
               <div className="text-xs text-white/50">{t.artist.total_plays}</div>
             </div>
             <div className="bg-white/10 rounded-xl p-3 text-center">
-              <div className="font-bold text-lg">{artist.total_walks}</div>
+              <div className="font-bold text-lg">{walks.length}</div>
               <div className="text-xs text-white/50">{t.artist.walks}</div>
             </div>
             <div className="bg-white/10 rounded-xl p-3 text-center">
               <div className="font-bold text-lg flex items-center justify-center gap-1">
                 <Star className="w-4 h-4 text-bembe-gold fill-bembe-gold" />
-                {artist.avg_rating}
+                {avgRating}
               </div>
               <div className="text-xs text-white/50">{t.artist.rating}</div>
             </div>
@@ -210,11 +209,11 @@ export default function ArtistProfilePage({
       {/* Walks */}
       <div className="max-w-3xl mx-auto px-4 py-6">
         <h2 className="font-bold text-lg mb-4">
-          {t.artist.art_walks} ({MOCK_WALKS.length})
+          {t.artist.art_walks} ({walks.length})
         </h2>
 
         <div className="space-y-3">
-          {MOCK_WALKS.map((walk) => (
+          {walks.map((walk, idx) => (
             <Link
               key={walk.id}
               href={`/walk/${walk.id}`}
@@ -222,7 +221,7 @@ export default function ArtistProfilePage({
             >
               <div className="flex">
                 <div
-                  className={`w-28 h-28 bg-gradient-to-br ${walk.gradient} shrink-0 flex items-center justify-center`}
+                  className={`w-28 h-28 bg-gradient-to-br ${GRADIENTS[idx % GRADIENTS.length]} shrink-0 flex items-center justify-center`}
                 >
                   <Headphones className="w-8 h-8 text-white/60" />
                 </div>
@@ -288,7 +287,7 @@ export default function ArtistProfilePage({
               {t.artist.send_tip}
             </button>
             <Link
-              href={`/gift/${artistId}`}
+              href={`/discover`}
               className="px-4 py-2 bg-white/10 text-white font-medium rounded-xl text-sm hover:bg-white/20 transition-colors"
             >
               {t.artist.gift_walk}

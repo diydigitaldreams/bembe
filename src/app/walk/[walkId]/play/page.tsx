@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { use, useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Link from "next/link";
 import mapboxgl from "mapbox-gl";
 import {
@@ -122,8 +122,16 @@ function formatTime(seconds: number): string {
 
 // ---------- Component ----------
 
-export default function WalkPlayerPage() {
+export default function WalkPlayerPage({
+  params,
+}: {
+  params: Promise<{ walkId: string }>;
+}) {
+  const { walkId } = use(params);
   const { t } = useI18n();
+  const [walkTitle, setWalkTitle] = useState("");
+  const [stops, setStops] = useState<WalkStop[]>(MOCK_STOPS);
+  const [loading, setLoading] = useState(true);
   const [currentStopIndex, setCurrentStopIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -136,8 +144,28 @@ export default function WalkPlayerPage() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const geo = useGeolocation(true);
-  const currentStop = MOCK_STOPS[currentStopIndex];
-  const totalStops = MOCK_STOPS.length;
+  const currentStop = stops[currentStopIndex];
+  const totalStops = stops.length;
+
+  // Fetch walk data from API
+  useEffect(() => {
+    async function fetchWalk() {
+      try {
+        const res = await fetch(`/api/walks/${walkId}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.walk) {
+            setWalkTitle(data.walk.title);
+            if (data.walk.stops?.length > 0) {
+              setStops(data.walk.stops);
+            }
+          }
+        }
+      } catch { /* use mock data as fallback */ }
+      setLoading(false);
+    }
+    fetchWalk();
+  }, [walkId]);
   const progress =
     currentStop.duration_seconds > 0
       ? Math.min(elapsed / currentStop.duration_seconds, 1)
@@ -164,7 +192,7 @@ export default function WalkPlayerPage() {
 
     // Check if near next stop
     if (currentStopIndex < totalStops - 1) {
-      const nextStop = MOCK_STOPS[currentStopIndex + 1];
+      const nextStop = stops[currentStopIndex + 1];
       const distToNext = getDistanceMeters(
         geo.lat,
         geo.lng,
@@ -175,7 +203,8 @@ export default function WalkPlayerPage() {
         handleNextStop();
       }
     }
-  }, [geo.lat, geo.lng, currentStopIndex, walkComplete]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [geo.lat, geo.lng, currentStopIndex, walkComplete, stops]);
 
   // Audio timer simulation
   useEffect(() => {
@@ -216,7 +245,7 @@ export default function WalkPlayerPage() {
     });
 
     // Add stop markers
-    MOCK_STOPS.forEach((stop, i) => {
+    stops.forEach((stop, i) => {
       const el = document.createElement("div");
       el.style.cssText = `
         width: 28px; height: 28px; border-radius: 50%;
@@ -241,7 +270,7 @@ export default function WalkPlayerPage() {
           properties: {},
           geometry: {
             type: "LineString",
-            coordinates: MOCK_STOPS.map((s) => [s.lng, s.lat]),
+            coordinates: stops.map((s) => [s.lng, s.lat]),
           },
         },
       });
@@ -333,7 +362,7 @@ export default function WalkPlayerPage() {
         </p>
         <div className="flex flex-col gap-3 w-full max-w-xs">
           <Link
-            href={`/walk/${WALK_ID}`}
+            href={`/walk/${walkId}`}
             className="flex items-center justify-center h-14 rounded-2xl bg-bembe-teal text-white font-semibold"
           >
             {t.player.leave_review}
@@ -364,7 +393,7 @@ export default function WalkPlayerPage() {
             {t.player.now_walking}
           </p>
           <p className="text-sm font-semibold text-bembe-night truncate">
-            {WALK_TITLE}
+            {walkTitle}
           </p>
         </div>
         <button
@@ -408,7 +437,7 @@ export default function WalkPlayerPage() {
         <div className="px-5 pt-5 pb-2">
           <div className="flex items-center gap-2">
             <div className="flex gap-1">
-              {MOCK_STOPS.map((_, i) => (
+              {stops.map((_, i) => (
                 <div
                   key={i}
                   className={`h-1.5 rounded-full transition-all duration-300 ${
@@ -536,7 +565,7 @@ export default function WalkPlayerPage() {
               {currentStopIndex + 2}
             </div>
             <p className="text-xs text-bembe-night/50 truncate">
-              {t.player.next_prefix}: {MOCK_STOPS[currentStopIndex + 1].title}
+              {t.player.next_prefix}: {stops[currentStopIndex + 1].title}
             </p>
           </div>
         )}

@@ -149,10 +149,41 @@ export default function CreateWalkPage() {
 
   async function handlePublish() {
     setPublishing(true);
-    // In production, this would call Supabase to create the walk
-    await new Promise((r) => setTimeout(r, 1500));
-    setPublishing(false);
-    alert("Walk published successfully!");
+    try {
+      const res = await fetch("/api/walks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: title.trim(),
+          description: description.trim(),
+          neighborhood,
+          municipality: neighborhood,
+          price_cents: pricingType === "paid" ? price * 100 : 0,
+          duration_minutes: stops.reduce((sum, s) => sum + Math.round((s.lat ? 180 : 120) / 60), 0) * stops.length,
+          distance_km: 0,
+          is_published: true,
+          stops: stops.map((s) => ({
+            title: s.title,
+            description: s.description,
+            lat: s.lat,
+            lng: s.lng,
+            duration_seconds: 180,
+          })),
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || "Failed to create walk");
+        return;
+      }
+
+      window.location.href = `/walk/${data.walk.id}`;
+    } catch {
+      alert("Failed to create walk. Please try again.");
+    } finally {
+      setPublishing(false);
+    }
   }
 
   function canProceed(): boolean {

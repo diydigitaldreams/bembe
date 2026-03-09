@@ -1,6 +1,6 @@
 "use client";
 
-import { use } from "react";
+import { use, useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ChevronLeft,
@@ -11,120 +11,11 @@ import {
   Play,
   User,
   Route,
+  Loader2,
 } from "lucide-react";
 import type { ArtWalk, WalkStop, Profile } from "@/types";
 import GiftButton from "@/components/gift-button";
 import { useI18n } from "@/lib/i18n/context";
-
-const MOCK_ARTIST: Profile = {
-  id: "artist-1",
-  email: "marina@bembe.art",
-  full_name: "Marina Del Valle",
-  avatar_url: null,
-  role: "artist",
-  bio: "Visual artist and urban storyteller born and raised in Santurce. Marina has spent 15 years documenting the street art renaissance that transformed her neighborhood into one of the Caribbean's most vibrant art districts.",
-  location: "Santurce, San Juan",
-  lat: 18.4468,
-  lng: -66.0614,
-  is_act60: false,
-  stripe_account_id: null,
-  stripe_customer_id: null,
-  created_at: "2025-01-01",
-};
-
-const MOCK_STOPS: WalkStop[] = [
-  {
-    id: "stop-1",
-    walk_id: "walk-santurce",
-    order_index: 0,
-    title: "Calle Cerra: The Birth of a Movement",
-    description:
-      "Start at the intersection where Santurce's street art revolution began. Learn about the first murals that appeared in 2010 and the artists who dared to transform blank walls into canvases.",
-    audio_url: null,
-    image_urls: [],
-    lat: 18.4455,
-    lng: -66.0625,
-    trigger_radius_meters: 30,
-    duration_seconds: 180,
-  },
-  {
-    id: "stop-2",
-    walk_id: "walk-santurce",
-    order_index: 1,
-    title: "MAC: Museo de Arte Contemporaneo",
-    description:
-      "The anchor of Santurce's art scene. Discover how this museum became a catalyst for the surrounding neighborhood's creative explosion.",
-    audio_url: null,
-    image_urls: [],
-    lat: 18.4470,
-    lng: -66.0590,
-    trigger_radius_meters: 40,
-    duration_seconds: 240,
-  },
-  {
-    id: "stop-3",
-    walk_id: "walk-santurce",
-    order_index: 2,
-    title: "La Placita: Where Art Meets Life",
-    description:
-      "By day, a farmers' market; by night, the island's most iconic gathering spot. Hear stories of the vendors, musicians, and artists who make La Placita the soul of Santurce.",
-    audio_url: null,
-    image_urls: [],
-    lat: 18.4452,
-    lng: -66.0605,
-    trigger_radius_meters: 35,
-    duration_seconds: 210,
-  },
-  {
-    id: "stop-4",
-    walk_id: "walk-santurce",
-    order_index: 3,
-    title: "Tras Talleres: The Hidden Studios",
-    description:
-      "Venture behind the main streets to discover working artist studios. Peek into the creative process and learn about the community that sustains itself through art.",
-    audio_url: null,
-    image_urls: [],
-    lat: 18.4480,
-    lng: -66.0570,
-    trigger_radius_meters: 30,
-    duration_seconds: 200,
-  },
-  {
-    id: "stop-5",
-    walk_id: "walk-santurce",
-    order_index: 4,
-    title: "Miramar: Art Deco to Neo-Muralism",
-    description:
-      "End your walk where old meets new. The Art Deco buildings of Miramar serve as backdrop for a new generation of muralists redefining Puerto Rican identity.",
-    audio_url: null,
-    image_urls: [],
-    lat: 18.4500,
-    lng: -66.0650,
-    trigger_radius_meters: 35,
-    duration_seconds: 220,
-  },
-];
-
-const MOCK_WALK: ArtWalk = {
-  id: "walk-santurce",
-  artist_id: "artist-1",
-  title: "Santurce Es Ley",
-  description:
-    "Explore the vibrant street art and galleries of Santurce, Puerto Rico's creative heartbeat. From towering murals on Calle Cerra to the hidden studios of Tras Talleres, this walk takes you through the neighborhood that sparked an island-wide art renaissance. You'll hear stories from the artists themselves, learn the history behind iconic works, and discover why Santurce has become a pilgrimage site for art lovers from around the world.",
-  cover_image_url: "/walks/santurce.jpg",
-  price_cents: 1499,
-  duration_minutes: 75,
-  distance_km: 2.4,
-  neighborhood: "Santurce",
-  municipality: "San Juan",
-  is_published: true,
-  is_featured: true,
-  total_plays: 342,
-  avg_rating: 4.8,
-  created_at: "2025-01-15",
-  artist: MOCK_ARTIST,
-  stops: MOCK_STOPS,
-};
 
 export default function WalkDetailPage({
   params,
@@ -133,8 +24,48 @@ export default function WalkDetailPage({
 }) {
   const { walkId } = use(params);
   const { t } = useI18n();
-  // In production, fetch walk by walkId. Using mock data for now.
-  const walk = MOCK_WALK;
+  const [walk, setWalk] = useState<ArtWalk | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    async function fetchWalk() {
+      try {
+        const res = await fetch(`/api/walks/${walkId}`);
+        if (!res.ok) {
+          setError(true);
+          return;
+        }
+        const data = await res.json();
+        setWalk(data.walk);
+      } catch {
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchWalk();
+  }, [walkId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-dvh bg-bembe-sand flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-bembe-teal" />
+      </div>
+    );
+  }
+
+  if (error || !walk) {
+    return (
+      <div className="min-h-dvh bg-bembe-sand flex flex-col items-center justify-center gap-4">
+        <p className="text-bembe-night/60">{"Walk not found"}</p>
+        <Link href="/discover" className="text-bembe-teal font-medium">
+          {t.discover.title}
+        </Link>
+      </div>
+    );
+  }
+
   const stops = walk.stops ?? [];
   const artist = walk.artist!;
   const totalStopDuration = stops.reduce((sum, s) => sum + s.duration_seconds, 0);
@@ -159,7 +90,7 @@ export default function WalkDetailPage({
         {/* Top nav */}
         <div className="absolute top-0 left-0 right-0 flex items-center gap-3 px-4 pt-[env(safe-area-inset-top,12px)] pb-3">
           <Link
-            href="/map"
+            href="/discover"
             className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-md text-white"
           >
             <ChevronLeft className="h-5 w-5" />

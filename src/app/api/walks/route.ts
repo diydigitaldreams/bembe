@@ -4,6 +4,144 @@ import { createClient } from "@/lib/supabase/server";
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 100;
 
+// ---------------------------------------------------------------------------
+// POST /api/walks — Create a new walk with stops
+// ---------------------------------------------------------------------------
+export async function POST(request: NextRequest) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json(
+      { error: "Authentication required" },
+      { status: 401 }
+    );
+  }
+
+  let body: Record<string, unknown>;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json(
+      { error: "Invalid JSON body" },
+      { status: 400 }
+    );
+  }
+
+  const {
+    title,
+    description,
+    neighborhood,
+    municipality,
+    cover_image_url,
+    price_cents,
+    duration_minutes,
+    distance_km,
+    is_published,
+    stops,
+  } = body as {
+    title?: string;
+    description?: string;
+    neighborhood?: string;
+    municipality?: string;
+    cover_image_url?: string;
+    price_cents?: number;
+    duration_minutes?: number;
+    distance_km?: number;
+    is_published?: boolean;
+    stops?: {
+      title: string;
+      description: string;
+      lat: number;
+      lng: number;
+      duration_seconds?: number;
+    }[];
+  };
+
+  if (!title?.trim()) {
+    return NextResponse.json(
+      { error: "Title is required" },
+      { status: 400 }
+    );
+  }
+
+  if (!neighborhood?.trim()) {
+    return NextResponse.json(
+      { error: "Neighborhood is required" },
+      { status: 400 }
+    );
+  }
+
+  // Insert the walk
+  const { data: walk, error: walkError } = await supabase
+    .from("art_walks")
+    .insert({
+      artist_id: user.id,
+      title: title.trim(),
+      description: (description || "").trim(),
+      cover_image_url: cover_image_url || "",
+      price_cents: price_cents ?? 0,
+      duration_minutes: duration_minutes ?? 0,
+      distance_km: distance_km ?? 0,
+      neighborhood: neighborhood.trim(),
+      municipality: (municipality || neighborhood).trim(),
+      is_published: is_published ?? false,
+    })
+    .select()
+    .single();
+
+  if (walkError) {
+    console.error("Failed to create walk:", walkError);
+    return NextResponse.json(
+      { error: "Failed to create walk" },
+      { status: 500 }
+    );
+  }
+
+  // Insert stops if provided
+  if (stops && stops.length > 0) {
+    const stopRows = stops.map((s, i) => ({
+      walk_id: walk.id,
+      order_index: i,
+      title: s.title || `Stop ${i + 1}`,
+      description: s.description || "",
+      lat: s.lat ?? 18.4655,
+      lng: s.lng ?? -66.1057,
+      duration_seconds: s.duration_seconds ?? 0,
+    }));
+
+    const { error: stopsError } = await supabase
+      .from("walk_stops")
+      .insert(stopRows);
+
+    if (stopsError) {
+      console.error("Failed to create stops:", stopsError);
+      // Walk was created but stops failed — still return the walk
+    }
+  }
+
+  // Re-fetch with relations
+  const { data: fullWalk } = await supabase
+    .from("art_walks")
+    .select(
+      `
+      *,
+      artist:profiles!art_walks_artist_id_fkey (id, full_name, avatar_url, location),
+      stops:walk_stops (*)
+    `
+    )
+    .eq("id", walk.id)
+    .single();
+
+  return NextResponse.json({ walk: fullWalk ?? walk }, { status: 201 });
+}
+
+// ---------------------------------------------------------------------------
+// GET /api/walks — List published walks
+// ---------------------------------------------------------------------------
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
   const { searchParams } = request.nextUrl;
@@ -35,7 +173,9 @@ export async function GET(request: NextRequest) {
         id,
         full_name,
         avatar_url,
-        location
+        location,
+        lat,
+        lng
       )
     `,
       { count: "exact" }
@@ -70,11 +210,7 @@ export async function GET(request: NextRequest) {
   }
 
   if (search) {
-    // Use Postgres full-text search against the GIN index
-    query = query.textSearch("title", search, {
-      type: "websearch",
-      config: "spanish",
-    });
+    query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
   }
 
   // Sorting

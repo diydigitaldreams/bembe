@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   Headphones,
   DollarSign,
@@ -10,91 +11,83 @@ import {
   Eye,
   MoreVertical,
   BarChart3,
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/context";
-
-// Mock data
-const stats = [
-  {
-    key: "total_plays" as const,
-    value: "1,247",
-    icon: Headphones,
-    color: "bg-bembe-teal/10 text-bembe-teal",
-  },
-  {
-    key: "revenue" as const,
-    value: "$3,420",
-    icon: DollarSign,
-    color: "bg-bembe-gold/10 text-bembe-gold",
-  },
-  {
-    key: "active_walks" as const,
-    value: "8",
-    icon: MapPin,
-    color: "bg-bembe-coral/10 text-bembe-coral",
-  },
-  {
-    key: "avg_rating" as const,
-    value: "4.8",
-    icon: Star,
-    color: "bg-bembe-night/10 text-bembe-night",
-  },
-];
-
-const walks = [
-  {
-    id: "1",
-    title: "Old San Juan Art Trail",
-    plays: 423,
-    revenue: "$1,269",
-    status: "published" as const,
-    neighborhood: "Viejo San Juan",
-  },
-  {
-    id: "2",
-    title: "Santurce Street Murals",
-    plays: 318,
-    revenue: "$954",
-    status: "published" as const,
-    neighborhood: "Santurce",
-  },
-  {
-    id: "3",
-    title: "La Placita After Dark",
-    plays: 256,
-    revenue: "$768",
-    status: "published" as const,
-    neighborhood: "Santurce",
-  },
-  {
-    id: "4",
-    title: "Condado Sculpture Walk",
-    plays: 178,
-    revenue: "$356",
-    status: "published" as const,
-    neighborhood: "Condado",
-  },
-  {
-    id: "5",
-    title: "Ponce Heritage Route",
-    plays: 72,
-    revenue: "$73",
-    status: "published" as const,
-    neighborhood: "Ponce",
-  },
-  {
-    id: "6",
-    title: "Rincon Surf & Art",
-    plays: 0,
-    revenue: "$0",
-    status: "draft" as const,
-    neighborhood: "Rincon",
-  },
-];
+import { createClient } from "@/lib/supabase/client";
+import type { ArtWalk } from "@/types";
 
 export default function ArtistDashboardPage() {
   const { t } = useI18n();
+  const [userName, setUserName] = useState("");
+  const [walks, setWalks] = useState<ArtWalk[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchDashboard() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        window.location.href = "/login";
+        return;
+      }
+
+      // Fetch profile
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
+
+      setUserName(profile?.full_name || user.email || "");
+
+      // Fetch artist's walks (published + drafts)
+      const { data: walksData } = await supabase
+        .from("art_walks")
+        .select("*")
+        .eq("artist_id", user.id)
+        .order("created_at", { ascending: false });
+
+      setWalks(walksData || []);
+      setLoading(false);
+    }
+    fetchDashboard();
+  }, []);
+
+  const totalPlays = walks.reduce((sum, w) => sum + w.total_plays, 0);
+  const activeCount = walks.filter((w) => w.is_published).length;
+  const avgRating = walks.length > 0
+    ? (walks.reduce((sum, w) => sum + Number(w.avg_rating), 0) / walks.length).toFixed(1)
+    : "0";
+
+  const stats = [
+    {
+      key: "total_plays" as const,
+      value: totalPlays.toLocaleString(),
+      icon: Headphones,
+      color: "bg-bembe-teal/10 text-bembe-teal",
+    },
+    {
+      key: "revenue" as const,
+      value: "$0",
+      icon: DollarSign,
+      color: "bg-bembe-gold/10 text-bembe-gold",
+    },
+    {
+      key: "active_walks" as const,
+      value: String(activeCount),
+      icon: MapPin,
+      color: "bg-bembe-coral/10 text-bembe-coral",
+    },
+    {
+      key: "avg_rating" as const,
+      value: avgRating,
+      icon: Star,
+      color: "bg-bembe-night/10 text-bembe-night",
+    },
+  ];
   return (
     <div className="min-h-screen bg-bembe-sand">
       {/* Header */}
@@ -104,7 +97,7 @@ export default function ArtistDashboardPage() {
             <div>
               <p className="text-sm text-bembe-night/50">{t.dashboard.welcome}</p>
               <h1 className="text-2xl font-bold text-bembe-night">
-                Maria del Carmen
+                {userName}
               </h1>
             </div>
             <div className="flex items-center gap-3">
@@ -179,6 +172,23 @@ export default function ArtistDashboardPage() {
           <h2 className="text-lg font-semibold text-bembe-night mb-4">
             {t.dashboard.my_walks}
           </h2>
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-bembe-teal" />
+            </div>
+          ) : walks.length === 0 ? (
+            <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
+              <MapPin className="w-10 h-10 text-bembe-night/20 mx-auto mb-3" />
+              <p className="text-bembe-night/50">{"No walks yet"}</p>
+              <Link
+                href="/artist/walks/new"
+                className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-bembe-teal text-white font-semibold hover:bg-bembe-teal/90 transition text-sm"
+              >
+                <Plus className="w-4 h-4" />
+                {t.dashboard.create_walk}
+              </Link>
+            </div>
+          ) : (
           <div className="bg-white rounded-2xl shadow-sm divide-y divide-bembe-night/5 overflow-hidden">
             {walks.map((walk) => (
               <div
@@ -198,12 +208,12 @@ export default function ArtistDashboardPage() {
                     </h3>
                     <span
                       className={`flex-shrink-0 px-2 py-0.5 rounded-full text-xs font-medium ${
-                        walk.status === "published"
+                        walk.is_published
                           ? "bg-bembe-teal/10 text-bembe-teal"
                           : "bg-bembe-night/10 text-bembe-night/50"
                       }`}
                     >
-                      {walk.status === "published" ? t.dashboard.published : t.dashboard.draft}
+                      {walk.is_published ? t.dashboard.published : t.dashboard.draft}
                     </span>
                   </div>
                   <p className="text-sm text-bembe-night/50">
@@ -215,15 +225,9 @@ export default function ArtistDashboardPage() {
                 <div className="hidden sm:flex items-center gap-6 text-sm">
                   <div className="text-right">
                     <p className="font-semibold text-bembe-night">
-                      {walk.plays}
+                      {walk.total_plays}
                     </p>
                     <p className="text-bembe-night/40 text-xs">{t.dashboard.plays}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-semibold text-bembe-night">
-                      {walk.revenue}
-                    </p>
-                    <p className="text-bembe-night/40 text-xs">{t.dashboard.revenue}</p>
                   </div>
                 </div>
 
@@ -245,6 +249,7 @@ export default function ArtistDashboardPage() {
               </div>
             ))}
           </div>
+          )}
         </div>
       </main>
     </div>

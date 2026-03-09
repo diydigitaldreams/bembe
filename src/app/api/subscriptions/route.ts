@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
 
     // Look up the artist's Stripe Connect account ID
     const { data: artist, error: artistError } = await supabase
-      .from("artists")
+      .from("profiles")
       .select("stripe_account_id, full_name")
       .eq("id", artistId)
       .single();

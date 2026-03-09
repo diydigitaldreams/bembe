@@ -7,216 +7,6 @@ import { ChevronLeft, MapPin, Clock, Navigation, Star, DollarSign, X } from "luc
 import { useI18n } from "@/lib/i18n/context";
 import type { ArtWalk } from "@/types";
 
-const MOCK_WALKS: ArtWalk[] = [
-  {
-    id: "walk-santurce",
-    artist_id: "artist-1",
-    title: "Santurce Es Ley",
-    description:
-      "Explore the vibrant street art and galleries of Santurce, Puerto Rico's creative heartbeat. From murals to hidden courtyards, discover the stories behind the art.",
-    cover_image_url: "/walks/santurce.jpg",
-    price_cents: 1499,
-    duration_minutes: 75,
-    distance_km: 2.4,
-    neighborhood: "Santurce",
-    municipality: "San Juan",
-    is_published: true,
-    is_featured: true,
-    total_plays: 342,
-    avg_rating: 4.8,
-    created_at: "2025-01-15",
-    artist: {
-      id: "artist-1",
-      email: "marina@bembe.art",
-      full_name: "Marina Del Valle",
-      avatar_url: null,
-      role: "artist",
-      bio: "Visual artist and storyteller from Santurce",
-      location: "Santurce, PR",
-      lat: 18.4468,
-      lng: -66.0614,
-      is_act60: false,
-      stripe_account_id: null,
-      stripe_customer_id: null,
-      created_at: "2025-01-01",
-    },
-  },
-  {
-    id: "walk-old-san-juan",
-    artist_id: "artist-2",
-    title: "Adoquines y Leyendas",
-    description:
-      "Walk the cobblestone streets of Old San Juan and hear centuries-old legends. From El Morro to the hidden plazas.",
-    cover_image_url: "/walks/old-sj.jpg",
-    price_cents: 0,
-    duration_minutes: 90,
-    distance_km: 3.1,
-    neighborhood: "Viejo San Juan",
-    municipality: "San Juan",
-    is_published: true,
-    is_featured: true,
-    total_plays: 891,
-    avg_rating: 4.9,
-    created_at: "2025-02-10",
-    artist: {
-      id: "artist-2",
-      email: "carlos@bembe.art",
-      full_name: "Carlos Ruiz Medina",
-      avatar_url: null,
-      role: "artist",
-      bio: "Historian and musician",
-      location: "Viejo San Juan, PR",
-      lat: 18.4655,
-      lng: -66.1057,
-      is_act60: false,
-      stripe_account_id: null,
-      stripe_customer_id: null,
-      created_at: "2025-01-01",
-    },
-  },
-  {
-    id: "walk-ponce",
-    artist_id: "artist-3",
-    title: "Ponce: Perla del Sur",
-    description:
-      "Discover the architectural grandeur and artistic traditions of the Pearl of the South. Art Deco, neoclassical, and contemporary.",
-    cover_image_url: "/walks/ponce.jpg",
-    price_cents: 999,
-    duration_minutes: 60,
-    distance_km: 1.8,
-    neighborhood: "Centro Historico",
-    municipality: "Ponce",
-    is_published: true,
-    is_featured: false,
-    total_plays: 156,
-    avg_rating: 4.6,
-    created_at: "2025-03-01",
-    artist: {
-      id: "artist-3",
-      email: "lucia@bembe.art",
-      full_name: "Lucia Torres",
-      avatar_url: null,
-      role: "artist",
-      bio: "Architect turned art guide",
-      location: "Ponce, PR",
-      lat: 18.0115,
-      lng: -66.6141,
-      is_act60: false,
-      stripe_account_id: null,
-      stripe_customer_id: null,
-      created_at: "2025-01-01",
-    },
-  },
-  {
-    id: "walk-rincon",
-    artist_id: "artist-4",
-    title: "Rincon: Sunset Canvas",
-    description:
-      "Follow the coast of Rincon and experience the intersection of surf culture, local art, and Caribbean sunsets.",
-    cover_image_url: "/walks/rincon.jpg",
-    price_cents: 799,
-    duration_minutes: 50,
-    distance_km: 2.0,
-    neighborhood: "Pueblo",
-    municipality: "Rincon",
-    is_published: true,
-    is_featured: false,
-    total_plays: 98,
-    avg_rating: 4.7,
-    created_at: "2025-04-01",
-    artist: {
-      id: "artist-4",
-      email: "rafael@bembe.art",
-      full_name: "Rafael Mora",
-      avatar_url: null,
-      role: "artist",
-      bio: "Surfer, painter, and storyteller",
-      location: "Rincon, PR",
-      lat: 18.3403,
-      lng: -67.2500,
-      is_act60: false,
-      stripe_account_id: null,
-      stripe_customer_id: null,
-      created_at: "2025-01-01",
-    },
-  },
-  {
-    id: "walk-condado",
-    artist_id: "artist-5",
-    title: "Condado Art Deco",
-    description:
-      "A sophisticated stroll through Condado's beachside architecture, boutique galleries, and hidden murals.",
-    cover_image_url: "/walks/condado.jpg",
-    price_cents: 1299,
-    duration_minutes: 45,
-    distance_km: 1.5,
-    neighborhood: "Condado",
-    municipality: "San Juan",
-    is_published: true,
-    is_featured: false,
-    total_plays: 210,
-    avg_rating: 4.5,
-    created_at: "2025-05-15",
-    artist: {
-      id: "artist-5",
-      email: "diana@bembe.art",
-      full_name: "Diana Ramos",
-      avatar_url: null,
-      role: "artist",
-      bio: "Interior designer with a love for Art Deco",
-      location: "Condado, PR",
-      lat: 18.4577,
-      lng: -66.0700,
-      is_act60: false,
-      stripe_account_id: null,
-      stripe_customer_id: null,
-      created_at: "2025-01-01",
-    },
-  },
-  {
-    id: "walk-bayamon",
-    artist_id: "artist-6",
-    title: "Bayamon: Raices Tainas",
-    description:
-      "Trace the indigenous Taino heritage through Bayamon's parks, museums, and public art installations.",
-    cover_image_url: "/walks/bayamon.jpg",
-    price_cents: 0,
-    duration_minutes: 55,
-    distance_km: 2.2,
-    neighborhood: "Centro",
-    municipality: "Bayamon",
-    is_published: true,
-    is_featured: false,
-    total_plays: 178,
-    avg_rating: 4.4,
-    created_at: "2025-06-01",
-    artist: {
-      id: "artist-6",
-      email: "pedro@bembe.art",
-      full_name: "Pedro Colon",
-      avatar_url: null,
-      role: "artist",
-      bio: "Sculptor and cultural educator",
-      location: "Bayamon, PR",
-      lat: 18.3985,
-      lng: -66.1553,
-      is_act60: false,
-      stripe_account_id: null,
-      stripe_customer_id: null,
-      created_at: "2025-01-01",
-    },
-  },
-];
-
-const WALK_COORDS: Record<string, [number, number]> = {
-  "walk-santurce": [-66.0614, 18.4468],
-  "walk-old-san-juan": [-66.1165, 18.4663],
-  "walk-ponce": [-66.6141, 18.0115],
-  "walk-rincon": [-67.2500, 18.3403],
-  "walk-condado": [-66.0700, 18.4577],
-  "walk-bayamon": [-66.1553, 18.3985],
-};
-
 export default function MapPage() {
   const { t } = useI18n();
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -224,9 +14,41 @@ export default function MapPage() {
   const markersRef = useRef<mapboxgl.Marker[]>([]);
   const [selectedWalk, setSelectedWalk] = useState<ArtWalk | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [walks, setWalks] = useState<ArtWalk[]>([]);
 
   const handleMarkerClick = useCallback((walk: ArtWalk) => {
     setSelectedWalk(walk);
+  }, []);
+
+  // Fetch walks from API
+  useEffect(() => {
+    async function fetchWalks() {
+      try {
+        const res = await fetch("/api/walks?limit=50");
+        const data = await res.json();
+        if (data.walks && data.walks.length > 0) {
+          // For each walk, try to get coordinates from stops
+          const walksWithCoords = await Promise.all(
+            data.walks.map(async (walk: ArtWalk) => {
+              if (walk.artist?.lat && walk.artist?.lng) return walk;
+              // Fetch first stop for coordinates
+              try {
+                const stopRes = await fetch(`/api/walks/${walk.id}`);
+                const stopData = await stopRes.json();
+                if (stopData.walk?.stops?.length > 0) {
+                  return { ...walk, stops: stopData.walk.stops };
+                }
+              } catch { /* skip */ }
+              return walk;
+            })
+          );
+          setWalks(walksWithCoords);
+        }
+      } catch {
+        // API unavailable
+      }
+    }
+    fetchWalks();
   }, []);
 
   useEffect(() => {
@@ -270,16 +92,28 @@ export default function MapPage() {
     };
   }, []);
 
+  // Place markers from fetched walks using artist lat/lng
   useEffect(() => {
-    if (!mapLoaded || !mapRef.current) return;
+    if (!mapLoaded || !mapRef.current || walks.length === 0) return;
 
     // Clear old markers
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
-    MOCK_WALKS.forEach((walk) => {
-      const coords = WALK_COORDS[walk.id];
-      if (!coords) return;
+    walks.forEach((walk) => {
+      // Use artist coordinates, then first stop, then skip
+      let lat = walk.artist?.lat;
+      let lng = walk.artist?.lng;
+      if (!lat || !lng) {
+        const firstStop = walk.stops?.[0];
+        if (firstStop) {
+          lat = firstStop.lat;
+          lng = firstStop.lng;
+        }
+      }
+      if (!lat || !lng) return;
+
+      const coords: [number, number] = [lng, lat];
 
       // Custom marker element
       const el = document.createElement("div");
@@ -320,7 +154,7 @@ export default function MapPage() {
 
       markersRef.current.push(marker);
     });
-  }, [mapLoaded, handleMarkerClick]);
+  }, [mapLoaded, walks, handleMarkerClick]);
 
   return (
     <div className="relative h-dvh w-full overflow-hidden bg-bembe-sand">

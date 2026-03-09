@@ -5,6 +5,12 @@ import Navbar from "@/components/navbar";
 import { ArrowRight, Video, Film, Headphones } from "lucide-react";
 import { useI18n } from "@/lib/i18n/context";
 
+const COLOR_MAP: Record<string, { bg: string; text: string }> = {
+  "bembe-teal": { bg: "bg-bembe-teal/10", text: "text-bembe-teal" },
+  "bembe-coral": { bg: "bg-bembe-coral/10", text: "text-bembe-coral" },
+  "bembe-gold": { bg: "bg-bembe-gold/10", text: "text-bembe-gold" },
+};
+
 const guides = [
   {
     slug: "documentary-style",
@@ -89,9 +95,9 @@ export default function GuidesPage() {
             >
               <div className="flex flex-col sm:flex-row sm:items-start gap-5">
                 <div
-                  className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-${guide.color}/10`}
+                  className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${COLOR_MAP[guide.color]?.bg || "bg-bembe-teal/10"}`}
                 >
-                  <guide.icon className={`h-7 w-7 text-${guide.color}`} />
+                  <guide.icon className={`h-7 w-7 ${COLOR_MAP[guide.color]?.text || "text-bembe-teal"}`} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-4">

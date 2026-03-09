@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Headphones, MapPin, Heart, ArrowRight } from "lucide-react";
 import Navbar from "@/components/navbar";
@@ -8,107 +9,24 @@ import { useI18n } from "@/lib/i18n/context";
 
 import type { ArtWalk } from "@/types";
 
-const featuredWalks: ArtWalk[] = [
-  {
-    id: "w1-santurce-murals",
-    artist_id: "a1",
-    title: "Santurce Murals: Color of Resistance",
-    description: "A walking journey through the vibrant street art of Santurce.",
-    cover_image_url: "",
-    price_cents: 499,
-    duration_minutes: 45,
-    distance_km: 1.8,
-    neighborhood: "Santurce",
-    municipality: "San Juan",
-    is_published: true,
-    is_featured: true,
-    total_plays: 1243,
-    avg_rating: 4.8,
-    created_at: "2025-01-15",
-    artist: {
-      id: "a1",
-      email: "yara@bembe.art",
-      full_name: "Yara Montilla",
-      avatar_url: null,
-      role: "artist",
-      bio: null,
-      location: "Santurce",
-      lat: null,
-      lng: null,
-      is_act60: false,
-      stripe_account_id: null,
-      stripe_customer_id: null,
-      created_at: "2025-01-01",
-    },
-  },
-  {
-    id: "w2-viejo-san-juan",
-    artist_id: "a2",
-    title: "Old San Juan: Whispers of the Adoquines",
-    description: "Listen to five centuries of history beneath your feet.",
-    cover_image_url: "",
-    price_cents: 0,
-    duration_minutes: 60,
-    distance_km: 2.3,
-    neighborhood: "Old San Juan",
-    municipality: "San Juan",
-    is_published: true,
-    is_featured: true,
-    total_plays: 2567,
-    avg_rating: 4.9,
-    created_at: "2025-02-10",
-    artist: {
-      id: "a2",
-      email: "carlos@bembe.art",
-      full_name: "Carlos Vega",
-      avatar_url: null,
-      role: "artist",
-      bio: null,
-      location: "Old San Juan",
-      lat: null,
-      lng: null,
-      is_act60: false,
-      stripe_account_id: null,
-      stripe_customer_id: null,
-      created_at: "2025-01-01",
-    },
-  },
-  {
-    id: "w3-ponce-heritage",
-    artist_id: "a3",
-    title: "Ponce: The Pearl of the South",
-    description: "Architecture, plazas, and Ponce's legendary cultural pride.",
-    cover_image_url: "",
-    price_cents: 399,
-    duration_minutes: 50,
-    distance_km: 2.0,
-    neighborhood: "Ponce Centro",
-    municipality: "Ponce",
-    is_published: true,
-    is_featured: true,
-    total_plays: 890,
-    avg_rating: 4.6,
-    created_at: "2025-03-05",
-    artist: {
-      id: "a3",
-      email: "lina@bembe.art",
-      full_name: "Lina Beauchamp",
-      avatar_url: null,
-      role: "artist",
-      bio: null,
-      location: "Ponce",
-      lat: null,
-      lng: null,
-      is_act60: false,
-      stripe_account_id: null,
-      stripe_customer_id: null,
-      created_at: "2025-01-01",
-    },
-  },
-];
-
 export default function Home() {
   const { t } = useI18n();
+  const [featuredWalks, setFeaturedWalks] = useState<ArtWalk[]>([]);
+
+  useEffect(() => {
+    async function fetchFeatured() {
+      try {
+        const res = await fetch("/api/walks?featured=true&limit=3");
+        const data = await res.json();
+        if (data.walks && data.walks.length > 0) {
+          setFeaturedWalks(data.walks);
+        }
+      } catch {
+        // API unavailable
+      }
+    }
+    fetchFeatured();
+  }, []);
 
   const steps = [
     {
