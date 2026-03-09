@@ -102,6 +102,16 @@ export interface StopComment {
   user?: Pick<Profile, "id" | "full_name" | "avatar_url">;
 }
 
+export interface Review {
+  id: string;
+  walk_id: string;
+  user_id: string;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+  user?: Pick<Profile, "id" | "full_name" | "avatar_url">;
+}
+
 export interface ArtistSubscription {
   id: string;
   artist_id: string;

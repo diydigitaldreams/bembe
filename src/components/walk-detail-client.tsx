@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import type { ArtWalk, WalkStop, Profile } from "@/types";
 import GiftButton from "@/components/gift-button";
+import WalkReviews from "@/components/walk-reviews";
 import { useI18n } from "@/lib/i18n/context";
 
 interface WalkDetailClientProps {
@@ -173,18 +174,9 @@ export default function WalkDetailClient({ walk }: WalkDetailClientProps) {
           </div>
         </div>
 
-        {/* Reviews placeholder */}
+        {/* Reviews */}
         <div className="mb-32">
-          <h2 className="text-lg font-bold text-bembe-night mb-3">{t.walk.reviews}</h2>
-          <div className="bg-white rounded-2xl p-6 text-center">
-            <Star className="h-8 w-8 text-bembe-gold/30 mx-auto mb-2" />
-            <p className="text-sm text-bembe-night/50">
-              {walk.total_plays} {t.walk.people_taken}
-            </p>
-            <p className="text-sm text-bembe-night/50 mt-1">
-              {t.walk.coming_soon}
-            </p>
-          </div>
+          <WalkReviews walkId={walk.id} totalPlays={walk.total_plays} />
         </div>
       </div>
 

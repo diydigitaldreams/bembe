@@ -373,6 +373,16 @@ export const translations = {
       success: "You're now subscribed!",
     },
 
+    reviews: {
+      count: "reviews",
+      your_review: "Your review",
+      comment_placeholder: "Share your experience (optional)",
+      submit: "Submit Review",
+      thanks: "Thanks for your review!",
+      no_reviews: "Be the first to review this walk",
+      login_to_review: "Sign in to leave a review",
+    },
+
     gift: {
       title: "Gift This Walk",
       from: "From",
@@ -856,6 +866,16 @@ export const translations = {
       perks: "Acceso anticipado a nuevas caminatas y contenido exclusivo",
       manage: "Gestionar Suscripcion",
       success: "Ya estas suscrito!",
+    },
+
+    reviews: {
+      count: "resenas",
+      your_review: "Tu resena",
+      comment_placeholder: "Comparte tu experiencia (opcional)",
+      submit: "Enviar Resena",
+      thanks: "Gracias por tu resena!",
+      no_reviews: "Se el primero en resenar esta caminata",
+      login_to_review: "Inicia sesion para dejar una resena",
     },
 
     gift: {
