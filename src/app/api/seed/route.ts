@@ -8,7 +8,7 @@ import { seed } from "@/scripts/seed";
 // ---------------------------------------------------------------------------
 export async function POST(request: NextRequest) {
   // 1. Auth check
-  const adminKey = request.headers.get("BEMBE_ADMIN_KEY");
+  const adminKey = request.headers.get("x-admin-key") || request.headers.get("bembe_admin_key");
   if (!adminKey || adminKey !== process.env.BEMBE_ADMIN_KEY) {
     return NextResponse.json(
       { error: "Unauthorized — invalid or missing BEMBE_ADMIN_KEY header" },
