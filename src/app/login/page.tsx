@@ -4,12 +4,14 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
 
 export default function LoginPage() {
   const { t } = useI18n();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -40,8 +42,12 @@ export default function LoginPage() {
       .eq("id", (await supabase.auth.getUser()).data.user?.id ?? "")
       .single();
 
-    const userRole = profile?.role;
-    router.push(userRole === "artist" || userRole === "both" ? "/artist/dashboard" : "/discover");
+    if (redirectTo) {
+      router.push(redirectTo);
+    } else {
+      const userRole = profile?.role;
+      router.push(userRole === "artist" || userRole === "both" ? "/artist/dashboard" : "/discover");
+    }
   }
 
   async function handleGoogleLogin() {
