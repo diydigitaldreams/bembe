@@ -40,4 +40,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.vercel
+# media / pitch assets
+/slides/
+/audio/
+/social-media/
+/agents/
+*.mp4
+build_video.py

@@ -119,7 +119,10 @@ export async function POST(request: NextRequest) {
 
     if (stopsError) {
       console.error("Failed to create stops:", stopsError);
-      // Walk was created but stops failed — still return the walk
+      return NextResponse.json(
+        { error: "Walk created but stops failed to save" },
+        { status: 500 }
+      );
     }
   }
 

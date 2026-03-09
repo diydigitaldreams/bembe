@@ -36,16 +36,16 @@ export async function POST(
     return NextResponse.json({ error: "Gift not found" }, { status: 404 });
   }
 
-  if (gift.status !== "paid") {
+  if (gift.status === "redeemed") {
     return NextResponse.json(
-      { error: "This gift has not been paid for yet" },
+      { error: "This gift has already been redeemed" },
       { status: 400 }
     );
   }
 
-  if (gift.status === "redeemed") {
+  if (gift.status !== "paid") {
     return NextResponse.json(
-      { error: "This gift has already been redeemed" },
+      { error: "This gift has not been paid for yet" },
       { status: 400 }
     );
   }
@@ -78,19 +78,8 @@ export async function POST(
     })
     .eq("gift_code", code);
 
-  // Increment total_plays on the walk
-  const { data: walk } = await supabase
-    .from("art_walks")
-    .select("total_plays")
-    .eq("id", gift.walk_id)
-    .single();
-
-  if (walk) {
-    await supabase
-      .from("art_walks")
-      .update({ total_plays: walk.total_plays + 1 })
-      .eq("id", gift.walk_id);
-  }
+  // Atomically increment total_plays on the walk
+  await supabase.rpc("increment_plays", { walk: gift.walk_id });
 
   return NextResponse.json({ success: true });
 }

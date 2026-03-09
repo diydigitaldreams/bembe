@@ -28,7 +28,10 @@ export async function GET(request: NextRequest) {
   }
 
   if (q) {
-    query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%`);
+    const sanitized = q.replace(/[.,%()]/g, "");
+    if (sanitized.trim()) {
+      query = query.or(`title.ilike.%${sanitized}%,description.ilike.%${sanitized}%`);
+    }
   }
 
   const { data: events, error, count } = await query;

@@ -32,6 +32,7 @@ export async function seed(): Promise<SeedResult> {
   const artists = [
     {
       id: "a1000000-0000-0000-0000-000000000001",
+      email: "lourdes.pagan@bembe.app",
       full_name: "Lourdes Pagán Rivera",
       bio: "Artista multidisciplinaria de Santurce. Explora la memoria colectiva boricua a través de instalaciones sonoras y murales interactivos. Su trabajo ha sido exhibido en la Bienal de San Juan y el Museo de Arte de Puerto Rico.",
       location: "Santurce, PR",
@@ -42,6 +43,7 @@ export async function seed(): Promise<SeedResult> {
     },
     {
       id: "a1000000-0000-0000-0000-000000000002",
+      email: "carlos.melendez@bembe.app",
       full_name: "Carlos Meléndez Ortiz",
       bio: "Músico y historiador cultural de Ponce. Documenta las tradiciones orales y sonoras de Puerto Rico, desde la bomba y plena hasta los pregones del casco urbano. Fundador del colectivo Sonido Ancestral.",
       location: "Ponce, PR",
