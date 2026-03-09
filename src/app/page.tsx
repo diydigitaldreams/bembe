@@ -289,7 +289,7 @@ export default function Home() {
               <ul className="mt-4 flex flex-col gap-2.5">
                 {[
                   { href: "/discover", label: t.landing.footer_all_walks },
-                  { href: "/discover", label: t.landing.footer_neighborhoods },
+                  { href: "/neighborhoods", label: t.landing.footer_neighborhoods },
                   { href: "/discover", label: t.landing.footer_free_walks },
                 ].map((link) => (
                   <li key={link.href}>
