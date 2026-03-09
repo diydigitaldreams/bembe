@@ -25,12 +25,9 @@ function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<UserRole>(defaultRole as UserRole);
-  const [isAct60, setIsAct60] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const showAct60 = role === "patron" || role === "both";
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
@@ -50,7 +47,6 @@ function SignupForm() {
         data: {
           full_name: fullName,
           role,
-          is_act60: showAct60 ? isAct60 : false,
         },
       },
     });
@@ -221,26 +217,6 @@ function SignupForm() {
                 ))}
               </div>
             </div>
-
-            {/* Act 60 checkbox */}
-            {showAct60 && (
-              <label className="flex items-start gap-3 p-3 rounded-xl bg-bembe-gold/10 border border-bembe-gold/20 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={isAct60}
-                  onChange={(e) => setIsAct60(e.target.checked)}
-                  className="mt-0.5 w-4 h-4 rounded border-bembe-night/20 text-bembe-gold focus:ring-bembe-gold accent-bembe-gold"
-                />
-                <div>
-                  <span className="text-sm font-medium text-bembe-night">
-                    {t.auth.act60}
-                  </span>
-                  <span className="block text-xs text-bembe-night/50 mt-0.5">
-                    {t.auth.act60_desc}
-                  </span>
-                </div>
-              </label>
-            )}
 
             {/* Terms */}
             <label className="flex items-start gap-3 cursor-pointer">

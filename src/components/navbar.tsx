@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Menu, X, MessageCircle } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useI18n } from "@/lib/i18n/context";
 import { LanguageToggle } from "@/components/language-toggle";
 
@@ -14,7 +14,6 @@ export default function Navbar() {
     { href: "/discover", label: t.nav.discover },
     { href: "/map", label: t.nav.map },
     { href: "/events", label: t.nav.events },
-    { href: "/messages", label: t.nav.messages },
   ];
 
   return (
@@ -41,13 +40,6 @@ export default function Navbar() {
 
         {/* Desktop login + language toggle */}
         <div className="hidden items-center gap-3 md:flex">
-          <Link
-            href="/messages"
-            className="rounded-lg p-2 text-bembe-night/60 transition-colors hover:text-bembe-teal hover:bg-bembe-teal/10"
-            aria-label={t.nav.messages}
-          >
-            <MessageCircle className="h-5 w-5" />
-          </Link>
           <LanguageToggle />
           <Link
             href="/login"

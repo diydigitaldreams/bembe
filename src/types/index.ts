@@ -10,7 +10,6 @@ export interface Profile {
   location: string | null;
   lat: number | null;
   lng: number | null;
-  is_act60: boolean;
   stripe_account_id: string | null;
   stripe_customer_id: string | null;
   created_at: string;
