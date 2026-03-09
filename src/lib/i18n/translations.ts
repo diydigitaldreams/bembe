@@ -20,7 +20,7 @@ export const translations = {
       hero_title_1: "Puerto Rico",
       hero_title_2: "Is the Museum",
       hero_subtitle:
-        "Audio art walks created by local artists. Discover the island like never before.",
+        "Immersive audio art walks curated by local artists. Experience the island like never before.",
       cta_explore: "Explore Walks",
       cta_artist: "I'm an Artist",
       stats_artists: "Artists",
@@ -38,9 +38,10 @@ export const translations = {
       how_step3_title: "Support Artists",
       how_step3_desc:
         "Every walk played sends royalties directly to the artist. Tip, gift walks, or commission custom experiences.",
+      how_step: "Step",
       artist_cta_title: "Are you a Puerto Rico artist?",
       artist_cta_desc:
-        "Create audio walks, reach new audiences, and earn royalties. Our AI tools make it easy — just speak your story.",
+        "Create immersive audio walks, reach new audiences, and earn royalties. Just share your story — we handle the rest.",
       artist_cta_button: "Start Creating",
       footer_explore: "Explore",
       footer_artists: "For Artists",
@@ -169,9 +170,9 @@ export const translations = {
       plays: "plays",
       published: "Published",
       draft: "Draft",
-      ai_grant_title: "AI Grant Assistant",
+      ai_grant_title: "Grant Assistant",
       ai_grant_desc:
-        "Let AI help you write grant applications for arts funding in Puerto Rico. Our assistant knows local foundations and requirements.",
+        "Get help writing grant applications for arts funding in Puerto Rico. Our assistant knows local foundations and requirements.",
       ai_grant_cta: "Write a Grant",
     },
 
@@ -247,6 +248,15 @@ export const translations = {
       act60_desc: "Tax incentive program for individuals relocating to Puerto Rico",
       terms: "I agree to the Terms of Service and Privacy Policy",
       or: "or",
+      sign_up_link: "Sign up",
+      sign_in_link: "Sign in",
+      placeholder_name: "Your full name",
+      placeholder_password: "Your password",
+      placeholder_password_min: "At least 8 characters",
+      i_want_to: "I want to...",
+      google_unavailable: "Google sign-in is currently being set up. Please use email and password for now.",
+      agree_terms: "Please agree to the terms and conditions.",
+      tagline: "Puerto Rico\u2019s Living Art Museum",
     },
 
     // Business page
@@ -402,7 +412,7 @@ export const translations = {
       hero_title_1: "Puerto Rico",
       hero_title_2: "Es el Museo",
       hero_subtitle:
-        "Caminatas de arte en audio creadas por artistas locales. Descubre la isla como nunca antes.",
+        "Caminatas inmersivas de arte en audio curadas por artistas locales. Vive la isla como nunca antes.",
       cta_explore: "Explorar Caminatas",
       cta_artist: "Soy Artista",
       stats_artists: "Artistas",
@@ -420,9 +430,10 @@ export const translations = {
       how_step3_title: "Apoya a los Artistas",
       how_step3_desc:
         "Cada caminata reproducida envia regalias directamente al artista. Deja propina, regala caminatas o encarga experiencias personalizadas.",
+      how_step: "Paso",
       artist_cta_title: "Eres artista de Puerto Rico?",
       artist_cta_desc:
-        "Crea caminatas de arte en audio, alcanza nuevas audiencias y gana regalias. Nuestras herramientas de IA lo hacen facil — solo cuenta tu historia.",
+        "Crea caminatas inmersivas de audio, alcanza nuevas audiencias y gana regalias. Solo comparte tu historia — nosotros nos encargamos del resto.",
       artist_cta_button: "Comenzar a Crear",
       footer_explore: "Explorar",
       footer_artists: "Para Artistas",
@@ -545,9 +556,9 @@ export const translations = {
       plays: "reproducciones",
       published: "Publicada",
       draft: "Borrador",
-      ai_grant_title: "Asistente de Becas con IA",
+      ai_grant_title: "Asistente de Becas",
       ai_grant_desc:
-        "Deja que la IA te ayude a escribir solicitudes de becas para financiamiento artistico en Puerto Rico. Nuestro asistente conoce las fundaciones y requisitos locales.",
+        "Recibe ayuda para escribir solicitudes de becas para financiamiento artistico en Puerto Rico. Nuestro asistente conoce las fundaciones y requisitos locales.",
       ai_grant_cta: "Escribir Solicitud",
     },
 
@@ -621,6 +632,15 @@ export const translations = {
       act60_desc: "Programa de incentivos contributivos para individuos que se mudan a Puerto Rico",
       terms: "Acepto los Terminos de Servicio y la Politica de Privacidad",
       or: "o",
+      sign_up_link: "Registrarse",
+      sign_in_link: "Iniciar sesion",
+      placeholder_name: "Tu nombre completo",
+      placeholder_password: "Tu contrasena",
+      placeholder_password_min: "Minimo 8 caracteres",
+      i_want_to: "Quiero...",
+      google_unavailable: "El inicio de sesion con Google se esta configurando. Por favor usa correo y contrasena por ahora.",
+      agree_terms: "Por favor acepta los terminos y condiciones.",
+      tagline: "El Museo de Arte Viviente de Puerto Rico",
     },
 
     business: {

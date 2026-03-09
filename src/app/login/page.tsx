@@ -47,7 +47,7 @@ export default function LoginPage() {
     });
     if (oauthError) {
       setError(
-        "Google sign-in is currently being set up. Please use email and password to sign in for now."
+        t.auth.google_unavailable
       );
     }
   }
@@ -61,7 +61,7 @@ export default function LoginPage() {
             Bembe
           </h1>
           <p className="mt-2 text-bembe-night/60">
-            Puerto Rico&apos;s Living Art Museum
+            {t.auth.tagline}
           </p>
         </div>
 
@@ -116,7 +116,7 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Your password"
+                  placeholder={t.auth.placeholder_password}
                   className="w-full pl-10 pr-12 py-3 rounded-xl border border-bembe-night/10 bg-bembe-sand/50 text-bembe-night placeholder:text-bembe-night/30 focus:outline-none focus:ring-2 focus:ring-bembe-teal/30 focus:border-bembe-teal transition"
                 />
                 <button
@@ -187,7 +187,7 @@ export default function LoginPage() {
             href="/signup"
             className="text-bembe-teal font-semibold hover:underline"
           >
-            Sign up
+            {t.auth.sign_up_link}
           </Link>
         </p>
       </div>

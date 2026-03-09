@@ -158,7 +158,7 @@ export default function ArtistDashboardPage() {
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="w-5 h-5 text-bembe-gold" />
               <span className="text-sm font-medium text-bembe-gold">
-                AI-Powered
+                {t.dashboard.ai_grant_title}
               </span>
             </div>
             <h3 className="text-xl font-bold mb-1">{t.dashboard.ai_grant_title}</h3>

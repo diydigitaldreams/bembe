@@ -35,7 +35,7 @@ function SignupForm() {
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
     if (!agreedToTerms) {
-      setError("Please agree to the terms and conditions.");
+      setError(t.auth.agree_terms);
       return;
     }
 
@@ -75,7 +75,7 @@ function SignupForm() {
     });
     if (oauthError) {
       setError(
-        "Google sign-in is currently being set up. Please use email and password to create your account for now."
+        t.auth.google_unavailable
       );
     }
   }
@@ -134,7 +134,7 @@ function SignupForm() {
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Your full name"
+                  placeholder={t.auth.placeholder_name}
                   className="w-full pl-10 pr-4 py-3 rounded-xl border border-bembe-night/10 bg-bembe-sand/50 text-bembe-night placeholder:text-bembe-night/30 focus:outline-none focus:ring-2 focus:ring-bembe-teal/30 focus:border-bembe-teal transition"
                 />
               </div>
@@ -179,7 +179,7 @@ function SignupForm() {
                   minLength={8}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="At least 8 characters"
+                  placeholder={t.auth.placeholder_password_min}
                   className="w-full pl-10 pr-4 py-3 rounded-xl border border-bembe-night/10 bg-bembe-sand/50 text-bembe-night placeholder:text-bembe-night/30 focus:outline-none focus:ring-2 focus:ring-bembe-teal/30 focus:border-bembe-teal transition"
                 />
               </div>
@@ -188,7 +188,7 @@ function SignupForm() {
             {/* Role Selector */}
             <div>
               <label className="block text-sm font-medium text-bembe-night/70 mb-2">
-                I want to...
+                {t.auth.i_want_to}
               </label>
               <div className="grid grid-cols-3 gap-2">
                 {roles.map((r) => (
@@ -309,7 +309,7 @@ function SignupForm() {
             href="/login"
             className="text-bembe-teal font-semibold hover:underline"
           >
-            Sign in
+            {t.auth.sign_in_link}
           </Link>
         </p>
       </div>

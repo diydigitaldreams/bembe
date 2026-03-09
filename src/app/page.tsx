@@ -236,7 +236,7 @@ export default function Home() {
                   <step.icon className="h-7 w-7 text-bembe-teal" />
                 </div>
                 <span className="mt-1 text-xs font-bold text-bembe-teal/60">
-                  Step {i + 1}
+                  {t.landing.how_step} {i + 1}
                 </span>
                 <h3 className="mt-3 text-lg font-bold text-bembe-night">
                   {step.title}
