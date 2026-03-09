@@ -5,7 +5,7 @@ import { Headphones, MapPin, Heart, ArrowRight } from "lucide-react";
 import Navbar from "@/components/navbar";
 import WalkCard from "@/components/walk-card";
 import { useI18n } from "@/lib/i18n/context";
-import { LanguageToggle } from "@/components/language-toggle";
+
 import type { ArtWalk } from "@/types";
 
 const featuredWalks: ArtWalk[] = [
@@ -134,11 +134,6 @@ export default function Home() {
 
       {/* Hero */}
       <section className="relative overflow-hidden">
-        {/* Language Toggle */}
-        <div className="absolute right-4 top-4 z-10 sm:right-6 lg:right-8">
-          <LanguageToggle />
-        </div>
-
         {/* Decorative background */}
         <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-bembe-teal/10 blur-3xl" />
         <div className="pointer-events-none absolute -left-32 bottom-0 h-80 w-80 rounded-full bg-bembe-coral/10 blur-3xl" />

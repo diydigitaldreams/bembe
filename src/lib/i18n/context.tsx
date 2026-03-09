@@ -24,10 +24,6 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     const saved = localStorage.getItem("bembe-locale") as Locale | null;
     if (saved && (saved === "en" || saved === "es")) {
       setLocaleState(saved);
-    } else {
-      // Default to Spanish for PR, detect browser lang for others
-      const browserLang = navigator.language.startsWith("es") ? "es" : "en";
-      setLocaleState(browserLang);
     }
   }, []);
 

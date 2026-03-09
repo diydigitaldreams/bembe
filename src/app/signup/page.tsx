@@ -65,13 +65,19 @@ function SignupForm() {
   }
 
   async function handleGoogleSignup() {
+    setError(null);
     const supabase = createClient();
-    await supabase.auth.signInWithOAuth({
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
       },
     });
+    if (oauthError) {
+      setError(
+        "Google sign-in is currently being set up. Please use email and password to create your account for now."
+      );
+    }
   }
 
   const roles: { value: UserRole; label: string; desc: string }[] = [

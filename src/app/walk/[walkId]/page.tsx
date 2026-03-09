@@ -1,3 +1,6 @@
+"use client";
+
+import { use } from "react";
 import Link from "next/link";
 import {
   ChevronLeft,
@@ -11,6 +14,7 @@ import {
 } from "lucide-react";
 import type { ArtWalk, WalkStop, Profile } from "@/types";
 import GiftButton from "@/components/gift-button";
+import { useI18n } from "@/lib/i18n/context";
 
 const MOCK_ARTIST: Profile = {
   id: "artist-1",
@@ -122,27 +126,28 @@ const MOCK_WALK: ArtWalk = {
   stops: MOCK_STOPS,
 };
 
-function formatPrice(cents: number): string {
-  if (cents === 0) return "Free";
-  return `$${(cents / 100).toFixed(2)}`;
-}
-
-function formatDuration(seconds: number): string {
-  const mins = Math.round(seconds / 60);
-  return `${mins} min`;
-}
-
-export default async function WalkDetailPage({
+export default function WalkDetailPage({
   params,
 }: {
   params: Promise<{ walkId: string }>;
 }) {
-  const { walkId } = await params;
+  const { walkId } = use(params);
+  const { t } = useI18n();
   // In production, fetch walk by walkId. Using mock data for now.
   const walk = MOCK_WALK;
   const stops = walk.stops ?? [];
   const artist = walk.artist!;
   const totalStopDuration = stops.reduce((sum, s) => sum + s.duration_seconds, 0);
+
+  function formatPrice(cents: number): string {
+    if (cents === 0) return t.walk.free;
+    return `$${(cents / 100).toFixed(2)}`;
+  }
+
+  function formatDuration(seconds: number): string {
+    const mins = Math.round(seconds / 60);
+    return `${mins} ${t.common.min}`;
+  }
 
   return (
     <div className="min-h-dvh bg-bembe-sand">
@@ -169,7 +174,7 @@ export default async function WalkDetailPage({
             </span>
             {walk.is_featured && (
               <span className="inline-block px-2.5 py-1 rounded-full bg-bembe-gold/30 text-white text-xs font-medium backdrop-blur-sm">
-                Featured
+                {t.walk.featured}
               </span>
             )}
           </div>
@@ -190,28 +195,28 @@ export default async function WalkDetailPage({
               <p className="text-sm font-semibold text-bembe-night">
                 {walk.duration_minutes}
               </p>
-              <p className="text-xs text-bembe-night/50">min</p>
+              <p className="text-xs text-bembe-night/50">{t.common.min}</p>
             </div>
             <div>
               <Navigation className="h-5 w-5 text-bembe-teal mx-auto mb-1" />
               <p className="text-sm font-semibold text-bembe-night">
                 {walk.distance_km}
               </p>
-              <p className="text-xs text-bembe-night/50">km</p>
+              <p className="text-xs text-bembe-night/50">{t.common.km}</p>
             </div>
             <div>
               <Star className="h-5 w-5 text-bembe-gold fill-bembe-gold mx-auto mb-1" />
               <p className="text-sm font-semibold text-bembe-night">
                 {walk.avg_rating}
               </p>
-              <p className="text-xs text-bembe-night/50">rating</p>
+              <p className="text-xs text-bembe-night/50">{t.walk.rating}</p>
             </div>
             <div>
               <Route className="h-5 w-5 text-bembe-teal mx-auto mb-1" />
               <p className="text-sm font-semibold text-bembe-night">
                 {stops.length}
               </p>
-              <p className="text-xs text-bembe-night/50">stops</p>
+              <p className="text-xs text-bembe-night/50">{t.walk.stops}</p>
             </div>
           </div>
         </div>
@@ -242,7 +247,7 @@ export default async function WalkDetailPage({
         {/* Description */}
         <div className="mb-8">
           <h2 className="text-lg font-bold text-bembe-night mb-2">
-            About This Walk
+            {t.walk.about}
           </h2>
           <p className="text-sm text-bembe-night/70 leading-relaxed">
             {walk.description}
@@ -252,7 +257,7 @@ export default async function WalkDetailPage({
         {/* Stops */}
         <div className="mb-8">
           <h2 className="text-lg font-bold text-bembe-night mb-4">
-            {stops.length} Stops
+            {stops.length} {t.walk.stops}
           </h2>
           <div className="space-y-0">
             {stops.map((stop, index) => (
@@ -285,14 +290,14 @@ export default async function WalkDetailPage({
 
         {/* Reviews placeholder */}
         <div className="mb-32">
-          <h2 className="text-lg font-bold text-bembe-night mb-3">Reviews</h2>
+          <h2 className="text-lg font-bold text-bembe-night mb-3">{t.walk.reviews}</h2>
           <div className="bg-white rounded-2xl p-6 text-center">
             <Star className="h-8 w-8 text-bembe-gold/30 mx-auto mb-2" />
             <p className="text-sm text-bembe-night/50">
-              {walk.total_plays} people have taken this walk.
+              {walk.total_plays} {t.walk.people_taken}
             </p>
             <p className="text-sm text-bembe-night/50 mt-1">
-              Reviews coming soon.
+              {t.walk.coming_soon}
             </p>
           </div>
         </div>
@@ -303,7 +308,7 @@ export default async function WalkDetailPage({
         <div className="flex items-center gap-3">
           <div className="flex-1">
             <p className="text-xs text-bembe-night/50 uppercase tracking-wider font-medium">
-              {walk.price_cents === 0 ? "Free Walk" : "Walk Price"}
+              {walk.price_cents === 0 ? t.walk.free_walk : t.walk.walk_price}
             </p>
             <p className="text-xl font-bold text-bembe-night">
               {formatPrice(walk.price_cents)}
@@ -319,7 +324,7 @@ export default async function WalkDetailPage({
             className="flex items-center gap-2 h-14 px-8 rounded-2xl bg-bembe-teal text-white font-semibold transition-all hover:bg-bembe-teal/90 active:scale-[0.98]"
           >
             <Play className="h-5 w-5 fill-white" />
-            {walk.price_cents === 0 ? "Start Walk" : `Purchase Walk`}
+            {walk.price_cents === 0 ? t.walk.start : t.walk.purchase}
           </Link>
         </div>
       </div>

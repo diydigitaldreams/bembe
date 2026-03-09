@@ -15,6 +15,7 @@ import {
   Locate,
 } from "lucide-react";
 import { useGeolocation } from "@/hooks/use-geolocation";
+import { useI18n } from "@/lib/i18n/context";
 import type { WalkStop } from "@/types";
 
 // ---------- Mock data ----------
@@ -122,6 +123,7 @@ function formatTime(seconds: number): string {
 // ---------- Component ----------
 
 export default function WalkPlayerPage() {
+  const { t } = useI18n();
   const [currentStopIndex, setCurrentStopIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -324,24 +326,23 @@ export default function WalkPlayerPage() {
           <Navigation className="h-10 w-10 text-bembe-teal" />
         </div>
         <h1 className="text-2xl font-bold text-bembe-night mb-2">
-          Walk Complete!
+          {t.player.completed_title}
         </h1>
         <p className="text-bembe-night/60 mb-8 max-w-xs">
-          You just experienced {WALK_TITLE}. Thank you for exploring Santurce
-          through art.
+          {t.player.completed_desc}
         </p>
         <div className="flex flex-col gap-3 w-full max-w-xs">
           <Link
             href={`/walk/${WALK_ID}`}
             className="flex items-center justify-center h-14 rounded-2xl bg-bembe-teal text-white font-semibold"
           >
-            Leave a Review
+            {t.player.leave_review}
           </Link>
           <Link
             href="/map"
             className="flex items-center justify-center h-14 rounded-2xl border-2 border-bembe-night/10 text-bembe-night font-semibold"
           >
-            Explore More Walks
+            {t.player.explore_more}
           </Link>
         </div>
       </div>
@@ -360,7 +361,7 @@ export default function WalkPlayerPage() {
         </Link>
         <div className="flex-1 min-w-0">
           <p className="text-xs text-bembe-night/50 uppercase tracking-wider font-medium">
-            Now Walking
+            {t.player.now_walking}
           </p>
           <p className="text-sm font-semibold text-bembe-night truncate">
             {WALK_TITLE}
@@ -396,7 +397,7 @@ export default function WalkPlayerPage() {
               <div className="absolute bottom-2 left-2 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-sm shadow text-xs">
                 <Locate className="h-3 w-3 text-bembe-coral" />
                 <span className="text-bembe-night/70">
-                  {geo.accuracy ? `${Math.round(geo.accuracy)}m accuracy` : "Locating..."}
+                  {geo.accuracy ? `${Math.round(geo.accuracy)}${t.player.distance_unit} ${t.player.accuracy}` : t.player.locating}
                 </span>
               </div>
             )}
@@ -421,7 +422,7 @@ export default function WalkPlayerPage() {
               ))}
             </div>
             <span className="ml-auto text-xs text-bembe-night/50 font-medium">
-              Stop {currentStopIndex + 1} of {totalStops}
+              {t.player.stop_label} {currentStopIndex + 1} {t.player.stop_of} {totalStops}
             </span>
           </div>
         </div>
@@ -433,7 +434,7 @@ export default function WalkPlayerPage() {
               <div className="w-16 h-16 rounded-full bg-white/60 flex items-center justify-center mx-auto mb-2">
                 <MapPin className="h-8 w-8 text-bembe-teal" />
               </div>
-              <p className="text-xs text-bembe-night/40">Stop image</p>
+              <p className="text-xs text-bembe-night/40">{t.player.stop_image}</p>
             </div>
           </div>
         </div>
@@ -460,7 +461,7 @@ export default function WalkPlayerPage() {
                     currentStop.lng
                   )
                 )}
-                m away
+                {t.player.distance_unit} {t.player.distance_away}
               </span>
             </div>
           )}
@@ -535,7 +536,7 @@ export default function WalkPlayerPage() {
               {currentStopIndex + 2}
             </div>
             <p className="text-xs text-bembe-night/50 truncate">
-              Next: {MOCK_STOPS[currentStopIndex + 1].title}
+              {t.player.next_prefix}: {MOCK_STOPS[currentStopIndex + 1].title}
             </p>
           </div>
         )}

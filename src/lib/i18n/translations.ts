@@ -101,6 +101,11 @@ export const translations = {
       distance: "Distance",
       rating: "Rating",
       coming_soon: "Reviews coming soon",
+      featured: "Featured",
+      free_walk: "Free Walk",
+      walk_price: "Walk Price",
+      free: "Free",
+      people_taken: "people have taken this walk.",
     },
 
     // Walk player
@@ -116,6 +121,13 @@ export const translations = {
       explore_more: "Explore More Walks",
       listening: "Now Playing",
       paused: "Paused",
+      now_walking: "Now Walking",
+      stop_label: "Stop",
+      stop_image: "Stop image",
+      distance_unit: "m",
+      accuracy: "accuracy",
+      locating: "Locating...",
+      next_prefix: "Next",
     },
 
     // Events
@@ -468,6 +480,11 @@ export const translations = {
       distance: "Distancia",
       rating: "Calificacion",
       coming_soon: "Resenas proximamente",
+      featured: "Destacada",
+      free_walk: "Caminata Gratis",
+      walk_price: "Precio de Caminata",
+      free: "Gratis",
+      people_taken: "personas han tomado esta caminata.",
     },
 
     player: {
@@ -483,6 +500,13 @@ export const translations = {
       explore_more: "Explorar Mas Caminatas",
       listening: "Reproduciendo",
       paused: "Pausado",
+      now_walking: "Caminando",
+      stop_label: "Parada",
+      stop_image: "Imagen de parada",
+      distance_unit: "m",
+      accuracy: "precision",
+      locating: "Localizando...",
+      next_prefix: "Siguiente",
     },
 
     events: {

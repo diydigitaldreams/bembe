@@ -37,13 +37,19 @@ export default function LoginPage() {
   }
 
   async function handleGoogleLogin() {
+    setError(null);
     const supabase = createClient();
-    await supabase.auth.signInWithOAuth({
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
       },
     });
+    if (oauthError) {
+      setError(
+        "Google sign-in is currently being set up. Please use email and password to sign in for now."
+      );
+    }
   }
 
   return (
