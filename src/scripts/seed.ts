@@ -27,36 +27,72 @@ export async function seed(): Promise<SeedResult> {
   });
 
   // -----------------------------------------------------------------------
-  // 1. Artist profiles
+  // 1. Artist profiles (must create auth.users first due to FK constraint)
   // -----------------------------------------------------------------------
-  const artists = [
+  const artistDefs = [
     {
-      id: "a1000000-0000-0000-0000-000000000001",
       email: "lourdes.pagan@bembe.app",
       full_name: "Lourdes Pagán Rivera [Ejemplo]",
       bio: "Perfil de ejemplo — Artista multidisciplinaria de Santurce. Explora la memoria colectiva boricua a través de instalaciones sonoras y murales interactivos. Su trabajo ha sido exhibido en la Bienal de San Juan y el Museo de Arte de Puerto Rico.",
       location: "Santurce, PR",
-      role: "artist",
+      role: "artist" as const,
       avatar_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Lourdes",
       lat: 18.4496,
       lng: -66.0638,
     },
     {
-      id: "a1000000-0000-0000-0000-000000000002",
       email: "carlos.melendez@bembe.app",
       full_name: "Carlos Meléndez Ortiz [Ejemplo]",
       bio: "Perfil de ejemplo — Músico y historiador cultural de Ponce. Documenta las tradiciones orales y sonoras de Puerto Rico, desde la bomba y plena hasta los pregones del casco urbano. Fundador del colectivo Sonido Ancestral.",
       location: "Ponce, PR",
-      role: "artist",
+      role: "artist" as const,
       avatar_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos",
       lat: 18.0108,
       lng: -66.6141,
     },
   ];
 
+  // Create auth users first (service role can do this)
+  const artists: { id: string; email: string }[] = [];
+  for (const def of artistDefs) {
+    // Check if user already exists
+    const { data: existingUsers } = await supabase.auth.admin.listUsers();
+    const existing = existingUsers?.users?.find((u) => u.email === def.email);
+
+    let userId: string;
+    if (existing) {
+      userId = existing.id;
+    } else {
+      const { data: newUser, error: authError } =
+        await supabase.auth.admin.createUser({
+          email: def.email,
+          password: "bembe-example-2024",
+          email_confirm: true,
+        });
+      if (authError) {
+        throw new Error(`Failed to create auth user ${def.email}: ${authError.message}`);
+      }
+      userId = newUser.user.id;
+    }
+    artists.push({ id: userId, email: def.email });
+  }
+
+  // Now upsert profiles with the real auth user IDs
+  const profileRows = artistDefs.map((def, i) => ({
+    id: artists[i].id,
+    email: def.email,
+    full_name: def.full_name,
+    bio: def.bio,
+    location: def.location,
+    role: def.role,
+    avatar_url: def.avatar_url,
+    lat: def.lat,
+    lng: def.lng,
+  }));
+
   const { data: insertedProfiles, error: profilesError } = await supabase
     .from("profiles")
-    .upsert(artists, { onConflict: "id" })
+    .upsert(profileRows, { onConflict: "id" })
     .select();
 
   if (profilesError) {
@@ -68,7 +104,7 @@ export async function seed(): Promise<SeedResult> {
   // -----------------------------------------------------------------------
   const walks = [
     {
-      id: "w1000000-0000-0000-0000-000000000001",
+      id: "a1b00000-0000-4000-8000-000000000001",
       artist_id: artists[0].id,
       title: "Murales Vivos de Santurce [Ejemplo]",
       description:
@@ -85,7 +121,7 @@ export async function seed(): Promise<SeedResult> {
       avg_rating: 4.7,
     },
     {
-      id: "w1000000-0000-0000-0000-000000000002",
+      id: "a1b00000-0000-4000-8000-000000000002",
       artist_id: artists[0].id,
       title: "Ecos del Viejo San Juan [Ejemplo]",
       description:
@@ -102,7 +138,7 @@ export async function seed(): Promise<SeedResult> {
       avg_rating: 4.9,
     },
     {
-      id: "w1000000-0000-0000-0000-000000000003",
+      id: "a1b00000-0000-4000-8000-000000000003",
       artist_id: artists[1].id,
       title: "Ponce: La Perla del Sur [Ejemplo]",
       description:
@@ -119,7 +155,7 @@ export async function seed(): Promise<SeedResult> {
       avg_rating: 4.5,
     },
     {
-      id: "w1000000-0000-0000-0000-000000000004",
+      id: "a1b00000-0000-4000-8000-000000000004",
       artist_id: artists[1].id,
       title: "Atardecer en Rincón [Ejemplo]",
       description:
@@ -136,7 +172,7 @@ export async function seed(): Promise<SeedResult> {
       avg_rating: 4.6,
     },
     {
-      id: "w1000000-0000-0000-0000-000000000005",
+      id: "a1b00000-0000-4000-8000-000000000005",
       artist_id: artists[0].id,
       title: "Condado: Brisa y Cultura [Ejemplo]",
       description:
@@ -404,7 +440,7 @@ export async function seed(): Promise<SeedResult> {
 
   const events = [
     {
-      id: "e1000000-0000-0000-0000-000000000001",
+      id: "b2c00000-0000-4000-8000-000000000001",
       organizer_id: artists[0].id,
       title: "Noche de Galerías — Santurce es Ley [Ejemplo]",
       description:
@@ -423,7 +459,7 @@ export async function seed(): Promise<SeedResult> {
       is_published: true,
     },
     {
-      id: "e1000000-0000-0000-0000-000000000002",
+      id: "b2c00000-0000-4000-8000-000000000002",
       organizer_id: artists[1].id,
       title: "Festival de Bomba y Plena — Ponce [Ejemplo]",
       description:
@@ -442,7 +478,7 @@ export async function seed(): Promise<SeedResult> {
       is_published: true,
     },
     {
-      id: "e1000000-0000-0000-0000-000000000003",
+      id: "b2c00000-0000-4000-8000-000000000003",
       organizer_id: artists[0].id,
       title: "Jazz en la Calle — Viejo San Juan [Ejemplo]",
       description:
@@ -461,7 +497,7 @@ export async function seed(): Promise<SeedResult> {
       is_published: true,
     },
     {
-      id: "e1000000-0000-0000-0000-000000000004",
+      id: "b2c00000-0000-4000-8000-000000000004",
       organizer_id: artists[1].id,
       title: "Exposición: Tierra y Memoria [Ejemplo]",
       description:
