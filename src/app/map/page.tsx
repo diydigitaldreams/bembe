@@ -55,10 +55,7 @@ export default function MapPage() {
     if (!mapContainerRef.current || mapRef.current) return;
 
     const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
-    if (!token) {
-      console.error("NEXT_PUBLIC_MAPBOX_TOKEN is not set");
-      return;
-    }
+    if (!token) return;
 
     mapboxgl.accessToken = token;
 

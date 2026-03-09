@@ -58,8 +58,7 @@ export default function TipModal({
       if (data.url) {
         window.location.href = data.url;
       }
-    } catch (err) {
-      console.error("Tip error:", err);
+    } catch {
       setLoading(false);
     }
   }

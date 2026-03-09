@@ -42,6 +42,12 @@ export default function Navbar() {
         <div className="hidden items-center gap-3 md:flex">
           <LanguageToggle />
           <Link
+            href="/signup"
+            className="text-sm font-medium text-bembe-night/70 transition-colors hover:text-bembe-teal"
+          >
+            {t.nav.signup}
+          </Link>
+          <Link
             href="/login"
             className="rounded-full bg-bembe-teal px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-bembe-teal/90"
           >
@@ -74,6 +80,15 @@ export default function Navbar() {
                 </Link>
               </li>
             ))}
+            <li>
+              <Link
+                href="/signup"
+                onClick={() => setMobileOpen(false)}
+                className="block rounded-lg px-3 py-2 text-center text-base font-medium text-bembe-night/80 transition-colors hover:bg-bembe-teal/10 hover:text-bembe-teal"
+              >
+                {t.nav.signup}
+              </Link>
+            </li>
             <li>
               <Link
                 href="/login"

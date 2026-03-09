@@ -49,7 +49,7 @@ export default function GiftModal({
 
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error || "Something went wrong");
+        setError(data.error || t.common.error);
         return;
       }
 
@@ -58,7 +58,7 @@ export default function GiftModal({
         window.location.href = checkoutUrl;
       }
     } catch {
-      setError("Something went wrong");
+      setError(t.common.error);
     } finally {
       setLoading(false);
     }
@@ -109,7 +109,7 @@ export default function GiftModal({
               value={senderName}
               onChange={(e) => setSenderName(e.target.value)}
               className="w-full h-12 px-4 rounded-xl border border-bembe-night/10 bg-bembe-sand/30 text-bembe-night placeholder:text-bembe-night/30 focus:outline-none focus:ring-2 focus:ring-bembe-teal/30 focus:border-bembe-teal transition-all"
-              placeholder="John"
+              placeholder={t.gift.name_placeholder}
             />
           </div>
 
@@ -147,7 +147,7 @@ export default function GiftModal({
 
           {/* Info text */}
           <p className="text-xs text-bembe-night/50 text-center">
-            They&apos;ll receive a link to redeem this walk
+            {t.gift.redeem_info}
           </p>
 
           {/* Error */}

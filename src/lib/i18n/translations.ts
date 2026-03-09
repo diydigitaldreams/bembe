@@ -107,6 +107,7 @@ export const translations = {
       walk_price: "Walk Price",
       free: "Free",
       people_taken: "people have taken this walk.",
+      not_found: "Walk not found",
     },
 
     // Walk player
@@ -179,6 +180,7 @@ export const translations = {
       gift_walk: "Gift a Walk",
       support_desc:
         "Every walk played sends royalties directly to the artist. You can also leave a tip or buy a walk as a gift.",
+      not_found: "Artist not found",
     },
 
     // Artist dashboard
@@ -197,6 +199,7 @@ export const translations = {
       ai_grant_desc:
         "Get help writing grant applications for arts funding in Puerto Rico. Our assistant knows local foundations and requirements.",
       ai_grant_cta: "Write a Grant",
+      no_walks: "No walks yet",
     },
 
     // Walk creator
@@ -378,6 +381,8 @@ export const translations = {
       login_to_redeem: "Sign in to redeem this walk",
       processing: "Processing...",
       your_name: "Your Name",
+      name_placeholder: "John",
+      redeem_info: "They\u2019ll receive a link to redeem this walk",
     },
 
     // Messages
@@ -400,6 +405,19 @@ export const translations = {
       remove: "Remove Download",
       offline_banner: "You're offline \u2014 showing downloaded walks",
       storage_used: "Storage Used",
+    },
+
+    error_page: {
+      title: "Something went wrong",
+      description: "Something unexpected happened. Please try again.",
+      retry: "Try again",
+    },
+
+    not_found_page: {
+      title: "Page not found",
+      description: "The page you\u2019re looking for doesn\u2019t exist or has been moved.",
+      go_home: "Go home",
+      explore_walks: "Explore walks",
     },
 
     common: {
@@ -517,6 +535,7 @@ export const translations = {
       walk_price: "Precio de Caminata",
       free: "Gratis",
       people_taken: "personas han tomado esta caminata.",
+      not_found: "Caminata no encontrada",
     },
 
     player: {
@@ -587,6 +606,7 @@ export const translations = {
       gift_walk: "Regalar Caminata",
       support_desc:
         "Cada caminata reproducida envia regalias directamente al artista. Tambien puedes dejar propina o comprar una caminata como regalo.",
+      not_found: "Artista no encontrado",
     },
 
     dashboard: {
@@ -604,6 +624,7 @@ export const translations = {
       ai_grant_desc:
         "Recibe ayuda para escribir solicitudes de becas para financiamiento artistico en Puerto Rico. Nuestro asistente conoce las fundaciones y requisitos locales.",
       ai_grant_cta: "Escribir Solicitud",
+      no_walks: "No tienes caminatas aun",
     },
 
     creator: {
@@ -782,6 +803,8 @@ export const translations = {
       login_to_redeem: "Inicia sesion para canjear esta caminata",
       processing: "Procesando...",
       your_name: "Tu Nombre",
+      name_placeholder: "Juan",
+      redeem_info: "Recibiran un enlace para canjear esta caminata",
     },
 
     // Messages
@@ -804,6 +827,19 @@ export const translations = {
       remove: "Eliminar Descarga",
       offline_banner: "Estas sin conexion \u2014 mostrando caminatas descargadas",
       storage_used: "Almacenamiento Usado",
+    },
+
+    error_page: {
+      title: "Algo salio mal",
+      description: "Ocurrio algo inesperado. Por favor intenta de nuevo.",
+      retry: "Intentar de nuevo",
+    },
+
+    not_found_page: {
+      title: "Pagina no encontrada",
+      description: "La pagina que buscas no existe o ha sido movida.",
+      go_home: "Ir al inicio",
+      explore_walks: "Explorar caminatas",
     },
 
     common: {

@@ -38,8 +38,7 @@ export function SubscribeButton({
       if (data.url) {
         window.location.href = data.url;
       }
-    } catch (error) {
-      console.error("Subscribe error:", error);
+    } catch {
       setLoading(false);
     }
   }

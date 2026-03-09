@@ -58,7 +58,7 @@ export default function WalkDetailPage({
   if (error || !walk) {
     return (
       <div className="min-h-dvh bg-bembe-sand flex flex-col items-center justify-center gap-4">
-        <p className="text-bembe-night/60">{"Walk not found"}</p>
+        <p className="text-bembe-night/60">{t.walk.not_found}</p>
         <Link href="/discover" className="text-bembe-teal font-medium">
           {t.discover.title}
         </Link>

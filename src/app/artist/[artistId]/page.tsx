@@ -96,7 +96,7 @@ function ArtistProfileInner({ artistId }: { artistId: string }) {
   if (!artist) {
     return (
       <div className="min-h-screen bg-bembe-sand flex flex-col items-center justify-center gap-4">
-        <p className="text-bembe-night/60">Artist not found</p>
+        <p className="text-bembe-night/60">{t.artist.not_found}</p>
         <Link href="/discover" className="text-bembe-teal font-medium">{t.discover.title}</Link>
       </div>
     );

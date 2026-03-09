@@ -180,7 +180,7 @@ export default function ArtistDashboardPage() {
           ) : walks.length === 0 ? (
             <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
               <MapPin className="w-10 h-10 text-bembe-night/20 mx-auto mb-3" />
-              <p className="text-bembe-night/50">{"No walks yet"}</p>
+              <p className="text-bembe-night/50">{t.dashboard.no_walks}</p>
               <Link
                 href="/artist/walks/new"
                 className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-bembe-teal text-white font-semibold hover:bg-bembe-teal/90 transition text-sm"
