@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { rateLimit } from "@/lib/rate-limit";
 
 const SYSTEM_PROMPT_EN = `You are Bembé's Grant Assistant, specializing in arts and culture grants available to artists in Puerto Rico. You help artists find grants, understand requirements, and prepare applications.
 
@@ -33,6 +34,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: "Authentication required" },
       { status: 401 }
+    );
+  }
+
+  const { success: rateLimitOk } = rateLimit(user.id);
+  if (!rateLimitOk) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429 }
     );
   }
 

@@ -58,6 +58,8 @@ export default function WalkCard({ walk }: WalkCardProps) {
     >
       {/* Cover image placeholder */}
       <div
+        role="img"
+        aria-label={walk.title}
         className={`relative aspect-[4/3] bg-gradient-to-br ${getGradient(walk.id)}`}
       >
         <div className="absolute inset-0 bg-black/10 transition-opacity group-hover:bg-black/5" />
@@ -92,6 +94,7 @@ export default function WalkCard({ walk }: WalkCardProps) {
           <span className="text-xs font-medium text-bembe-night/50">
             {walk.avg_rating.toFixed(1)}
           </span>
+          <span className="sr-only">{walk.avg_rating.toFixed(1)} out of 5 stars</span>
         </div>
 
         {/* Meta row */}

@@ -60,6 +60,7 @@ export default function Navbar() {
           onClick={() => setMobileOpen(!mobileOpen)}
           className="inline-flex items-center justify-center rounded-md p-2 text-bembe-night md:hidden"
           aria-label="Toggle menu"
+          aria-expanded={mobileOpen}
         >
           {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>

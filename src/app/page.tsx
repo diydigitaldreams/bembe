@@ -12,6 +12,8 @@ import type { ArtWalk } from "@/types";
 export default function Home() {
   const { t } = useI18n();
   const [featuredWalks, setFeaturedWalks] = useState<ArtWalk[]>([]);
+  const [artistCount, setArtistCount] = useState<number | null>(null);
+  const [walkCount, setWalkCount] = useState<number | null>(null);
 
   useEffect(() => {
     async function fetchFeatured() {
@@ -25,7 +27,21 @@ export default function Home() {
         // API unavailable
       }
     }
+    async function fetchCounts() {
+      try {
+        const res = await fetch("/api/walks?limit=1000");
+        const data = await res.json();
+        if (data.walks) {
+          setWalkCount(data.walks.length);
+          const uniqueArtists = new Set(data.walks.map((w: ArtWalk) => w.artist_id));
+          setArtistCount(uniqueArtists.size);
+        }
+      } catch {
+        // API unavailable — leave counts as null
+      }
+    }
     fetchFeatured();
+    fetchCounts();
   }, []);
 
   const steps = [
@@ -88,9 +104,15 @@ export default function Home() {
       <section className="border-y border-bembe-night/5 bg-white/50">
         <div className="mx-auto grid max-w-4xl grid-cols-3 divide-x divide-bembe-night/5 px-4 py-10 sm:py-14">
           {[
-            { value: "500+", label: t.landing.stats_artists },
-            { value: "100+", label: t.landing.stats_walks },
-            { value: "20+", label: t.landing.stats_neighborhoods },
+            {
+              value: artistCount !== null ? String(artistCount) : t.landing.stats_artists_growing,
+              label: t.landing.stats_artists,
+            },
+            {
+              value: walkCount !== null ? String(walkCount) : t.landing.stats_walks_new,
+              label: t.landing.stats_walks,
+            },
+            { value: "13", label: t.landing.stats_neighborhoods },
           ].map((stat) => (
             <div key={stat.label} className="flex flex-col items-center gap-1">
               <span className="text-2xl font-extrabold text-bembe-teal sm:text-3xl md:text-4xl">
@@ -252,12 +274,13 @@ export default function Home() {
               </h4>
               <ul className="mt-4 flex flex-col gap-2.5">
                 {[
-                  { href: "mailto:hola@bembe.pr", label: t.landing.footer_about },
-                  { href: "mailto:hola@bembe.pr", label: t.landing.footer_privacy },
-                  { href: "mailto:hola@bembe.pr", label: t.landing.footer_terms },
+                  { href: "/about", label: t.landing.footer_about },
+                  { href: "/privacy", label: t.landing.footer_privacy },
+                  { href: "/terms", label: t.landing.footer_terms },
+                  { href: "/refunds", label: t.landing.footer_refunds },
                   { href: "mailto:hola@bembe.pr", label: t.landing.footer_contact },
                 ].map((link) => (
-                  <li key={link.href}>
+                  <li key={link.label}>
                     <Link
                       href={link.href}
                       className="text-sm text-bembe-night/60 transition-colors hover:text-bembe-teal"

@@ -115,8 +115,10 @@ export default function DiscoverPage() {
 
         {/* Search bar */}
         <div className="relative mb-6">
+          <label htmlFor="walk-search" className="sr-only">{t.discover.search_placeholder}</label>
           <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-bembe-night/30" />
           <input
+            id="walk-search"
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}

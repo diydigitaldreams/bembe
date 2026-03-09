@@ -25,7 +25,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
   themeColor: "#1A7A6D",
 };
 
@@ -38,13 +37,17 @@ export default function RootLayout({
     <html lang="es">
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <link
-          href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css"
-          rel="stylesheet"
-        />
       </head>
       <body className="antialiased">
-        <I18nProvider>{children}</I18nProvider>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:bg-bembe-teal focus:text-white focus:px-4 focus:py-2 focus:rounded-md focus:top-2 focus:left-2"
+        >
+          Skip to content
+        </a>
+        <I18nProvider>
+          <div id="main-content">{children}</div>
+        </I18nProvider>
       </body>
     </html>
   );

@@ -57,7 +57,7 @@ function SignupForm() {
       return;
     }
 
-    router.push("/artist/dashboard");
+    router.push(role === "patron" ? "/discover" : "/artist/dashboard");
   }
 
   async function handleGoogleSignup() {

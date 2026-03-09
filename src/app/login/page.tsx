@@ -33,7 +33,15 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/artist/dashboard");
+    // Redirect based on user role
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", (await supabase.auth.getUser()).data.user?.id ?? "")
+      .single();
+
+    const userRole = profile?.role;
+    router.push(userRole === "artist" || userRole === "both" ? "/artist/dashboard" : "/discover");
   }
 
   async function handleGoogleLogin() {
@@ -131,6 +139,16 @@ export default function LoginPage() {
                   )}
                 </button>
               </div>
+            </div>
+
+            {/* Forgot password */}
+            <div className="text-right">
+              <Link
+                href="/forgot-password"
+                className="text-sm text-bembe-teal hover:underline"
+              >
+                {t.forgot_password.title}
+              </Link>
             </div>
 
             {/* Submit */}
