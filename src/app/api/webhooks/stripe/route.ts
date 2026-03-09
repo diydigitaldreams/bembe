@@ -4,15 +4,30 @@ import { stripe } from "@/lib/stripe/client";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 function getSupabaseAdmin() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error("Missing Supabase env vars");
+  return createClient(url, key);
 }
 
 export async function POST(request: NextRequest) {
-  const supabaseAdmin = getSupabaseAdmin();
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!webhookSecret) {
+    return NextResponse.json(
+      { error: "Webhook not configured" },
+      { status: 503 }
+    );
+  }
+
+  let supabaseAdmin: ReturnType<typeof getSupabaseAdmin>;
+  try {
+    supabaseAdmin = getSupabaseAdmin();
+  } catch {
+    return NextResponse.json(
+      { error: "Server configuration error" },
+      { status: 503 }
+    );
+  }
   const body = await request.text();
   const signature = request.headers.get("stripe-signature");
 
@@ -74,7 +89,7 @@ async function handleCheckoutCompleted(
 
   if (type === "walk_purchase") {
     await handleWalkPurchase(session, supabaseAdmin);
-  } else if (type === "subscription") {
+  } else if (type === "subscription" || type === "artist_subscription") {
     await handleSubscription(session, supabaseAdmin);
   }
 }

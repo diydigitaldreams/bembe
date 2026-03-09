@@ -148,7 +148,7 @@ export default function GiftRedemptionPage({
         {redeemed ? (
           <div className="text-center">
             <p className="text-bembe-teal font-semibold mb-4">
-              Walk added to your library!
+              {"Walk added to your library!"}
             </p>
             <Link
               href={`/walk/${gift.walk_id}/play`}

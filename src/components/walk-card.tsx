@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { Clock, MapPin, Star } from "lucide-react";
 import type { ArtWalk } from "@/types";
+import { useI18n } from "@/lib/i18n/context";
 
 const gradients = [
   "from-bembe-teal to-emerald-400",
@@ -42,9 +45,10 @@ interface WalkCardProps {
 }
 
 export default function WalkCard({ walk }: WalkCardProps) {
+  const { t } = useI18n();
   const priceLabel =
     walk.price_cents === 0
-      ? "Free"
+      ? t.discover.free
       : `$${(walk.price_cents / 100).toFixed(2)}`;
 
   return (
@@ -79,7 +83,7 @@ export default function WalkCard({ walk }: WalkCardProps) {
           {walk.title}
         </h3>
         <p className="text-sm text-bembe-night/60">
-          by {walk.artist?.full_name ?? "Unknown Artist"}
+          {walk.artist?.full_name ?? "Unknown Artist"}
         </p>
 
         {/* Rating */}

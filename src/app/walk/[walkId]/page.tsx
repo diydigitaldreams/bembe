@@ -67,7 +67,7 @@ export default function WalkDetailPage({
   }
 
   const stops = walk.stops ?? [];
-  const artist = walk.artist!;
+  const artist = walk.artist ?? { id: "", full_name: "Unknown Artist", location: null, bio: null };
   const totalStopDuration = stops.reduce((sum, s) => sum + s.duration_seconds, 0);
 
   function formatPrice(cents: number): string {

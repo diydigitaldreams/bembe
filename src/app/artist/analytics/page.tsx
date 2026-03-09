@@ -125,6 +125,12 @@ export default function ArtistAnalyticsPage() {
 
   return (
     <div className="min-h-screen bg-bembe-sand">
+      {/* Demo Mode Banner */}
+      <div className="bg-bembe-gold/20 border-b border-bembe-gold/30 px-4 py-2.5 text-center">
+        <p className="text-sm font-medium text-bembe-night/70">
+          {"Demo mode — real analytics coming soon"}
+        </p>
+      </div>
       {/* Header */}
       <header className="bg-white border-b border-bembe-night/5">
         <div className="max-w-5xl mx-auto px-4 py-6">

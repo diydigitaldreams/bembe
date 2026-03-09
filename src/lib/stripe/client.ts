@@ -106,8 +106,8 @@ export async function createCheckoutSession(
       type: "walk_purchase",
       walk_id: walkId,
     },
-    success_url: `${appUrl}/walks/${walkId}/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${appUrl}/walks/${walkId}`,
+    success_url: `${appUrl}/walk/${walkId}?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${appUrl}/walk/${walkId}`,
   };
 
   if (couponCode) {

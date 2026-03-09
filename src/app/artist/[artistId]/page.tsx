@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, useEffect } from "react";
+import { use, useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/context";
 import { useSearchParams } from "next/navigation";
@@ -30,12 +30,7 @@ const GRADIENTS = [
   "from-bembe-teal to-blue-400",
 ];
 
-export default function ArtistProfilePage({
-  params,
-}: {
-  params: Promise<{ artistId: string }>;
-}) {
-  const { artistId } = use(params);
+function ArtistProfileInner({ artistId }: { artistId: string }) {
   const { t } = useI18n();
   const searchParams = useSearchParams();
   const justSubscribed = searchParams.get("subscribed") === "true";
@@ -307,5 +302,18 @@ export default function ArtistProfilePage({
         onClose={() => setTipModalOpen(false)}
       />
     </div>
+  );
+}
+
+export default function ArtistProfilePage({
+  params,
+}: {
+  params: Promise<{ artistId: string }>;
+}) {
+  const { artistId } = use(params);
+  return (
+    <Suspense>
+      <ArtistProfileInner artistId={artistId} />
+    </Suspense>
   );
 }

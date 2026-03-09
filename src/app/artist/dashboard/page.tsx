@@ -30,7 +30,8 @@ export default function ArtistDashboardPage() {
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
-        window.location.href = "/login";
+        // Redirect to login (full page nav since we're outside router context)
+        window.location.replace("/login");
         return;
       }
 
@@ -158,12 +159,12 @@ export default function ArtistDashboardPage() {
             <p className="text-white/60 text-sm mb-4 max-w-md">
               {t.dashboard.ai_grant_desc}
             </p>
-            <a
-              href="mailto:grants@bembe.pr"
+            <Link
+              href="/grants"
               className="inline-block px-5 py-2.5 rounded-xl bg-bembe-gold text-bembe-night font-semibold hover:bg-bembe-gold/90 active:scale-[0.98] transition text-sm"
             >
               {t.dashboard.ai_grant_cta}
-            </a>
+            </Link>
           </div>
         </div>
 

@@ -210,7 +210,11 @@ export async function GET(request: NextRequest) {
   }
 
   if (search) {
-    query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
+    // Sanitize search input to prevent PostgREST filter injection
+    const sanitized = search.replace(/[.,%()]/g, "");
+    if (sanitized.trim()) {
+      query = query.or(`title.ilike.%${sanitized}%,description.ilike.%${sanitized}%`);
+    }
   }
 
   // Sorting

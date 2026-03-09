@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 const SYSTEM_PROMPT_EN = `You are Bembé's Grant Assistant, specializing in arts and culture grants available to artists in Puerto Rico. You help artists find grants, understand requirements, and prepare applications.
 
@@ -25,6 +26,16 @@ const SYSTEM_PROMPT_ES = `Eres el Asistente de Becas de Bembé, especializado en
 Sé cálido, alentador y práctico. Mantén las respuestas concisas (2-3 párrafos máximo). Si no sabes algo específico, dilo honestamente y sugiere dónde podrían encontrar la información. Siempre responde en el mismo idioma que usa el usuario.`;
 
 export async function POST(request: NextRequest) {
+  // Auth check — prevent unauthenticated OpenAI spend
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json(
+      { error: "Authentication required" },
+      { status: 401 }
+    );
+  }
+
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     return NextResponse.json(

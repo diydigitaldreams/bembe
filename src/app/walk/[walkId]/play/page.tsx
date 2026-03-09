@@ -18,83 +18,6 @@ import { useGeolocation } from "@/hooks/use-geolocation";
 import { useI18n } from "@/lib/i18n/context";
 import type { WalkStop } from "@/types";
 
-// ---------- Mock data ----------
-const WALK_TITLE = "Santurce Es Ley";
-const WALK_ID = "walk-santurce";
-
-const MOCK_STOPS: WalkStop[] = [
-  {
-    id: "stop-1",
-    walk_id: WALK_ID,
-    order_index: 0,
-    title: "Calle Cerra: The Birth of a Movement",
-    description:
-      "Start at the intersection where Santurce's street art revolution began. Learn about the first murals that appeared in 2010 and the artists who dared to transform blank walls into canvases.",
-    audio_url: null,
-    image_urls: [],
-    lat: 18.4455,
-    lng: -66.0625,
-    trigger_radius_meters: 30,
-    duration_seconds: 180,
-  },
-  {
-    id: "stop-2",
-    walk_id: WALK_ID,
-    order_index: 1,
-    title: "MAC: Museo de Arte Contemporaneo",
-    description:
-      "The anchor of Santurce's art scene. Discover how this museum became a catalyst for the surrounding neighborhood's creative explosion.",
-    audio_url: null,
-    image_urls: [],
-    lat: 18.447,
-    lng: -66.059,
-    trigger_radius_meters: 40,
-    duration_seconds: 240,
-  },
-  {
-    id: "stop-3",
-    walk_id: WALK_ID,
-    order_index: 2,
-    title: "La Placita: Where Art Meets Life",
-    description:
-      "By day, a farmers' market; by night, the island's most iconic gathering spot. Hear stories of the vendors, musicians, and artists who make La Placita the soul of Santurce.",
-    audio_url: null,
-    image_urls: [],
-    lat: 18.4452,
-    lng: -66.0605,
-    trigger_radius_meters: 35,
-    duration_seconds: 210,
-  },
-  {
-    id: "stop-4",
-    walk_id: WALK_ID,
-    order_index: 3,
-    title: "Tras Talleres: The Hidden Studios",
-    description:
-      "Venture behind the main streets to discover working artist studios. Peek into the creative process and learn about the community that sustains itself through art.",
-    audio_url: null,
-    image_urls: [],
-    lat: 18.448,
-    lng: -66.057,
-    trigger_radius_meters: 30,
-    duration_seconds: 200,
-  },
-  {
-    id: "stop-5",
-    walk_id: WALK_ID,
-    order_index: 4,
-    title: "Miramar: Art Deco to Neo-Muralism",
-    description:
-      "End your walk where old meets new. The Art Deco buildings of Miramar serve as backdrop for a new generation of muralists redefining Puerto Rican identity.",
-    audio_url: null,
-    image_urls: [],
-    lat: 18.45,
-    lng: -66.065,
-    trigger_radius_meters: 35,
-    duration_seconds: 220,
-  },
-];
-
 // ---------- Helpers ----------
 
 function getDistanceMeters(
@@ -130,7 +53,7 @@ export default function WalkPlayerPage({
   const { walkId } = use(params);
   const { t } = useI18n();
   const [walkTitle, setWalkTitle] = useState("");
-  const [stops, setStops] = useState<WalkStop[]>(MOCK_STOPS);
+  const [stops, setStops] = useState<WalkStop[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentStopIndex, setCurrentStopIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -144,7 +67,6 @@ export default function WalkPlayerPage({
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const geo = useGeolocation(true);
-  const currentStop = stops[currentStopIndex];
   const totalStops = stops.length;
 
   // Fetch walk data from API
@@ -161,11 +83,38 @@ export default function WalkPlayerPage({
             }
           }
         }
-      } catch { /* use mock data as fallback */ }
+      } catch { /* fetch failed */ }
       setLoading(false);
     }
     fetchWalk();
   }, [walkId]);
+
+  // Loading / empty guard
+  if (loading) {
+    return (
+      <div className="min-h-dvh bg-bembe-sand flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 rounded-full bg-bembe-teal/10 flex items-center justify-center mx-auto mb-3 animate-pulse">
+            <Play className="h-6 w-6 text-bembe-teal" />
+          </div>
+          <p className="text-sm text-bembe-night/50">{t.common.loading}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (stops.length === 0) {
+    return (
+      <div className="min-h-dvh bg-bembe-sand flex flex-col items-center justify-center gap-4 px-6">
+        <p className="text-bembe-night/60">{t.walk.stops} not found</p>
+        <Link href={`/walk/${walkId}`} className="text-bembe-teal font-medium">
+          {t.common.close}
+        </Link>
+      </div>
+    );
+  }
+
+  const currentStop = stops[currentStopIndex];
   const progress =
     currentStop.duration_seconds > 0
       ? Math.min(elapsed / currentStop.duration_seconds, 1)
@@ -322,7 +271,7 @@ export default function WalkPlayerPage({
       setIsPlaying(false);
 
       // Pan mini map to next stop
-      const next = MOCK_STOPS[currentStopIndex + 1];
+      const next = stops[currentStopIndex + 1];
       miniMapInstance.current?.flyTo({
         center: [next.lng, next.lat],
         zoom: 15,
@@ -383,7 +332,7 @@ export default function WalkPlayerPage({
       {/* Header */}
       <header className="shrink-0 flex items-center gap-3 px-4 pt-[env(safe-area-inset-top,12px)] pb-3 bg-white/80 backdrop-blur-xl border-b border-bembe-night/5">
         <Link
-          href={`/walk/${WALK_ID}`}
+          href={`/walk/${walkId}`}
           className="flex h-10 w-10 items-center justify-center rounded-full bg-bembe-night/5 text-bembe-night"
         >
           <ChevronLeft className="h-5 w-5" />

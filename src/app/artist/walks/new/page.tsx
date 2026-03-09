@@ -91,6 +91,7 @@ export default function CreateWalkPage() {
 
   // Publishing
   const [publishing, setPublishing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   function handleCoverImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -141,7 +142,7 @@ export default function CreateWalkPage() {
         aiGenerated: true,
       });
     } catch {
-      alert("Failed to generate AI content. Please try again.");
+      setError(t.creator.polish_with_ai + " failed. Please try again.");
     } finally {
       setAiLoading(null);
     }
@@ -159,7 +160,7 @@ export default function CreateWalkPage() {
           neighborhood,
           municipality: neighborhood,
           price_cents: pricingType === "paid" ? price * 100 : 0,
-          duration_minutes: stops.reduce((sum, s) => sum + Math.round((s.lat ? 180 : 120) / 60), 0) * stops.length,
+          duration_minutes: stops.length * 3,
           distance_km: 0,
           is_published: true,
           stops: stops.map((s) => ({
@@ -174,13 +175,13 @@ export default function CreateWalkPage() {
 
       const data = await res.json();
       if (!res.ok) {
-        alert(data.error || "Failed to create walk");
+        setError(data.error || "Failed to create walk");
         return;
       }
 
       window.location.href = `/walk/${data.walk.id}`;
     } catch {
-      alert("Failed to create walk. Please try again.");
+      setError("Failed to create walk. Please try again.");
     } finally {
       setPublishing(false);
     }
@@ -268,6 +269,11 @@ export default function CreateWalkPage() {
       </header>
 
       <main className="max-w-3xl mx-auto px-4 py-8">
+        {error && (
+          <div className="mb-6 p-4 rounded-xl bg-bembe-coral/10 text-bembe-coral text-sm">
+            {error}
+          </div>
+        )}
         {/* Step 1: Basics */}
         {currentStep === 0 && (
           <div className="space-y-6">
@@ -526,7 +532,7 @@ export default function CreateWalkPage() {
                     {t.creator.polished_description}
                     {activeStop.aiGenerated && (
                       <span className="ml-2 text-xs text-bembe-gold font-normal">
-                        AI-polished
+                        ✨ AI
                       </span>
                     )}
                   </label>
