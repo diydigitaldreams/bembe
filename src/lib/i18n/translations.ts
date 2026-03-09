@@ -432,6 +432,12 @@ export const translations = {
       explore_walks: "Explore walks",
     },
 
+    cookie: {
+      description: "We use cookies to keep you signed in and improve your experience. No tracking cookies are used.",
+      accept: "Accept",
+      decline: "Decline",
+    },
+
     earn: {
       hero_title: "Your art, your earnings",
       hero_subtitle: "Bembe puts money directly in artists' pockets. Here's how.",
@@ -909,6 +915,12 @@ export const translations = {
       description: "La pagina que buscas no existe o ha sido movida.",
       go_home: "Ir al inicio",
       explore_walks: "Explorar caminatas",
+    },
+
+    cookie: {
+      description: "Usamos cookies para mantener tu sesion y mejorar tu experiencia. No usamos cookies de rastreo.",
+      accept: "Aceptar",
+      decline: "Rechazar",
     },
 
     earn: {

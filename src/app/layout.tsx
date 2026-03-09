@@ -1,9 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { I18nProvider } from "@/lib/i18n/context";
+import CookieConsent from "@/components/cookie-consent";
 
 export const metadata: Metadata = {
-  title: "Bembe — Puerto Rico's Living Art Museum",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://bembe.vercel.app"),
+  title: {
+    default: "Bembe — Puerto Rico's Living Art Museum",
+    template: "%s | Bembe",
+  },
   description:
     "Discover Puerto Rico through the eyes of local artists. Audio walks, stories, and cultural experiences that turn the island into an open-air museum.",
   keywords: [
@@ -13,12 +18,27 @@ export const metadata: Metadata = {
     "local artists",
     "Boricua",
     "art experiences",
+    "audio tours",
+    "San Juan",
+    "Santurce",
   ],
   openGraph: {
     title: "Bembe — Puerto Rico's Living Art Museum",
     description:
       "Audio art walks created by local Puerto Rican artists. Discover the island like never before.",
     type: "website",
+    siteName: "Bembe",
+    locale: "es_PR",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Bembe — Puerto Rico's Living Art Museum",
+    description:
+      "Audio art walks created by local Puerto Rican artists. Discover the island like never before.",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
@@ -47,6 +67,7 @@ export default function RootLayout({
         </a>
         <I18nProvider>
           <div id="main-content">{children}</div>
+          <CookieConsent />
         </I18nProvider>
       </body>
     </html>
