@@ -9,7 +9,7 @@ import {
   Ticket,
   ChevronLeft,
   Search,
-  Filter,
+  Plus,
 } from "lucide-react";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/context";
@@ -145,6 +145,13 @@ export default function EventsPage() {
               <ChevronLeft className="w-5 h-5" />
             </Link>
             <h1 className="text-xl font-bold">{t.events.title}</h1>
+            <Link
+              href="/artist/events/new"
+              className="ml-auto flex items-center gap-1.5 px-4 py-2 bg-bembe-teal text-white rounded-xl text-sm font-medium hover:bg-bembe-teal/90 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">{t.events.create_event}</span>
+            </Link>
           </div>
 
           <div className="relative mb-3">

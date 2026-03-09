@@ -66,6 +66,7 @@ export interface Event {
   description: string;
   cover_image_url: string;
   location_name: string;
+  neighborhood: string;
   lat: number;
   lng: number;
   starts_at: string;
@@ -73,6 +74,7 @@ export interface Event {
   ticket_price_cents: number;
   max_capacity: number;
   tickets_sold: number;
+  rsvp_url: string;
   is_published: boolean;
   created_at: string;
   organizer?: Profile;
