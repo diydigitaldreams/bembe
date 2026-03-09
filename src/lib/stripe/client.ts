@@ -74,12 +74,13 @@ export async function createCheckoutSession(
   walkId: string,
   walkTitle: string,
   priceCents: number,
-  artistStripeAccountId: string
+  artistStripeAccountId: string,
+  couponCode?: string
 ): Promise<Stripe.Checkout.Session> {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const platformFee = Math.round(priceCents * (PLATFORM_FEE_PERCENT / 100));
 
-  const session = await stripe.checkout.sessions.create({
+  const sessionParams: Stripe.Checkout.SessionCreateParams = {
     mode: "payment",
     line_items: [
       {
@@ -100,15 +101,65 @@ export async function createCheckoutSession(
         destination: artistStripeAccountId,
       },
     },
+    allow_promotion_codes: true,
     metadata: {
       type: "walk_purchase",
       walk_id: walkId,
     },
     success_url: `${appUrl}/walks/${walkId}/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${appUrl}/walks/${walkId}`,
-  });
+  };
+
+  if (couponCode) {
+    sessionParams.discounts = [{ coupon: couponCode }];
+    sessionParams.allow_promotion_codes = undefined;
+  }
+
+  const session = await stripe.checkout.sessions.create(sessionParams);
 
   return session;
+}
+
+/**
+ * Creates a Stripe coupon for testing or promotions.
+ */
+export async function createCoupon(
+  params: {
+    percentOff?: number;
+    amountOff?: number;
+    currency?: string;
+    name: string;
+    maxRedemptions?: number;
+  }
+): Promise<Stripe.Coupon> {
+  const couponParams: Stripe.CouponCreateParams = {
+    name: params.name,
+    max_redemptions: params.maxRedemptions,
+  };
+
+  if (params.percentOff) {
+    couponParams.percent_off = params.percentOff;
+  } else if (params.amountOff) {
+    couponParams.amount_off = params.amountOff;
+    couponParams.currency = params.currency || "usd";
+  }
+
+  return stripe.coupons.create(couponParams);
+}
+
+/**
+ * Creates a Stripe promotion code from a coupon (user-facing code).
+ */
+export async function createPromoCode(
+  couponId: string,
+  code: string,
+  maxRedemptions?: number
+): Promise<Stripe.PromotionCode> {
+  return stripe.promotionCodes.create({
+    coupon: couponId,
+    code,
+    max_redemptions: maxRedemptions,
+  });
 }
 
 /**
