@@ -156,7 +156,7 @@ export async function createPromoCode(
   maxRedemptions?: number
 ): Promise<Stripe.PromotionCode> {
   return stripe.promotionCodes.create({
-    coupon: couponId,
+    promotion: { type: "coupon", coupon: couponId },
     code,
     max_redemptions: maxRedemptions,
   });
