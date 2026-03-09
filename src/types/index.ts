@@ -92,6 +92,16 @@ export interface BusinessSponsor {
   created_at: string;
 }
 
+export interface StopComment {
+  id: string;
+  stop_id: string;
+  user_id: string;
+  timestamp_ms: number;
+  body: string;
+  created_at: string;
+  user?: Pick<Profile, "id" | "full_name" | "avatar_url">;
+}
+
 export interface ArtistSubscription {
   id: string;
   artist_id: string;

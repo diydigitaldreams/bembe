@@ -410,6 +410,15 @@ export const translations = {
       storage_used: "Storage Used",
     },
 
+    // Timed voices on the waveform
+    comments: {
+      add: "Leave a voice at this moment\u2026",
+      post: "Share",
+      at: "at",
+      no_comments: "Be the first to leave a voice here",
+      login_to_comment: "Sign in to leave your voice",
+    },
+
     error_page: {
       title: "Something went wrong",
       description: "Something unexpected happened. Please try again.",
@@ -878,6 +887,15 @@ export const translations = {
       remove: "Eliminar Descarga",
       offline_banner: "Estas sin conexion \u2014 mostrando caminatas descargadas",
       storage_used: "Almacenamiento Usado",
+    },
+
+    // Voces en el waveform
+    comments: {
+      add: "Deja tu voz en este momento\u2026",
+      post: "Compartir",
+      at: "en",
+      no_comments: "Se el primero en dejar tu voz aqui",
+      login_to_comment: "Inicia sesion para dejar tu voz",
     },
 
     error_page: {

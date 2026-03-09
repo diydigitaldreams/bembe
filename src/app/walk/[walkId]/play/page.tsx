@@ -1,7 +1,7 @@
 "use client";
 
 import "mapbox-gl/dist/mapbox-gl.css";
-import { use, useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { use, useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import mapboxgl from "mapbox-gl";
 import {
@@ -11,12 +11,12 @@ import {
   SkipForward,
   MapPin,
   Navigation,
-  X,
   Volume2,
   Locate,
 } from "lucide-react";
 import { useGeolocation } from "@/hooks/use-geolocation";
 import { useI18n } from "@/lib/i18n/context";
+import WaveformComments from "@/components/waveform-comments";
 import type { WalkStop } from "@/types";
 
 // ---------- Helpers ----------
@@ -36,12 +36,6 @@ function getDistanceMeters(
       Math.cos((lat2 * Math.PI) / 180) *
       Math.sin(dLng / 2) ** 2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
-
-function formatTime(seconds: number): string {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
 // ---------- Component ----------
@@ -116,10 +110,6 @@ export default function WalkPlayerPage({
   }
 
   const currentStop = stops[currentStopIndex];
-  const progress =
-    currentStop.duration_seconds > 0
-      ? Math.min(elapsed / currentStop.duration_seconds, 1)
-      : 0;
 
   // Auto-advance when user enters trigger radius
   useEffect(() => {
@@ -288,15 +278,6 @@ export default function WalkPlayerPage({
     setIsPlaying((prev) => !prev);
   }, []);
 
-  const handleSeek = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-      setElapsed(Math.round(ratio * currentStop.duration_seconds));
-    },
-    [currentStop.duration_seconds]
-  );
-
   // Walk complete screen
   if (walkComplete) {
     return (
@@ -455,25 +436,14 @@ export default function WalkPlayerPage({
 
       {/* Audio player controls (bottom) */}
       <div className="shrink-0 bg-white border-t border-bembe-night/5 px-5 pt-4 pb-[env(safe-area-inset-bottom,16px)]">
-        {/* Progress bar */}
+        {/* Waveform with timed voices from fellow walkers */}
         <div className="mb-3">
-          <div
-            className="h-1.5 rounded-full bg-bembe-night/10 cursor-pointer relative"
-            onClick={handleSeek}
-          >
-            <div
-              className="absolute inset-y-0 left-0 rounded-full bg-bembe-teal transition-all duration-300"
-              style={{ width: `${progress * 100}%` }}
-            />
-            <div
-              className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-bembe-teal shadow-md transition-all duration-300"
-              style={{ left: `calc(${progress * 100}% - 8px)` }}
-            />
-          </div>
-          <div className="flex justify-between mt-1.5 text-xs text-bembe-night/40">
-            <span>{formatTime(elapsed)}</span>
-            <span>{formatTime(currentStop.duration_seconds)}</span>
-          </div>
+          <WaveformComments
+            stopId={currentStop.id}
+            durationSeconds={currentStop.duration_seconds}
+            elapsed={elapsed}
+            onSeek={(s) => setElapsed(s)}
+          />
         </div>
 
         {/* Controls */}
