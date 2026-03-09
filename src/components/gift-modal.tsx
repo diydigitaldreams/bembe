@@ -73,7 +73,7 @@ export default function GiftModal({
       />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
+      <div className="relative bg-white rounded-2xl p-6 max-w-md w-full shadow-xl max-h-[90dvh] overflow-y-auto">
         {/* Close button */}
         <button
           onClick={onClose}

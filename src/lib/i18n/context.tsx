@@ -4,7 +4,6 @@ import {
   createContext,
   useContext,
   useState,
-  useEffect,
   type ReactNode,
 } from "react";
 import { translations, type Locale, type TranslationKeys } from "./translations";
@@ -17,15 +16,14 @@ interface I18nContextType {
 
 const I18nContext = createContext<I18nContextType | null>(null);
 
-export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("es");
+function getInitialLocale(): Locale {
+  if (typeof window === "undefined") return "es";
+  const saved = localStorage.getItem("bembe-locale");
+  return saved === "en" || saved === "es" ? saved : "es";
+}
 
-  useEffect(() => {
-    const saved = localStorage.getItem("bembe-locale") as Locale | null;
-    if (saved && (saved === "en" || saved === "es")) {
-      setLocaleState(saved);
-    }
-  }, []);
+export function I18nProvider({ children }: { children: ReactNode }) {
+  const [locale, setLocaleState] = useState<Locale>(getInitialLocale);
 
   const setLocale = (newLocale: Locale) => {
     setLocaleState(newLocale);

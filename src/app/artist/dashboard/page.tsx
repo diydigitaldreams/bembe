@@ -22,6 +22,7 @@ export default function ArtistDashboardPage() {
   const { t } = useI18n();
   const [userName, setUserName] = useState("");
   const [walks, setWalks] = useState<ArtWalk[]>([]);
+  const [revenueCents, setRevenueCents] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -51,7 +52,28 @@ export default function ArtistDashboardPage() {
         .eq("artist_id", user.id)
         .order("created_at", { ascending: false });
 
-      setWalks(walksData || []);
+      const artistWalks = walksData || [];
+      setWalks(artistWalks);
+
+      // Fetch revenue from walk purchases for this artist's walks
+      if (artistWalks.length > 0) {
+        const walkIds = artistWalks.map((w) => w.id);
+        const now = new Date();
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+
+        const { data: purchases } = await supabase
+          .from("walk_purchases")
+          .select("amount_cents")
+          .in("walk_id", walkIds)
+          .gte("created_at", monthStart);
+
+        const revenueCents = (purchases || []).reduce(
+          (sum, p) => sum + (p.amount_cents || 0),
+          0
+        );
+        setRevenueCents(revenueCents);
+      }
+
       setLoading(false);
     }
     fetchDashboard();
@@ -72,7 +94,7 @@ export default function ArtistDashboardPage() {
     },
     {
       key: "revenue" as const,
-      value: "$0",
+      value: `$${(revenueCents / 100).toFixed(2)}`,
       icon: DollarSign,
       color: "bg-bembe-gold/10 text-bembe-gold",
     },

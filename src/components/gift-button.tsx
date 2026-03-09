@@ -23,7 +23,7 @@ export default function GiftButton({
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="flex h-14 w-14 items-center justify-center rounded-2xl border border-bembe-night/10 bg-white text-bembe-coral transition-all hover:bg-bembe-coral/5 active:scale-[0.98]"
+        className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl border border-bembe-night/10 bg-white text-bembe-coral transition-all hover:bg-bembe-coral/5 active:scale-[0.98]"
         aria-label="Gift this walk"
       >
         <Gift className="h-5 w-5" />
