@@ -172,9 +172,14 @@ export default function EventsPage() {
                 key={event.id}
                 className="bg-white rounded-2xl overflow-hidden shadow-sm border border-bembe-night/5 hover:shadow-md transition-shadow"
               >
-                {/* Color Banner */}
+                {/* Cover Image or Color Banner */}
                 <div
                   className={`h-32 bg-gradient-to-br ${gradient} relative`}
+                  style={event.cover_image_url ? {
+                    backgroundImage: `url(${event.cover_image_url})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  } : undefined}
                 >
                   <div className="absolute bottom-3 left-4">
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-medium">

@@ -455,7 +455,7 @@ export async function seed(): Promise<SeedResult> {
       max_capacity: 500,
       tickets_sold: 187,
       rsvp_url: "",
-      cover_image_url: "",
+      cover_image_url: "https://images.unsplash.com/photo-1574099698592-9df0e9f19f3a?w=800&q=80",
       is_published: true,
     },
     {
@@ -474,7 +474,7 @@ export async function seed(): Promise<SeedResult> {
       max_capacity: 300,
       tickets_sold: 92,
       rsvp_url: "",
-      cover_image_url: "",
+      cover_image_url: "https://images.unsplash.com/photo-1523689119443-df96632084a1?w=800&q=80",
       is_published: true,
     },
     {
@@ -493,7 +493,7 @@ export async function seed(): Promise<SeedResult> {
       max_capacity: 150,
       tickets_sold: 63,
       rsvp_url: "",
-      cover_image_url: "",
+      cover_image_url: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=800&q=80",
       is_published: true,
     },
     {
@@ -512,7 +512,7 @@ export async function seed(): Promise<SeedResult> {
       max_capacity: 200,
       tickets_sold: 45,
       rsvp_url: "",
-      cover_image_url: "",
+      cover_image_url: "https://images.unsplash.com/photo-1758380742154-44738eb92832?w=800&q=80",
       is_published: true,
     },
   ];

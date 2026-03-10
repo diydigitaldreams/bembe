@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { I18nProvider } from "@/lib/i18n/context";
 import CookieConsent from "@/components/cookie-consent";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://bembe.vercel.app"),
@@ -69,6 +70,7 @@ export default function RootLayout({
           <div id="main-content">{children}</div>
           <CookieConsent />
         </I18nProvider>
+        <Analytics />
       </body>
     </html>
   );

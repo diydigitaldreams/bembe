@@ -104,5 +104,39 @@ export default async function WalkDetailPage({ params }: PageProps) {
     purchased = !!purchase;
   }
 
-  return <WalkDetailClient walk={walk} purchased={purchased} />;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TouristAttraction",
+    name: walk.title,
+    description: walk.description,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: walk.neighborhood,
+      addressRegion: walk.municipality,
+      addressCountry: "PR",
+    },
+    ...(walk.cover_image_url && { image: walk.cover_image_url }),
+    ...(walk.price_cents > 0 && {
+      offers: {
+        "@type": "Offer",
+        price: (walk.price_cents / 100).toFixed(2),
+        priceCurrency: "USD",
+      },
+    }),
+    provider: {
+      "@type": "Organization",
+      name: "Bembe",
+      url: "https://bembe.vercel.app",
+    },
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <WalkDetailClient walk={walk} purchased={purchased} />
+    </>
+  );
 }
