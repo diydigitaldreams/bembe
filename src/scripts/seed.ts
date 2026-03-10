@@ -143,7 +143,7 @@ export async function seed(): Promise<SeedResult> {
       title: "Ponce: La Perla del Sur [Ejemplo]",
       description:
         "🎧 Ejemplo de caminata — Explora la arquitectura criolla y neoclásica de Ponce. Desde el Parque de Bombas hasta el Museo de Arte de Ponce, esta caminata sonora celebra la elegancia y la historia de la Ciudad Señorial.",
-      cover_image_url: "https://images.unsplash.com/photo-1564604985362-fbb6eae09796?w=800&q=80",
+      cover_image_url: "https://images.unsplash.com/photo-1553107358-5a2bc56de9bb?w=800&q=80",
       price_cents: 0,
       duration_minutes: 50,
       distance_km: 2.0,
@@ -160,7 +160,7 @@ export async function seed(): Promise<SeedResult> {
       title: "Atardecer en Rincón [Ejemplo]",
       description:
         "🎧 Ejemplo de caminata — Una experiencia inmersiva al atardecer por la costa de Rincón. Escucha las olas, los cuentos de pescadores y la música jíbara mientras caminas desde Domes Beach hasta el Faro de Punta Higüero.",
-      cover_image_url: "https://images.unsplash.com/photo-1505228395891-9a51e7e86bf6?w=800&q=80",
+      cover_image_url: "https://images.unsplash.com/photo-1762222630690-20a58212af83?w=800&q=80",
       price_cents: 300,
       duration_minutes: 35,
       distance_km: 1.5,
@@ -177,7 +177,7 @@ export async function seed(): Promise<SeedResult> {
       title: "Condado: Brisa y Cultura [Ejemplo]",
       description:
         "🎧 Ejemplo de caminata — Pasea por el Condado y descubre cómo este barrio turístico esconde joyas culturales entre sus hoteles y playas. Arte público, arquitectura art deco y la energía del San Juan moderno en una sola caminata.",
-      cover_image_url: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80",
+      cover_image_url: "https://images.unsplash.com/photo-1497581280700-ddfa2455ce62?w=800&q=80",
       price_cents: 1000,
       duration_minutes: 40,
       distance_km: 1.6,
