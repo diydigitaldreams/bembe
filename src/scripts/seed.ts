@@ -109,7 +109,7 @@ export async function seed(): Promise<SeedResult> {
       title: "Murales Vivos de Santurce [Ejemplo]",
       description:
         "🎧 Ejemplo de caminata — Recorre las calles de Santurce y descubre la vibrante escena de arte urbano. Desde los icónicos murales de la Calle Cerra hasta las galerías emergentes de la Placita, esta caminata te sumerge en la revolución artística del barrio más cool de San Juan.",
-      cover_image_url: "https://images.unsplash.com/photo-1579783928621-7a13d66a62b1?w=800&q=80",
+      cover_image_url: "https://images.unsplash.com/photo-1631791563807-d41830aa0af4?w=800&q=80",
       price_cents: 500,
       duration_minutes: 45,
       distance_km: 1.8,
@@ -126,7 +126,7 @@ export async function seed(): Promise<SeedResult> {
       title: "Ecos del Viejo San Juan [Ejemplo]",
       description:
         "🎧 Ejemplo de caminata — Camina por los adoquines azules del Viejo San Juan mientras escuchas las historias que guardan sus murallas. Desde El Morro hasta la Catedral, cada parada revela capas de historia colonial, resistencia y cultura viva.",
-      cover_image_url: "https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?w=800&q=80",
+      cover_image_url: "https://images.unsplash.com/photo-1716512717499-bf31c6b3bcea?w=800&q=80",
       price_cents: 800,
       duration_minutes: 60,
       distance_km: 2.5,
