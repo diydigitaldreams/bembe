@@ -79,7 +79,7 @@ export default function DownloadWalkButton({
         </button>
         <button
           onClick={handleRemove}
-          className="flex items-center gap-1 rounded-full px-3 py-2 text-xs text-bembe-night/50 hover:text-bembe-coral transition-colors"
+          className="flex h-11 w-11 items-center justify-center rounded-full text-xs text-bembe-night/50 hover:text-bembe-coral transition-colors"
           title={t.offline.remove}
         >
           <Trash2 className="h-3.5 w-3.5" />

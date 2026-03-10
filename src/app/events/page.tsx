@@ -210,6 +210,20 @@ export default function EventsPage() {
               </div>
             );
           })
+        ) : events.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-bembe-teal/10">
+              <Calendar className="h-8 w-8 text-bembe-teal" />
+            </div>
+            <p className="font-medium text-bembe-night/70">{t.events.no_events_title}</p>
+            <p className="text-sm mt-1 text-bembe-night/40">{t.events.no_events_subtitle}</p>
+            <Link
+              href="/artist/events/new"
+              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-bembe-teal px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-bembe-teal/90"
+            >
+              {t.events.empty_cta}
+            </Link>
+          </div>
         ) : (
           <div className="text-center py-12 text-bembe-night/40">
             <Calendar className="w-12 h-12 mx-auto mb-3 opacity-30" />

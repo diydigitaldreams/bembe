@@ -26,7 +26,7 @@ function StarRating({
   const px = size === "sm" ? "h-4 w-4" : "h-7 w-7";
 
   return (
-    <div className="flex gap-0.5">
+    <div className="flex gap-0.5" role="group" aria-label="Rating">
       {[1, 2, 3, 4, 5].map((star) => (
         <button
           key={star}
@@ -35,6 +35,7 @@ function StarRating({
           onClick={() => onChange?.(star)}
           onMouseEnter={() => !readonly && setHover(star)}
           onMouseLeave={() => !readonly && setHover(0)}
+          aria-label={`${star} star${star > 1 ? 's' : ''}`}
           className={`${readonly ? "cursor-default" : "cursor-pointer"} transition-colors`}
         >
           <Star
@@ -50,18 +51,18 @@ function StarRating({
   );
 }
 
-function timeAgo(dateStr: string, locale: string): string {
+function timeAgo(dateStr: string, reviews: { today: string; yesterday: string; days_ago: string; months_ago: string }): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const days = Math.floor(diff / 86400000);
-  if (days === 0) return locale === "es" ? "Hoy" : "Today";
-  if (days === 1) return locale === "es" ? "Ayer" : "Yesterday";
-  if (days < 30) return locale === "es" ? `Hace ${days} dias` : `${days} days ago`;
+  if (days === 0) return reviews.today;
+  if (days === 1) return reviews.yesterday;
+  if (days < 30) return `${days} ${reviews.days_ago}`;
   const months = Math.floor(days / 30);
-  return locale === "es" ? `Hace ${months} mes${months > 1 ? "es" : ""}` : `${months} month${months > 1 ? "s" : ""} ago`;
+  return `${months} ${reviews.months_ago}`;
 }
 
 export default function WalkReviews({ walkId, totalPlays }: WalkReviewsProps) {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
@@ -220,7 +221,7 @@ export default function WalkReviews({ walkId, totalPlays }: WalkReviewsProps) {
                     {review.user?.full_name || "Walker"}
                   </p>
                   <p className="text-xs text-bembe-night/40">
-                    {timeAgo(review.created_at, locale)}
+                    {timeAgo(review.created_at, t.reviews)}
                   </p>
                 </div>
                 <StarRating value={review.rating} readonly size="sm" />

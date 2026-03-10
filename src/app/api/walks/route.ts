@@ -70,9 +70,37 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  if (title.trim().length > 200) {
+    return NextResponse.json(
+      { error: "Title must be 200 characters or less" },
+      { status: 400 }
+    );
+  }
+
+  if (description && description.length > 5000) {
+    return NextResponse.json(
+      { error: "Description must be 5000 characters or less" },
+      { status: 400 }
+    );
+  }
+
   if (!neighborhood?.trim()) {
     return NextResponse.json(
       { error: "Neighborhood is required" },
+      { status: 400 }
+    );
+  }
+
+  if (duration_minutes !== undefined && duration_minutes <= 0) {
+    return NextResponse.json(
+      { error: "Duration must be greater than 0" },
+      { status: 400 }
+    );
+  }
+
+  if (distance_km !== undefined && distance_km < 0) {
+    return NextResponse.json(
+      { error: "Distance must be 0 or greater" },
       { status: 400 }
     );
   }
@@ -218,7 +246,7 @@ export async function GET(request: NextRequest) {
 
   if (search) {
     // Sanitize search input to prevent PostgREST filter injection
-    const sanitized = search.replace(/[.,%()]/g, "");
+    const sanitized = search.replace(/[^a-zA-Z0-9\s\-áéíóúñüÁÉÍÓÚÑÜ]/g, "");
     if (sanitized.trim()) {
       query = query.or(`title.ilike.%${sanitized}%,description.ilike.%${sanitized}%`);
     }

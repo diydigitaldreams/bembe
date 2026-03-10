@@ -385,6 +385,7 @@ export default function WalkPlayerClient({
       <header className="shrink-0 flex items-center gap-3 px-4 pt-[env(safe-area-inset-top,12px)] pb-3 bg-white/80 backdrop-blur-xl border-b border-bembe-night/5">
         <Link
           href={`/walk/${walkId}`}
+          aria-label="Go back"
           className="flex h-10 w-10 items-center justify-center rounded-full bg-bembe-night/5 text-bembe-night"
         >
           <ChevronLeft className="h-5 w-5" />
@@ -399,6 +400,7 @@ export default function WalkPlayerClient({
         </div>
         <button
           onClick={() => setShowMap((prev) => !prev)}
+          aria-label={showMap ? "Hide map" : "Show map"}
           className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
             showMap
               ? "bg-bembe-teal text-white"
@@ -519,13 +521,14 @@ export default function WalkPlayerClient({
         </div>
 
         <div className="flex items-center justify-between">
-          <button className="flex h-10 w-10 items-center justify-center text-bembe-night/40">
+          <button aria-label="Volume" className="flex h-10 w-10 items-center justify-center text-bembe-night/40">
             <Volume2 className="h-5 w-5" />
           </button>
 
           <div className="flex items-center gap-4">
             <button
               onClick={togglePlayPause}
+              aria-label={isPlaying ? "Pause" : "Play"}
               className="flex h-16 w-16 items-center justify-center rounded-full bg-bembe-teal text-white shadow-lg shadow-bembe-teal/30 active:scale-95 transition-transform"
             >
               {isPlaying ? (
@@ -538,6 +541,7 @@ export default function WalkPlayerClient({
             <button
               onClick={handleNextStop}
               disabled={currentStopIndex >= totalStops - 1 && elapsed < currentStop.duration_seconds}
+              aria-label="Next stop"
               className="flex h-12 w-12 items-center justify-center rounded-full bg-bembe-night/5 text-bembe-night disabled:opacity-30 transition-opacity"
             >
               <SkipForward className="h-5 w-5" />

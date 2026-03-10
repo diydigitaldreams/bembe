@@ -73,10 +73,11 @@ export default function GiftModal({
       />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-2xl p-6 max-w-md w-full shadow-xl max-h-[90dvh] overflow-y-auto">
+      <div role="dialog" aria-modal="true" className="relative bg-white rounded-2xl p-6 max-w-md w-full shadow-xl max-h-[90dvh] overflow-y-auto">
         {/* Close button */}
         <button
           onClick={onClose}
+          aria-label="Close"
           className="absolute top-4 right-4 h-8 w-8 flex items-center justify-center rounded-full hover:bg-bembe-sand/50 transition-colors"
         >
           <X className="h-5 w-5 text-bembe-night/50" />
@@ -100,10 +101,11 @@ export default function GiftModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Sender Name */}
           <div>
-            <label className="block text-sm font-medium text-bembe-night mb-1">
+            <label htmlFor="gift-sender-name" className="block text-sm font-medium text-bembe-night mb-1">
               {t.gift.your_name}
             </label>
             <input
+              id="gift-sender-name"
               type="text"
               required
               value={senderName}
@@ -115,10 +117,11 @@ export default function GiftModal({
 
           {/* Recipient Email */}
           <div>
-            <label className="block text-sm font-medium text-bembe-night mb-1">
+            <label htmlFor="gift-recipient-email" className="block text-sm font-medium text-bembe-night mb-1">
               {t.gift.to_email}
             </label>
             <input
+              id="gift-recipient-email"
               type="email"
               value={recipientEmail}
               onChange={(e) => setRecipientEmail(e.target.value)}
@@ -129,10 +132,11 @@ export default function GiftModal({
 
           {/* Message */}
           <div>
-            <label className="block text-sm font-medium text-bembe-night mb-1">
+            <label htmlFor="gift-message" className="block text-sm font-medium text-bembe-night mb-1">
               {t.gift.message_placeholder}
             </label>
             <textarea
+              id="gift-message"
               value={message}
               onChange={(e) => setMessage(e.target.value.slice(0, 300))}
               rows={3}

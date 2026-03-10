@@ -72,10 +72,11 @@ export default function TipModal({
       />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-t-2xl sm:rounded-2xl w-full max-w-md mx-auto p-6 animate-in slide-in-from-bottom duration-300">
+      <div role="dialog" aria-modal="true" className="relative bg-white rounded-t-2xl sm:rounded-2xl w-full max-w-md mx-auto p-6 animate-in slide-in-from-bottom duration-300">
         {/* Close button */}
         <button
           onClick={onClose}
+          aria-label="Close"
           className="absolute top-4 right-4 p-1 rounded-lg hover:bg-bembe-sand transition-colors"
         >
           <X className="w-5 h-5 text-bembe-night/40" />
@@ -135,6 +136,7 @@ export default function TipModal({
                 $
               </span>
               <input
+                id="tip-custom-amount"
                 type="number"
                 min="2"
                 max="500"
@@ -142,6 +144,7 @@ export default function TipModal({
                 value={customAmount}
                 onChange={(e) => setCustomAmount(e.target.value)}
                 placeholder="0.00"
+                aria-label="Custom tip amount"
                 className="w-full pl-7 pr-4 py-3 rounded-xl border border-bembe-night/10 focus:border-bembe-teal focus:ring-1 focus:ring-bembe-teal outline-none text-bembe-night"
                 autoFocus
               />
@@ -152,9 +155,11 @@ export default function TipModal({
         {/* Message field */}
         <div className="mb-6">
           <textarea
+            id="tip-message"
             value={message}
             onChange={(e) => setMessage(e.target.value.slice(0, 200))}
             placeholder={t.tips.message_placeholder}
+            aria-label="Tip message"
             rows={2}
             className="w-full px-4 py-3 rounded-xl border border-bembe-night/10 focus:border-bembe-teal focus:ring-1 focus:ring-bembe-teal outline-none text-bembe-night text-sm resize-none placeholder:text-bembe-night/30"
           />
