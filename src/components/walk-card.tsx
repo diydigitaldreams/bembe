@@ -56,11 +56,16 @@ export default function WalkCard({ walk }: WalkCardProps) {
       href={`/walk/${walk.id}`}
       className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-bembe-night/5 transition-all hover:shadow-lg hover:ring-bembe-teal/20"
     >
-      {/* Cover image placeholder */}
+      {/* Cover image */}
       <div
         role="img"
         aria-label={walk.title}
         className={`relative aspect-[4/3] bg-gradient-to-br ${getGradient(walk.id)}`}
+        style={walk.cover_image_url ? {
+          backgroundImage: `url(${walk.cover_image_url})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        } : undefined}
       >
         <div className="absolute inset-0 bg-black/10 transition-opacity group-hover:bg-black/5" />
         {/* Neighborhood tag */}
