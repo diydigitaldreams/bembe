@@ -151,6 +151,7 @@ export default function CreateWalkPage() {
   async function handlePublish() {
     setPublishing(true);
     try {
+      // 1. Create the walk first to get the walk ID
       const res = await fetch("/api/walks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -179,7 +180,29 @@ export default function CreateWalkPage() {
         return;
       }
 
-      window.location.href = `/walk/${data.walk.id}`;
+      const walkId = data.walk.id;
+
+      // 2. Upload cover image if selected, then update the walk
+      if (coverImage) {
+        const form = new FormData();
+        form.append("file", coverImage);
+        form.append("walkId", walkId);
+        form.append("filename", "cover");
+        const uploadRes = await fetch("/api/upload/image", {
+          method: "POST",
+          body: form,
+        });
+        if (uploadRes.ok) {
+          const { url } = await uploadRes.json();
+          await fetch(`/api/walks/${walkId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cover_image_url: url }),
+          });
+        }
+      }
+
+      window.location.href = `/walk/${walkId}`;
     } catch {
       setError("Failed to create walk. Please try again.");
     } finally {
