@@ -58,6 +58,8 @@ export async function POST(request: NextRequest) {
       lat: number;
       lng: number;
       duration_seconds?: number;
+      audio_url?: string;
+      image_urls?: string[];
     }[];
   };
 
@@ -111,6 +113,8 @@ export async function POST(request: NextRequest) {
       lat: s.lat ?? 18.4655,
       lng: s.lng ?? -66.1057,
       duration_seconds: s.duration_seconds ?? 0,
+      audio_url: s.audio_url ?? null,
+      image_urls: s.image_urls ?? [],
     }));
 
     const { error: stopsError } = await supabase

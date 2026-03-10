@@ -87,5 +87,22 @@ export default async function WalkDetailPage({ params }: PageProps) {
     );
   }
 
-  return <WalkDetailClient walk={walk} />;
+  // Check if the current user has already purchased this walk
+  let purchased = false;
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user && walk.price_cents > 0) {
+    const { data: purchase } = await supabase
+      .from("walk_purchases")
+      .select("id")
+      .eq("walk_id", walkId)
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    purchased = !!purchase;
+  }
+
+  return <WalkDetailClient walk={walk} purchased={purchased} />;
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ChevronLeft,
   Clock,
@@ -11,6 +12,7 @@ import {
   Play,
   User,
   Route,
+  Loader2,
 } from "lucide-react";
 import type { ArtWalk, WalkStop, Profile } from "@/types";
 import GiftButton from "@/components/gift-button";
@@ -22,10 +24,13 @@ interface WalkDetailClientProps {
     artist?: Pick<Profile, "id" | "full_name" | "avatar_url" | "bio" | "location">;
     stops?: WalkStop[];
   };
+  purchased?: boolean;
 }
 
-export default function WalkDetailClient({ walk }: WalkDetailClientProps) {
+export default function WalkDetailClient({ walk, purchased }: WalkDetailClientProps) {
   const { t } = useI18n();
+  const router = useRouter();
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   const stops = walk.stops ?? [];
   const artist = walk.artist ?? { id: "", full_name: "Unknown Artist", location: null, bio: null };
@@ -196,13 +201,45 @@ export default function WalkDetailClient({ walk }: WalkDetailClientProps) {
             walkTitle={walk.title}
             priceCents={walk.price_cents}
           />
-          <Link
-            href={`/walk/${walk.id}/play`}
-            className="flex items-center gap-2 h-14 px-8 rounded-2xl bg-bembe-teal text-white font-semibold transition-all hover:bg-bembe-teal/90 active:scale-[0.98]"
-          >
-            <Play className="h-5 w-5 fill-white" />
-            {walk.price_cents === 0 ? t.walk.start : t.walk.purchase}
-          </Link>
+          {walk.price_cents === 0 || purchased ? (
+            <Link
+              href={`/walk/${walk.id}/play`}
+              className="flex items-center gap-2 h-14 px-8 rounded-2xl bg-bembe-teal text-white font-semibold transition-all hover:bg-bembe-teal/90 active:scale-[0.98]"
+            >
+              <Play className="h-5 w-5 fill-white" />
+              {walk.price_cents === 0 ? t.walk.start : t.walk.play}
+            </Link>
+          ) : (
+            <button
+              disabled={checkoutLoading}
+              onClick={async () => {
+                setCheckoutLoading(true);
+                try {
+                  const res = await fetch(`/api/walks/${walk.id}/checkout`, {
+                    method: "POST",
+                  });
+                  const data = await res.json();
+                  if (data.url) {
+                    router.push(data.url);
+                  } else {
+                    console.error("Checkout error:", data.error);
+                    setCheckoutLoading(false);
+                  }
+                } catch (err) {
+                  console.error("Checkout error:", err);
+                  setCheckoutLoading(false);
+                }
+              }}
+              className="flex items-center gap-2 h-14 px-8 rounded-2xl bg-bembe-teal text-white font-semibold transition-all hover:bg-bembe-teal/90 active:scale-[0.98] disabled:opacity-60"
+            >
+              {checkoutLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <Play className="h-5 w-5 fill-white" />
+              )}
+              {t.walk.purchase}
+            </button>
+          )}
         </div>
       </div>
     </div>

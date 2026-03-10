@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/context";
 import { createClient } from "@/lib/supabase/client";
+import StripeConnectBanner from "@/components/stripe-connect-banner";
 import type { ArtWalk } from "@/types";
 
 export default function ArtistDashboardPage() {
@@ -23,6 +24,7 @@ export default function ArtistDashboardPage() {
   const [userName, setUserName] = useState("");
   const [walks, setWalks] = useState<ArtWalk[]>([]);
   const [revenueCents, setRevenueCents] = useState(0);
+  const [stripeAccountId, setStripeAccountId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,11 +41,12 @@ export default function ArtistDashboardPage() {
       // Fetch profile
       const { data: profile } = await supabase
         .from("profiles")
-        .select("full_name")
+        .select("full_name, stripe_account_id")
         .eq("id", user.id)
         .single();
 
       setUserName(profile?.full_name || user.email || "");
+      setStripeAccountId(profile?.stripe_account_id || null);
 
       // Fetch artist's walks (published + drafts)
       const { data: walksData } = await supabase
@@ -145,6 +148,9 @@ export default function ArtistDashboardPage() {
       </header>
 
       <main className="max-w-5xl mx-auto px-4 py-8 space-y-8">
+        {/* Stripe Connect Banner */}
+        <StripeConnectBanner stripeAccountId={stripeAccountId} />
+
         {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {stats.map((stat) => (

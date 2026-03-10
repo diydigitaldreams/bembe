@@ -100,6 +100,7 @@ export const translations = {
       reviews: "Reviews",
       start: "Start Walk",
       purchase: "Purchase Walk",
+      play: "Play",
       by: "by",
       duration: "Duration",
       distance: "Distance",
@@ -122,6 +123,8 @@ export const translations = {
       finish: "Finish Walk",
       completed_title: "Walk Complete!",
       completed_desc: "You've experienced all the stops. Thank you for supporting local artists.",
+      share: "Share Completion",
+      share_text: "I just completed \"{title}\" on Bembe! Check out this art walk in Puerto Rico.",
       leave_review: "Leave a Review",
       explore_more: "Explore More Walks",
       listening: "Now Playing",
@@ -373,6 +376,14 @@ export const translations = {
       success: "You're now subscribed!",
     },
 
+    stripe: {
+      connect_title: "Set Up Payouts",
+      connect_description:
+        "Connect your Stripe account to receive earnings from walk sales.",
+      connect_button: "Connect with Stripe",
+      connected: "Payouts active",
+    },
+
     reviews: {
       count: "reviews",
       your_review: "Your review",
@@ -493,6 +504,30 @@ export const translations = {
       mismatch: "Passwords do not match.",
     },
 
+    sponsors: {
+      page_title: "Sponsor Art Walks",
+      page_subtitle: "Put your business on the map — literally. Sponsor walks and reach culturally engaged locals and tourists.",
+      starter: "Starter",
+      growth: "Growth",
+      premium: "Premium",
+      per_month: "/month",
+      starter_price: "$49",
+      growth_price: "$149",
+      premium_price: "$399",
+      starter_desc: "Pin on 1 walk map, logo in walk credits",
+      growth_desc: "Pin on 5 walk maps, featured placement, monthly report",
+      premium_desc: "Unlimited walks, priority placement, dedicated analytics dashboard",
+      get_started: "Get Started",
+      contact_us: "Contact Us",
+      features_title: "What You Get",
+      feature_pin: "Business pin on walk maps",
+      feature_logo: "Logo in walk credits",
+      feature_report: "Monthly foot traffic report",
+      feature_analytics: "Real-time analytics dashboard",
+      feature_priority: "Priority map placement",
+      feature_unlimited: "Unlimited walk sponsorships",
+    },
+
     common: {
       loading: "Loading...",
       error: "Something went wrong",
@@ -601,6 +636,7 @@ export const translations = {
       reviews: "Resenas",
       start: "Comenzar Caminata",
       purchase: "Comprar Caminata",
+      play: "Reproducir",
       by: "por",
       duration: "Duracion",
       distance: "Distancia",
@@ -623,6 +659,8 @@ export const translations = {
       completed_title: "Caminata Completada!",
       completed_desc:
         "Has experimentado todas las paradas. Gracias por apoyar a los artistas locales.",
+      share: "Compartir Logro",
+      share_text: "Acabo de completar \"{title}\" en Bembe! Mira esta caminata de arte en Puerto Rico.",
       leave_review: "Dejar Resena",
       explore_more: "Explorar Mas Caminatas",
       listening: "Reproduciendo",
@@ -868,6 +906,14 @@ export const translations = {
       success: "Ya estas suscrito!",
     },
 
+    stripe: {
+      connect_title: "Configura tus pagos",
+      connect_description:
+        "Conecta tu cuenta de Stripe para recibir ganancias de la venta de caminatas.",
+      connect_button: "Conectar con Stripe",
+      connected: "Pagos activos",
+    },
+
     reviews: {
       count: "resenas",
       your_review: "Tu resena",
@@ -986,6 +1032,30 @@ export const translations = {
       updating: "Actualizando...",
       success: "Contrasena actualizada! Redirigiendo al inicio de sesion...",
       mismatch: "Las contrasenas no coinciden.",
+    },
+
+    sponsors: {
+      page_title: "Patrocina Caminatas de Arte",
+      page_subtitle: "Pon tu negocio en el mapa — literalmente. Patrocina caminatas y llega a locales y turistas culturalmente comprometidos.",
+      starter: "Inicial",
+      growth: "Crecimiento",
+      premium: "Premium",
+      per_month: "/mes",
+      starter_price: "$49",
+      growth_price: "$149",
+      premium_price: "$399",
+      starter_desc: "Pin en 1 mapa de caminata, logo en creditos",
+      growth_desc: "Pin en 5 mapas de caminata, ubicacion destacada, reporte mensual",
+      premium_desc: "Caminatas ilimitadas, ubicacion prioritaria, panel de analiticas dedicado",
+      get_started: "Comenzar",
+      contact_us: "Contactanos",
+      features_title: "Que Incluye",
+      feature_pin: "Pin de negocio en mapas de caminata",
+      feature_logo: "Logo en creditos de caminata",
+      feature_report: "Reporte mensual de trafico",
+      feature_analytics: "Panel de analiticas en tiempo real",
+      feature_priority: "Ubicacion prioritaria en mapa",
+      feature_unlimited: "Patrocinios de caminatas ilimitados",
     },
 
     common: {

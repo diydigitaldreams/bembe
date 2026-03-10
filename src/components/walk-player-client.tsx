@@ -40,16 +40,26 @@ function getDistanceMeters(
 
 // ---------- Component ----------
 
+interface SponsorPin {
+  id: string;
+  business_name: string;
+  logo_url: string | null;
+  lat: number;
+  lng: number;
+}
+
 interface WalkPlayerClientProps {
   walkId: string;
   walkTitle: string;
   stops: WalkStop[];
+  sponsorPins?: SponsorPin[];
 }
 
 export default function WalkPlayerClient({
   walkId,
   walkTitle,
   stops,
+  sponsorPins = [],
 }: WalkPlayerClientProps) {
   const { t } = useI18n();
   const [currentStopIndex, setCurrentStopIndex] = useState(0);
@@ -62,6 +72,7 @@ export default function WalkPlayerClient({
   const miniMapInstance = useRef<mapboxgl.Map | null>(null);
   const userMarkerRef = useRef<mapboxgl.Marker | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const geo = useGeolocation(true);
   const totalStops = stops.length;
@@ -100,8 +111,62 @@ export default function WalkPlayerClient({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [geo.lat, geo.lng, currentStopIndex, walkComplete, stops]);
 
-  // Audio timer simulation
+  const hasAudio = !!currentStop.audio_url;
+
+  // Load audio source when stop changes
   useEffect(() => {
+    if (!currentStop.audio_url) {
+      // No real audio — clean up any previous Audio element
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+        audioRef.current = null;
+      }
+      return;
+    }
+
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+    }
+    const audio = audioRef.current;
+    audio.src = currentStop.audio_url;
+    audio.load();
+
+    const onEnded = () => {
+      setIsPlaying(false);
+      setElapsed(Math.floor(audio.duration) || currentStop.duration_seconds);
+    };
+
+    const onTimeUpdate = () => {
+      setElapsed(Math.floor(audio.currentTime));
+    };
+
+    audio.addEventListener("ended", onEnded);
+    audio.addEventListener("timeupdate", onTimeUpdate);
+
+    return () => {
+      audio.removeEventListener("ended", onEnded);
+      audio.removeEventListener("timeupdate", onTimeUpdate);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentStopIndex, currentStop.audio_url]);
+
+  // Play / pause real audio
+  useEffect(() => {
+    if (!hasAudio || !audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.play().catch(() => {
+        // autoplay may be blocked
+        setIsPlaying(false);
+      });
+    } else {
+      audioRef.current.pause();
+    }
+  }, [isPlaying, hasAudio]);
+
+  // Simulated timer fallback (only when no real audio)
+  useEffect(() => {
+    if (hasAudio) return; // real audio handles its own time
     if (isPlaying) {
       timerRef.current = setInterval(() => {
         setElapsed((prev) => {
@@ -118,7 +183,7 @@ export default function WalkPlayerClient({
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isPlaying, currentStop.duration_seconds]);
+  }, [isPlaying, hasAudio, currentStop.duration_seconds]);
 
   // Mini map
   useEffect(() => {
@@ -151,6 +216,24 @@ export default function WalkPlayerClient({
 
       new mapboxgl.Marker({ element: el })
         .setLngLat([stop.lng, stop.lat])
+        .addTo(map);
+    });
+
+    // Sponsor pins (BEM-48)
+    sponsorPins.forEach((sponsor) => {
+      const el = document.createElement("div");
+      el.style.cssText = `
+        width: 32px; height: 32px; border-radius: 8px;
+        background: #D4A843; border: 2px solid white;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 14px; cursor: pointer;
+      `;
+      el.textContent = "★";
+      el.title = sponsor.business_name;
+
+      new mapboxgl.Marker({ element: el })
+        .setLngLat([sponsor.lng, sponsor.lat])
         .addTo(map);
     });
 
@@ -208,6 +291,10 @@ export default function WalkPlayerClient({
   }, [geo.lat, geo.lng]);
 
   const handleNextStop = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
     if (currentStopIndex < totalStops - 1) {
       setCurrentStopIndex((prev) => prev + 1);
       setElapsed(0);
@@ -231,6 +318,24 @@ export default function WalkPlayerClient({
 
   // Walk complete screen
   if (walkComplete) {
+    const shareData = {
+      title: walkTitle,
+      text: t.player.share_text.replace("{title}", walkTitle),
+      url: `${typeof window !== "undefined" ? window.location.origin : ""}/walk/${walkId}`,
+    };
+
+    const handleShare = async () => {
+      if (navigator.share) {
+        try {
+          await navigator.share(shareData);
+        } catch {
+          // user cancelled
+        }
+      } else {
+        await navigator.clipboard.writeText(shareData.url);
+      }
+    };
+
     return (
       <div className="min-h-dvh bg-bembe-sand flex flex-col items-center justify-center px-6 text-center">
         <div className="w-20 h-20 rounded-full bg-bembe-teal/10 flex items-center justify-center mb-6">
@@ -242,7 +347,21 @@ export default function WalkPlayerClient({
         <p className="text-bembe-night/60 mb-8 max-w-xs">
           {t.player.completed_desc}
         </p>
+
+        {/* Completion card (BEM-52) */}
+        <div className="w-full max-w-xs rounded-2xl bg-gradient-to-br from-bembe-teal to-bembe-teal/80 p-6 mb-6 text-white">
+          <p className="text-xs uppercase tracking-widest opacity-70 mb-1">Bembe</p>
+          <p className="text-lg font-bold mb-1">{walkTitle}</p>
+          <p className="text-sm opacity-70">{totalStops} {t.walk.stops} {t.player.completed_title.toLowerCase()}</p>
+        </div>
+
         <div className="flex flex-col gap-3 w-full max-w-xs">
+          <button
+            onClick={handleShare}
+            className="flex items-center justify-center h-14 rounded-2xl bg-bembe-gold text-white font-semibold"
+          >
+            {t.player.share}
+          </button>
           <Link
             href={`/walk/${walkId}`}
             className="flex items-center justify-center h-14 rounded-2xl bg-bembe-teal text-white font-semibold"
@@ -390,7 +509,12 @@ export default function WalkPlayerClient({
             stopId={currentStop.id}
             durationSeconds={currentStop.duration_seconds}
             elapsed={elapsed}
-            onSeek={(s) => setElapsed(s)}
+            onSeek={(s) => {
+              setElapsed(s);
+              if (audioRef.current) {
+                audioRef.current.currentTime = s;
+              }
+            }}
           />
         </div>
 

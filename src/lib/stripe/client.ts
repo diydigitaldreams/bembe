@@ -91,6 +91,7 @@ export async function createCheckoutSession(
             description: `Art walk experience in Puerto Rico`,
           },
           unit_amount: priceCents,
+          tax_behavior: "exclusive",
         },
         quantity: 1,
       },
@@ -101,6 +102,7 @@ export async function createCheckoutSession(
         destination: artistStripeAccountId,
       },
     },
+    automatic_tax: { enabled: true },
     allow_promotion_codes: true,
     metadata: {
       type: "walk_purchase",
@@ -192,6 +194,7 @@ export async function createSubscriptionCheckout(
         quantity: 1,
       },
     ],
+    automatic_tax: { enabled: true },
     metadata: {
       type: "subscription",
       plan,
