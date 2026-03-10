@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Gift, X } from "lucide-react";
 import { useI18n } from "@/lib/i18n/context";
+import { useFocusTrap } from "@/hooks/use-focus-trap";
 
 interface GiftModalProps {
   walkId: string;
@@ -22,6 +23,8 @@ export default function GiftModal({
   onClose,
 }: GiftModalProps) {
   const { t } = useI18n();
+  const modalRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(modalRef, true, onClose);
   const [senderName, setSenderName] = useState("");
   const [recipientEmail, setRecipientEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -73,7 +76,7 @@ export default function GiftModal({
       />
 
       {/* Modal */}
-      <div role="dialog" aria-modal="true" className="relative bg-white rounded-2xl p-6 max-w-md w-full shadow-xl max-h-[90dvh] overflow-y-auto">
+      <div ref={modalRef} role="dialog" aria-modal="true" className="relative bg-white rounded-2xl p-6 max-w-md w-full shadow-xl max-h-[90dvh] overflow-y-auto">
         {/* Close button */}
         <button
           onClick={onClose}

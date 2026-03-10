@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/context";
+import { SkeletonCard } from "@/components/skeleton";
 import type { Event } from "@/types";
 
 const GRADIENTS = [
@@ -30,14 +31,22 @@ export default function EventsPage() {
   const [filter, setFilter] = useState<string>("all");
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const PAGE_SIZE = 20;
 
   useEffect(() => {
     async function fetchEvents() {
       try {
-        const res = await fetch("/api/events?limit=50");
+        const res = await fetch(`/api/events?page=1&limit=${PAGE_SIZE}`);
         const data = await res.json();
         if (data.events && data.events.length > 0) {
           setEvents(data.events);
+        }
+        if (data.pagination) {
+          setTotalPages(data.pagination.total_pages);
+          setCurrentPage(1);
         }
       } catch {
         // API failed
@@ -47,6 +56,26 @@ export default function EventsPage() {
     }
     fetchEvents();
   }, []);
+
+  async function loadMore() {
+    const nextPage = currentPage + 1;
+    setLoadingMore(true);
+    try {
+      const res = await fetch(`/api/events?page=${nextPage}&limit=${PAGE_SIZE}`);
+      const data = await res.json();
+      if (data.events && data.events.length > 0) {
+        setEvents((prev) => [...prev, ...data.events]);
+      }
+      if (data.pagination) {
+        setTotalPages(data.pagination.total_pages);
+      }
+      setCurrentPage(nextPage);
+    } catch {
+      // Failed to load more
+    } finally {
+      setLoadingMore(false);
+    }
+  }
 
   const neighborhoods = useMemo(
     () => ["all", ...new Set(events.map((e) => e.neighborhood).filter(Boolean))],
@@ -118,8 +147,10 @@ export default function EventsPage() {
       {/* Events List */}
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-4">
         {loading ? (
-          <div className="flex justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-bembe-teal" />
+          <div className="space-y-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
           </div>
         ) : filtered.length > 0 ? (
           filtered.map((event, idx) => {
@@ -229,6 +260,24 @@ export default function EventsPage() {
             <Calendar className="w-12 h-12 mx-auto mb-3 opacity-30" />
             <p className="font-medium">{t.events.empty_title}</p>
             <p className="text-sm mt-1">{t.events.empty_subtitle}</p>
+          </div>
+        )}
+        {!loading && filtered.length > 0 && currentPage < totalPages && (
+          <div className="mt-6 flex justify-center">
+            <button
+              onClick={loadMore}
+              disabled={loadingMore}
+              className="inline-flex items-center gap-2 rounded-xl bg-bembe-teal px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-bembe-teal/90 disabled:opacity-60"
+            >
+              {loadingMore ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {t.events.loading_more}
+                </>
+              ) : (
+                t.events.load_more
+              )}
+            </button>
           </div>
         )}
       </div>

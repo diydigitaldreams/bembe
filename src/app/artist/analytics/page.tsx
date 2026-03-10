@@ -8,10 +8,10 @@ import {
   CheckCircle,
   ArrowLeft,
   MapPin,
-  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/context";
+import { SkeletonCard } from "@/components/skeleton";
 import { createClient } from "@/lib/supabase/client";
 import type { ArtWalk } from "@/types";
 
@@ -208,8 +208,23 @@ export default function ArtistAnalyticsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-bembe-sand flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-bembe-teal" />
+      <div className="min-h-screen bg-bembe-sand">
+        <header className="bg-white border-b border-bembe-night/5">
+          <div className="max-w-5xl mx-auto px-4 py-6">
+            <div className="h-8 bg-bembe-night/10 rounded w-48 animate-pulse" />
+          </div>
+        </header>
+        <main className="max-w-5xl mx-auto px-4 py-8 space-y-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </div>
+          <div className="bg-white rounded-2xl p-6 animate-pulse">
+            <div className="h-4 bg-bembe-night/10 rounded w-40 mb-6" />
+            <div className="h-48 bg-bembe-night/5 rounded" />
+          </div>
+        </main>
       </div>
     );
   }

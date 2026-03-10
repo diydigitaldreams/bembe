@@ -83,6 +83,8 @@ export const translations = {
       no_walks_subtitle: "Be the first to create an audio art walk in Puerto Rico.",
       duration: "min",
       free: "Free",
+      load_more: "Load More",
+      loading_more: "Loading...",
     },
 
     // Map page
@@ -179,6 +181,8 @@ export const translations = {
       event_publishing: "Publishing...",
       event_save_draft: "Save as Draft",
       event_success: "Event created successfully!",
+      load_more: "Load More",
+      loading_more: "Loading...",
     },
 
     // Artist profile
@@ -631,6 +635,8 @@ export const translations = {
       no_walks_subtitle: "Se el primero en crear una caminata de arte en audio en Puerto Rico.",
       duration: "min",
       free: "Gratis",
+      load_more: "Cargar Mas",
+      loading_more: "Cargando...",
     },
 
     map: {
@@ -724,6 +730,8 @@ export const translations = {
       event_publishing: "Publicando...",
       event_save_draft: "Guardar Borrador",
       event_success: "Evento creado exitosamente!",
+      load_more: "Cargar Mas",
+      loading_more: "Cargando...",
     },
 
     artist: {

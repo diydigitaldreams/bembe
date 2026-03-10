@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Star, Loader2, User } from "lucide-react";
 import { useI18n } from "@/lib/i18n/context";
 import { createClient } from "@/lib/supabase/client";
+import { SkeletonReview } from "@/components/skeleton";
 import type { Review } from "@/types";
 
 interface WalkReviewsProps {
@@ -24,15 +25,49 @@ function StarRating({
 }) {
   const [hover, setHover] = useState(0);
   const px = size === "sm" ? "h-4 w-4" : "h-7 w-7";
+  const groupRef = useRef<HTMLDivElement>(null);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLButtonElement>) => {
+      if (readonly || !onChange) return;
+
+      let newValue = value;
+      if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+        e.preventDefault();
+        newValue = Math.min(5, value + 1);
+      } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+        e.preventDefault();
+        newValue = Math.max(1, value - 1);
+      } else {
+        return;
+      }
+
+      onChange(newValue);
+
+      // Move focus to the newly selected star
+      const buttons = groupRef.current?.querySelectorAll<HTMLButtonElement>('[role="radio"]');
+      buttons?.[newValue - 1]?.focus();
+    },
+    [value, onChange, readonly]
+  );
 
   return (
-    <div className="flex gap-0.5" role="group" aria-label="Rating">
+    <div
+      ref={groupRef}
+      className="flex gap-0.5"
+      role="radiogroup"
+      aria-label="Rating"
+    >
       {[1, 2, 3, 4, 5].map((star) => (
         <button
           key={star}
           type="button"
           disabled={readonly}
+          role="radio"
+          aria-checked={star === value}
+          tabIndex={readonly ? -1 : star === value || (value === 0 && star === 1) ? 0 : -1}
           onClick={() => onChange?.(star)}
+          onKeyDown={handleKeyDown}
           onMouseEnter={() => !readonly && setHover(star)}
           onMouseLeave={() => !readonly && setHover(0)}
           aria-label={`${star} star${star > 1 ? 's' : ''}`}
@@ -200,8 +235,10 @@ export default function WalkReviews({ walkId, totalPlays }: WalkReviewsProps) {
 
       {/* Reviews list */}
       {loading ? (
-        <div className="flex justify-center py-6">
-          <Loader2 className="h-6 w-6 animate-spin text-bembe-teal" />
+        <div className="space-y-3">
+          <SkeletonReview />
+          <SkeletonReview />
+          <SkeletonReview />
         </div>
       ) : reviews.length === 0 ? (
         <div className="bg-white rounded-2xl p-6 text-center">

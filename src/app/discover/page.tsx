@@ -2,9 +2,10 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import { Search, MapPinned, X, Loader2, Headphones } from "lucide-react";
+import { Search, MapPinned, X, Headphones, Loader2 } from "lucide-react";
 import Navbar from "@/components/navbar";
 import WalkCard from "@/components/walk-card";
+import { SkeletonList } from "@/components/skeleton";
 import type { ArtWalk } from "@/types";
 import { useI18n } from "@/lib/i18n/context";
 
@@ -50,15 +51,23 @@ export default function DiscoverPage() {
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [walks, setWalks] = useState<ArtWalk[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const PAGE_SIZE = 20;
   const filterChips = getFilterChips(t);
 
   useEffect(() => {
     async function fetchWalks() {
       try {
-        const res = await fetch("/api/walks?limit=50");
+        const res = await fetch(`/api/walks?page=1&limit=${PAGE_SIZE}`);
         const data = await res.json();
         if (data.walks && data.walks.length > 0) {
           setWalks(data.walks);
+        }
+        if (data.pagination) {
+          setTotalPages(data.pagination.total_pages);
+          setCurrentPage(1);
         }
       } catch {
         // API failed — walks stays empty
@@ -68,6 +77,26 @@ export default function DiscoverPage() {
     }
     fetchWalks();
   }, []);
+
+  async function loadMore() {
+    const nextPage = currentPage + 1;
+    setLoadingMore(true);
+    try {
+      const res = await fetch(`/api/walks?page=${nextPage}&limit=${PAGE_SIZE}`);
+      const data = await res.json();
+      if (data.walks && data.walks.length > 0) {
+        setWalks((prev) => [...prev, ...data.walks]);
+      }
+      if (data.pagination) {
+        setTotalPages(data.pagination.total_pages);
+      }
+      setCurrentPage(nextPage);
+    } catch {
+      // Failed to load more
+    } finally {
+      setLoadingMore(false);
+    }
+  }
 
   function toggleFilter(key: string) {
     setActiveFilters((prev) =>
@@ -170,15 +199,33 @@ export default function DiscoverPage() {
 
         {/* Walk grid */}
         {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-bembe-teal" />
-          </div>
+          <SkeletonList count={6} />
         ) : filteredWalks.length > 0 ? (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filteredWalks.map((walk) => (
-              <WalkCard key={walk.id} walk={walk} />
-            ))}
-          </div>
+          <>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {filteredWalks.map((walk) => (
+                <WalkCard key={walk.id} walk={walk} />
+              ))}
+            </div>
+            {currentPage < totalPages && (
+              <div className="mt-10 flex justify-center">
+                <button
+                  onClick={loadMore}
+                  disabled={loadingMore}
+                  className="inline-flex items-center gap-2 rounded-xl bg-bembe-teal px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-bembe-teal/90 disabled:opacity-60"
+                >
+                  {loadingMore ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      {t.discover.loading_more}
+                    </>
+                  ) : (
+                    t.discover.load_more
+                  )}
+                </button>
+              </div>
+            )}
+          </>
         ) : walks.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-bembe-teal/10">

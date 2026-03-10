@@ -11,10 +11,10 @@ import {
   Eye,
   MoreVertical,
   BarChart3,
-  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/context";
+import { SkeletonList } from "@/components/skeleton";
 import { createClient } from "@/lib/supabase/client";
 import StripeConnectBanner from "@/components/stripe-connect-banner";
 import type { ArtWalk } from "@/types";
@@ -202,9 +202,7 @@ export default function ArtistDashboardPage() {
             {t.dashboard.my_walks}
           </h2>
           {loading ? (
-            <div className="flex justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-bembe-teal" />
-            </div>
+            <SkeletonList count={3} />
           ) : walks.length === 0 ? (
             <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
               <MapPin className="w-10 h-10 text-bembe-night/20 mx-auto mb-3" />

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useI18n } from "@/lib/i18n/context";
 import { X, Heart } from "lucide-react";
+import { useFocusTrap } from "@/hooks/use-focus-trap";
 
 interface TipModalProps {
   artistId: string;
@@ -20,6 +21,8 @@ export default function TipModal({
   onClose,
 }: TipModalProps) {
   const { t } = useI18n();
+  const modalRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(modalRef, open, onClose);
   const [selectedAmount, setSelectedAmount] = useState<number | null>(500);
   const [customAmount, setCustomAmount] = useState("");
   const [isCustom, setIsCustom] = useState(false);
@@ -72,7 +75,7 @@ export default function TipModal({
       />
 
       {/* Modal */}
-      <div role="dialog" aria-modal="true" className="relative bg-white rounded-t-2xl sm:rounded-2xl w-full max-w-md mx-auto p-6 animate-in slide-in-from-bottom duration-300">
+      <div ref={modalRef} role="dialog" aria-modal="true" className="relative bg-white rounded-t-2xl sm:rounded-2xl w-full max-w-md mx-auto p-6 animate-in slide-in-from-bottom duration-300">
         {/* Close button */}
         <button
           onClick={onClose}
