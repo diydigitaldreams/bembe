@@ -13,9 +13,18 @@ import {
   Navigation,
   Volume2,
   Locate,
+  Crosshair,
+  GripHorizontal,
 } from "lucide-react";
 import { useGeolocation } from "@/hooks/use-geolocation";
+import { useRouteProgress } from "@/hooks/use-route-progress";
 import { useI18n } from "@/lib/i18n/context";
+import {
+  fitBoundsFromStops,
+  addStopMarkers,
+  addProgressRouteLayers,
+  addRouteLayer,
+} from "@/lib/mapbox/utils";
 import WaveformComments from "@/components/waveform-comments";
 import type { WalkStop } from "@/types";
 
@@ -36,6 +45,22 @@ function getDistanceMeters(
       Math.cos((lat2 * Math.PI) / 180) *
       Math.sin(dLng / 2) ** 2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+// Snap points for the draggable map panel (fraction of viewport height)
+const SNAP_POINTS = [0, 0.4, 0.85]; // hidden, half, near-full
+
+function closestSnap(fraction: number): number {
+  let best = SNAP_POINTS[0];
+  let bestDist = Math.abs(fraction - best);
+  for (const sp of SNAP_POINTS) {
+    const d = Math.abs(fraction - sp);
+    if (d < bestDist) {
+      best = sp;
+      bestDist = d;
+    }
+  }
+  return best;
 }
 
 // ---------- Component ----------
@@ -65,18 +90,62 @@ export default function WalkPlayerClient({
   const [currentStopIndex, setCurrentStopIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [elapsed, setElapsed] = useState(0);
-  const [showMap, setShowMap] = useState(false);
   const [walkComplete, setWalkComplete] = useState(false);
+  const [followUser, setFollowUser] = useState(false);
+  const [gpsEnabled, setGpsEnabled] = useState(false);
+  const [routeGeojson, setRouteGeojson] = useState<GeoJSON.LineString | null>(null);
 
-  const miniMapRef = useRef<HTMLDivElement>(null);
-  const miniMapInstance = useRef<mapboxgl.Map | null>(null);
+  // Draggable map state — fraction of viewport height (0 = hidden)
+  const [mapFraction, setMapFraction] = useState(0);
+  const isDragging = useRef(false);
+  const dragStartY = useRef(0);
+  const dragStartFraction = useRef(0);
+
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapInstance = useRef<mapboxgl.Map | null>(null);
+  const mapInitialized = useRef(false);
   const userMarkerRef = useRef<mapboxgl.Marker | null>(null);
+  const stopMarkersRef = useRef<mapboxgl.Marker[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const geo = useGeolocation(true);
+  const geo = useGeolocation(gpsEnabled);
   const totalStops = stops.length;
   const currentStop = stops[currentStopIndex];
+  const nextStop =
+    currentStopIndex < totalStops - 1 ? stops[currentStopIndex + 1] : null;
+
+  const routeCoords = routeGeojson?.coordinates as [number, number][] | null;
+
+  const routeProgress = useRouteProgress(
+    routeCoords ?? null,
+    geo.lat,
+    geo.lng,
+    currentStop.lat,
+    currentStop.lng
+  );
+
+  // Fetch walking directions client-side from Mapbox Directions API
+  useEffect(() => {
+    if (stops.length < 2) return;
+    const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+    if (!token) return;
+
+    const coords = stops.map((s) => `${s.lng},${s.lat}`).join(";");
+    const url = `https://api.mapbox.com/directions/v5/mapbox/walking/${coords}?geometries=geojson&overview=full&access_token=${token}`;
+
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => {
+        const geom = data.routes?.[0]?.geometry;
+        if (geom?.type === "LineString") {
+          setRouteGeojson(geom);
+        }
+      })
+      .catch(() => {
+        // Fallback: straight lines (handled by addRouteLayer when routeGeojson is null)
+      });
+  }, [stops]);
 
   // Auto-advance when user enters trigger radius
   useEffect(() => {
@@ -97,18 +166,13 @@ export default function WalkPlayerClient({
     }
 
     if (currentStopIndex < totalStops - 1) {
-      const nextStop = stops[currentStopIndex + 1];
-      const distToNext = getDistanceMeters(
-        geo.lat,
-        geo.lng,
-        nextStop.lat,
-        nextStop.lng
-      );
-      if (distToNext <= nextStop.trigger_radius_meters) {
+      const ns = stops[currentStopIndex + 1];
+      const distToNext = getDistanceMeters(geo.lat, geo.lng, ns.lat, ns.lng);
+      if (distToNext <= ns.trigger_radius_meters) {
         handleNextStop();
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [geo.lat, geo.lng, currentStopIndex, walkComplete, stops]);
 
   const hasAudio = !!currentStop.audio_url;
@@ -116,7 +180,6 @@ export default function WalkPlayerClient({
   // Load audio source when stop changes
   useEffect(() => {
     if (!currentStop.audio_url) {
-      // No real audio — clean up any previous Audio element
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.src = "";
@@ -148,7 +211,7 @@ export default function WalkPlayerClient({
       audio.removeEventListener("ended", onEnded);
       audio.removeEventListener("timeupdate", onTimeUpdate);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentStopIndex, currentStop.audio_url]);
 
   // Play / pause real audio
@@ -156,7 +219,6 @@ export default function WalkPlayerClient({
     if (!hasAudio || !audioRef.current) return;
     if (isPlaying) {
       audioRef.current.play().catch(() => {
-        // autoplay may be blocked
         setIsPlaying(false);
       });
     } else {
@@ -166,7 +228,7 @@ export default function WalkPlayerClient({
 
   // Simulated timer fallback (only when no real audio)
   useEffect(() => {
-    if (hasAudio) return; // real audio handles its own time
+    if (hasAudio) return;
     if (isPlaying) {
       timerRef.current = setInterval(() => {
         setElapsed((prev) => {
@@ -185,9 +247,9 @@ export default function WalkPlayerClient({
     };
   }, [isPlaying, hasAudio, currentStop.duration_seconds]);
 
-  // Mini map
+  // Init map once on mount
   useEffect(() => {
-    if (!showMap || !miniMapRef.current || miniMapInstance.current) return;
+    if (mapInitialized.current || !mapContainerRef.current) return;
 
     const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
     if (!token) return;
@@ -195,7 +257,7 @@ export default function WalkPlayerClient({
     mapboxgl.accessToken = token;
 
     const map = new mapboxgl.Map({
-      container: miniMapRef.current,
+      container: mapContainerRef.current,
       style: "mapbox://styles/mapbox/light-v11",
       center: [currentStop.lng, currentStop.lat],
       zoom: 15,
@@ -203,23 +265,13 @@ export default function WalkPlayerClient({
       attributionControl: false,
     });
 
-    stops.forEach((stop, i) => {
-      const el = document.createElement("div");
-      el.style.cssText = `
-        width: 28px; height: 28px; border-radius: 50%;
-        background: ${i === currentStopIndex ? "#1A7A6D" : "#D4A843"};
-        border: 2px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.3);
-        display: flex; align-items: center; justify-content: center;
-        color: white; font-size: 12px; font-weight: bold;
-      `;
-      el.textContent = String(i + 1);
-
-      new mapboxgl.Marker({ element: el })
-        .setLngLat([stop.lng, stop.lat])
-        .addTo(map);
+    map.on("load", () => {
+      addRouteLayer(map, stops, routeGeojson);
+      fitBoundsFromStops(map, stops);
     });
 
-    // Sponsor pins (BEM-48)
+    stopMarkersRef.current = addStopMarkers(map, stops, currentStopIndex);
+
     sponsorPins.forEach((sponsor) => {
       const el = document.createElement("div");
       el.style.cssText = `
@@ -229,7 +281,7 @@ export default function WalkPlayerClient({
         display: flex; align-items: center; justify-content: center;
         font-size: 14px; cursor: pointer;
       `;
-      el.textContent = "★";
+      el.textContent = "\u2605";
       el.title = sponsor.business_name;
 
       new mapboxgl.Marker({ element: el })
@@ -237,43 +289,75 @@ export default function WalkPlayerClient({
         .addTo(map);
     });
 
-    map.on("load", () => {
-      map.addSource("route", {
-        type: "geojson",
-        data: {
-          type: "Feature",
-          properties: {},
-          geometry: {
-            type: "LineString",
-            coordinates: stops.map((s) => [s.lng, s.lat]),
-          },
-        },
-      });
-      map.addLayer({
-        id: "route",
-        type: "line",
-        source: "route",
-        layout: { "line-join": "round", "line-cap": "round" },
-        paint: {
-          "line-color": "#1A7A6D",
-          "line-width": 3,
-          "line-opacity": 0.6,
-          "line-dasharray": [2, 2],
-        },
-      });
-    });
+    map.on("dragstart", () => setFollowUser(false));
 
-    miniMapInstance.current = map;
+    mapInstance.current = map;
+    mapInitialized.current = true;
 
     return () => {
       map.remove();
-      miniMapInstance.current = null;
+      mapInstance.current = null;
+      mapInitialized.current = false;
     };
-  }, [showMap]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // Update user marker on mini map
+  // Update route layer when Directions API resolves
   useEffect(() => {
-    if (!miniMapInstance.current || !geo.lat || !geo.lng) return;
+    const map = mapInstance.current;
+    if (!map || !map.isStyleLoaded()) return;
+    addRouteLayer(map, stops, routeGeojson);
+  }, [routeGeojson, stops]);
+
+  // Resize map when panel height changes
+  useEffect(() => {
+    if (mapFraction > 0 && mapInstance.current) {
+      requestAnimationFrame(() => {
+        mapInstance.current?.resize();
+        if (!isDragging.current) {
+          fitBoundsFromStops(mapInstance.current!, stops, { animate: true });
+        }
+      });
+    }
+  }, [mapFraction, stops]);
+
+  // Update stop markers when currentStopIndex changes
+  useEffect(() => {
+    const map = mapInstance.current;
+    if (!map) return;
+    stopMarkersRef.current.forEach((m) => m.remove());
+    stopMarkersRef.current = addStopMarkers(map, stops, currentStopIndex);
+  }, [currentStopIndex, stops]);
+
+  // Update progress route layers
+  useEffect(() => {
+    const map = mapInstance.current;
+    if (!map || !map.isStyleLoaded()) return;
+    if (routeProgress.completedCoords.length === 0 && routeProgress.remainingCoords.length === 0) return;
+
+    // Remove single route layer when progress takes over
+    if (map.getLayer("route")) {
+      map.removeLayer("route");
+      map.removeSource("route");
+    }
+
+    const toLineString = (coords: [number, number][]): GeoJSON.LineString | null =>
+      coords.length >= 2 ? { type: "LineString", coordinates: coords } : null;
+
+    addProgressRouteLayers(
+      map,
+      toLineString(routeProgress.completedCoords),
+      toLineString(routeProgress.remainingCoords)
+    );
+  }, [routeProgress.completedCoords, routeProgress.remainingCoords]);
+
+  // Update user marker
+  useEffect(() => {
+    if (!mapInstance.current || !geo.lat || !geo.lng) return;
+
+    const pos: [number, number] = routeProgress.snappedPosition
+      ? routeProgress.snappedPosition
+      : [geo.lng, geo.lat];
 
     if (!userMarkerRef.current) {
       const el = document.createElement("div");
@@ -283,12 +367,74 @@ export default function WalkPlayerClient({
         box-shadow: 0 0 0 3px rgba(232,93,74,0.3), 0 1px 4px rgba(0,0,0,0.3);
       `;
       userMarkerRef.current = new mapboxgl.Marker({ element: el })
-        .setLngLat([geo.lng, geo.lat])
-        .addTo(miniMapInstance.current);
+        .setLngLat(pos)
+        .addTo(mapInstance.current);
     } else {
-      userMarkerRef.current.setLngLat([geo.lng, geo.lat]);
+      userMarkerRef.current.setLngLat(pos);
     }
-  }, [geo.lat, geo.lng]);
+
+    if (followUser) {
+      mapInstance.current.easeTo({
+        center: pos,
+        zoom: 17,
+        duration: 500,
+      });
+    }
+  }, [geo.lat, geo.lng, routeProgress.snappedPosition, followUser]);
+
+  // ---------- Drag handlers for map panel ----------
+  const handleDragStart = useCallback(
+    (clientY: number) => {
+      isDragging.current = true;
+      dragStartY.current = clientY;
+      dragStartFraction.current = mapFraction;
+    },
+    [mapFraction]
+  );
+
+  const handleDragMove = useCallback((clientY: number) => {
+    if (!isDragging.current) return;
+    const vh = window.innerHeight;
+    const delta = dragStartY.current - clientY; // positive = drag up = bigger map
+    const newFraction = Math.max(
+      0,
+      Math.min(0.85, dragStartFraction.current + delta / vh)
+    );
+    setMapFraction(newFraction);
+  }, []);
+
+  const handleDragEnd = useCallback(() => {
+    if (!isDragging.current) return;
+    isDragging.current = false;
+    setMapFraction((prev) => closestSnap(prev));
+  }, []);
+
+  // Touch events
+  const onTouchStart = useCallback(
+    (e: React.TouchEvent) => handleDragStart(e.touches[0].clientY),
+    [handleDragStart]
+  );
+  const onTouchMove = useCallback(
+    (e: React.TouchEvent) => handleDragMove(e.touches[0].clientY),
+    [handleDragMove]
+  );
+  const onTouchEnd = useCallback(() => handleDragEnd(), [handleDragEnd]);
+
+  // Mouse events (for desktop testing)
+  const onMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      handleDragStart(e.clientY);
+      const onMove = (ev: MouseEvent) => handleDragMove(ev.clientY);
+      const onUp = () => {
+        handleDragEnd();
+        window.removeEventListener("mousemove", onMove);
+        window.removeEventListener("mouseup", onUp);
+      };
+      window.addEventListener("mousemove", onMove);
+      window.addEventListener("mouseup", onUp);
+    },
+    [handleDragStart, handleDragMove, handleDragEnd]
+  );
 
   const handleNextStop = useCallback(() => {
     if (audioRef.current) {
@@ -301,20 +447,53 @@ export default function WalkPlayerClient({
       setIsPlaying(false);
 
       const next = stops[currentStopIndex + 1];
-      miniMapInstance.current?.flyTo({
+      mapInstance.current?.flyTo({
         center: [next.lng, next.lat],
-        zoom: 15,
+        zoom: 16,
         duration: 800,
       });
     } else {
       setWalkComplete(true);
       setIsPlaying(false);
     }
-  }, [currentStopIndex, totalStops]);
+  }, [currentStopIndex, totalStops, stops]);
 
   const togglePlayPause = useCallback(() => {
     setIsPlaying((prev) => !prev);
   }, []);
+
+  // Tap the map button to toggle between 0 and 0.4
+  const toggleMap = useCallback(() => {
+    setMapFraction((prev) => (prev > 0 ? 0 : 0.4));
+  }, []);
+
+  // Computed values
+  const distToCurrentStop =
+    routeProgress.distanceToNextStop > 0
+      ? routeProgress.distanceToNextStop
+      : geo.lat && geo.lng
+        ? Math.round(
+            getDistanceMeters(geo.lat, geo.lng, currentStop.lat, currentStop.lng)
+          )
+        : null;
+
+  const etaMinutes =
+    routeProgress.etaToNextStop > 0
+      ? Math.ceil(routeProgress.etaToNextStop / 60)
+      : null;
+
+  const isNearby =
+    geo.lat && geo.lng
+      ? getDistanceMeters(geo.lat, geo.lng, currentStop.lat, currentStop.lng) <=
+        currentStop.trigger_radius_meters
+      : false;
+
+  const isApproaching =
+    geo.lat && geo.lng && !isNearby
+      ? getDistanceMeters(geo.lat, geo.lng, currentStop.lat, currentStop.lng) <= 100
+      : false;
+
+  const mapIsVisible = mapFraction > 0.02;
 
   // Walk complete screen
   if (walkComplete) {
@@ -348,11 +527,12 @@ export default function WalkPlayerClient({
           {t.player.completed_desc}
         </p>
 
-        {/* Completion card (BEM-52) */}
         <div className="w-full max-w-xs rounded-2xl bg-gradient-to-br from-bembe-teal to-bembe-teal/80 p-6 mb-6 text-white">
           <p className="text-xs uppercase tracking-widest opacity-70 mb-1">Bembe</p>
           <p className="text-lg font-bold mb-1">{walkTitle}</p>
-          <p className="text-sm opacity-70">{totalStops} {t.walk.stops} {t.player.completed_title.toLowerCase()}</p>
+          <p className="text-sm opacity-70">
+            {totalStops} {t.walk.stops} {t.player.completed_title.toLowerCase()}
+          </p>
         </div>
 
         <div className="flex flex-col gap-3 w-full max-w-xs">
@@ -399,10 +579,10 @@ export default function WalkPlayerClient({
           </p>
         </div>
         <button
-          onClick={() => setShowMap((prev) => !prev)}
-          aria-label={showMap ? "Hide map" : "Show map"}
+          onClick={toggleMap}
+          aria-label={mapIsVisible ? t.player.map_full : t.player.map_hidden}
           className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
-            showMap
+            mapIsVisible
               ? "bg-bembe-teal text-white"
               : "bg-bembe-night/5 text-bembe-night"
           }`}
@@ -413,25 +593,98 @@ export default function WalkPlayerClient({
 
       {/* Main content area */}
       <div className="flex-1 overflow-y-auto">
-        {/* Mini map (collapsible) */}
-        {showMap && (
-          <div className="relative h-48 bg-bembe-night/5">
-            <div ref={miniMapRef} className="h-full w-full" />
-            {!process.env.NEXT_PUBLIC_MAPBOX_TOKEN && (
-              <div className="absolute inset-0 flex items-center justify-center bg-bembe-night/5">
-                <p className="text-xs text-bembe-night/40">
-                  Set NEXT_PUBLIC_MAPBOX_TOKEN to enable map
+        {/* Map panel — draggable via handle */}
+        <div
+          className="relative bg-bembe-night/5 overflow-hidden"
+          style={{
+            height: `${mapFraction * 100}vh`,
+            transition: isDragging.current ? "none" : "height 0.3s ease-out",
+          }}
+        >
+          <div ref={mapContainerRef} className="h-full w-full" />
+          {!process.env.NEXT_PUBLIC_MAPBOX_TOKEN && mapIsVisible && (
+            <div className="absolute inset-0 flex items-center justify-center bg-bembe-night/5">
+              <p className="text-xs text-bembe-night/40">
+                Set NEXT_PUBLIC_MAPBOX_TOKEN to enable map
+              </p>
+            </div>
+          )}
+          {mapIsVisible && (
+            <>
+              {geo.isTracking && (
+                <div className="absolute bottom-8 left-2 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-sm shadow text-xs">
+                  <Locate className="h-3 w-3 text-bembe-coral" />
+                  <span className="text-bembe-night/70">
+                    {geo.accuracy
+                      ? `${Math.round(geo.accuracy)}${t.player.distance_unit} ${t.player.accuracy}`
+                      : t.player.locating}
+                  </span>
+                </div>
+              )}
+              <button
+                onClick={() => setFollowUser(true)}
+                className={`absolute bottom-8 right-2 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full shadow text-xs font-medium transition-colors ${
+                  followUser
+                    ? "bg-bembe-teal text-white"
+                    : "bg-white/90 backdrop-blur-sm text-bembe-night/70"
+                }`}
+              >
+                <Crosshair className="h-3.5 w-3.5" />
+                {t.player.follow_me}
+              </button>
+            </>
+          )}
+
+          {/* Drag handle */}
+          <div
+            className="absolute bottom-0 left-0 right-0 flex justify-center py-1.5 cursor-row-resize touch-none bg-gradient-to-t from-bembe-sand/80 to-transparent"
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+            onMouseDown={onMouseDown}
+          >
+            <GripHorizontal className="h-5 w-5 text-bembe-night/30" />
+          </div>
+        </div>
+
+        {/* GPS permission prompt — shown until user opts in */}
+        {!gpsEnabled && (
+          <div className="mx-5 mt-4 p-4 rounded-2xl bg-white shadow-sm border border-bembe-night/5">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-bembe-teal/10">
+                <Locate className="h-5 w-5 text-bembe-teal" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-bembe-night mb-1">
+                  {t.player.start_walking}
                 </p>
+                <p className="text-xs text-bembe-night/50 mb-3">
+                  {t.player.start_walking_desc}
+                </p>
+                <button
+                  onClick={() => {
+                    setGpsEnabled(true);
+                    setFollowUser(true);
+                    if (mapFraction === 0) setMapFraction(0.4);
+                  }}
+                  className="px-4 py-2 rounded-xl bg-bembe-teal text-white text-sm font-medium active:scale-[0.97] transition-transform"
+                >
+                  {t.player.start_walking}
+                </button>
               </div>
-            )}
-            {geo.isTracking && (
-              <div className="absolute bottom-2 left-2 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-sm shadow text-xs">
-                <Locate className="h-3 w-3 text-bembe-coral" />
-                <span className="text-bembe-night/70">
-                  {geo.accuracy ? `${Math.round(geo.accuracy)}${t.player.distance_unit} ${t.player.accuracy}` : t.player.locating}
-                </span>
-              </div>
-            )}
+            </div>
+          </div>
+        )}
+
+        {/* Proximity notifications */}
+        {isNearby && (
+          <div className="mx-5 mt-3 px-3 py-2 rounded-xl bg-bembe-teal/10 text-bembe-teal text-xs font-medium text-center">
+            {t.player.youre_here}
+          </div>
+        )}
+        {isApproaching && !isNearby && (
+          <div className="mx-5 mt-3 px-3 py-2 rounded-xl bg-bembe-gold/10 text-bembe-gold text-xs font-medium text-center">
+            {t.player.arriving}
           </div>
         )}
 
@@ -446,14 +699,15 @@ export default function WalkPlayerClient({
                     i < currentStopIndex
                       ? "w-6 bg-bembe-teal"
                       : i === currentStopIndex
-                      ? "w-8 bg-bembe-teal"
-                      : "w-4 bg-bembe-night/10"
+                        ? "w-8 bg-bembe-teal"
+                        : "w-4 bg-bembe-night/10"
                   }`}
                 />
               ))}
             </div>
             <span className="ml-auto text-xs text-bembe-night/50 font-medium">
-              {t.player.stop_label} {currentStopIndex + 1} {t.player.stop_of} {totalStops}
+              {t.player.stop_label} {currentStopIndex + 1} {t.player.stop_of}{" "}
+              {totalStops}
             </span>
           </div>
         </div>
@@ -479,20 +733,35 @@ export default function WalkPlayerClient({
             {currentStop.description}
           </p>
 
-          {geo.lat && geo.lng && (
-            <div className="mt-4 flex items-center gap-2 text-xs text-bembe-night/50">
-              <Navigation className="h-3.5 w-3.5" />
-              <span>
-                {Math.round(
-                  getDistanceMeters(
-                    geo.lat,
-                    geo.lng,
-                    currentStop.lat,
-                    currentStop.lng
-                  )
-                )}
-                {t.player.distance_unit} {t.player.distance_away}
-              </span>
+          {/* Distance & ETA */}
+          {distToCurrentStop != null && gpsEnabled && (
+            <div className="mt-4 flex items-center gap-3 text-xs text-bembe-night/50">
+              <div className="flex items-center gap-1.5">
+                <Navigation className="h-3.5 w-3.5" />
+                <span>
+                  {distToCurrentStop}
+                  {t.player.distance_unit}{" "}
+                  {routeProgress.distanceToNextStop > 0
+                    ? t.player.route_distance
+                    : t.player.distance_away}
+                </span>
+              </div>
+              {etaMinutes != null && (
+                <span className="text-bembe-teal font-medium">
+                  {t.player.eta_prefix}
+                  {etaMinutes} {t.player.eta_min}
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Route progress bar */}
+          {routeProgress.progress > 0 && (
+            <div className="mt-3 h-1.5 rounded-full bg-bembe-night/5 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-bembe-teal transition-all duration-700"
+                style={{ width: `${Math.round(routeProgress.progress * 100)}%` }}
+              />
             </div>
           )}
 
@@ -521,7 +790,10 @@ export default function WalkPlayerClient({
         </div>
 
         <div className="flex items-center justify-between">
-          <button aria-label="Volume" className="flex h-10 w-10 items-center justify-center text-bembe-night/40">
+          <button
+            aria-label="Volume"
+            className="flex h-10 w-10 items-center justify-center text-bembe-night/40"
+          >
             <Volume2 className="h-5 w-5" />
           </button>
 
@@ -540,7 +812,10 @@ export default function WalkPlayerClient({
 
             <button
               onClick={handleNextStop}
-              disabled={currentStopIndex >= totalStops - 1 && elapsed < currentStop.duration_seconds}
+              disabled={
+                currentStopIndex >= totalStops - 1 &&
+                elapsed < currentStop.duration_seconds
+              }
               aria-label="Next stop"
               className="flex h-12 w-12 items-center justify-center rounded-full bg-bembe-night/5 text-bembe-night disabled:opacity-30 transition-opacity"
             >
@@ -551,13 +826,13 @@ export default function WalkPlayerClient({
           <div className="w-10" />
         </div>
 
-        {currentStopIndex < totalStops - 1 && (
+        {nextStop && (
           <div className="mt-3 flex items-center gap-2 px-3 py-2 rounded-xl bg-bembe-night/[0.03]">
             <div className="flex h-6 w-6 items-center justify-center rounded-full bg-bembe-gold/20 text-bembe-gold text-xs font-bold shrink-0">
               {currentStopIndex + 2}
             </div>
             <p className="text-xs text-bembe-night/50 truncate">
-              {t.player.next_prefix}: {stops[currentStopIndex + 1].title}
+              {t.player.next_prefix}: {nextStop.title}
             </p>
           </div>
         )}

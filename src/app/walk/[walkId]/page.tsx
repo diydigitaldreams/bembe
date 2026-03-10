@@ -104,6 +104,20 @@ export default async function WalkDetailPage({ params }: PageProps) {
     purchased = !!purchase;
   }
 
+  // Build static map preview URL
+  const stops = (walk.stops ?? []) as { lat: number; lng: number }[];
+  let staticMapUrl: string | null = null;
+  const mapToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+
+  if (mapToken && stops.length >= 2) {
+    const pins = stops
+      .map((s, i) => `pin-s-${i + 1}+1A7A6D(${s.lng},${s.lat})`)
+      .join(",");
+    const pathCoords = stops.map((s) => `${s.lng} ${s.lat}`).join(",");
+    const path = `path-3+1A7A6D-0.6(${pathCoords})`;
+    staticMapUrl = `https://api.mapbox.com/styles/v1/mapbox/light-v11/static/${pins},${path}/auto/600x400@2x?padding=40&access_token=${mapToken}`;
+  }
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "TouristAttraction",
@@ -136,7 +150,11 @@ export default async function WalkDetailPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <WalkDetailClient walk={walk} purchased={purchased} />
+      <WalkDetailClient
+        walk={walk}
+        purchased={purchased}
+        staticMapUrl={staticMapUrl}
+      />
     </>
   );
 }

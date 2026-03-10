@@ -8,7 +8,6 @@ import {
   Clock,
   Navigation,
   Star,
-  MapPin,
   Play,
   User,
   Route,
@@ -25,9 +24,10 @@ interface WalkDetailClientProps {
     stops?: WalkStop[];
   };
   purchased?: boolean;
+  staticMapUrl?: string | null;
 }
 
-export default function WalkDetailClient({ walk, purchased }: WalkDetailClientProps) {
+export default function WalkDetailClient({ walk, purchased, staticMapUrl = null }: WalkDetailClientProps) {
   const { t } = useI18n();
   const router = useRouter();
   const [checkoutLoading, setCheckoutLoading] = useState(false);
@@ -146,6 +146,24 @@ export default function WalkDetailClient({ walk, purchased }: WalkDetailClientPr
             {walk.description}
           </p>
         </div>
+
+        {/* Route preview — static Mapbox image, zero JS */}
+        {staticMapUrl && (
+          <div className="mb-8">
+            <h2 className="text-lg font-bold text-bembe-night mb-2">
+              {t.walk.route_preview}
+            </h2>
+            <div className="rounded-2xl overflow-hidden bg-bembe-night/5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={staticMapUrl}
+                alt={`${t.walk.route_preview} — ${walk.title}`}
+                className="w-full h-[200px] object-cover"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        )}
 
         {/* Stops */}
         <div className="mb-8">

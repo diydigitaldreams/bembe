@@ -117,6 +117,8 @@ export const translations = {
       free: "Free",
       people_taken: "people have taken this walk.",
       not_found: "Walk not found",
+      route_preview: "Route Preview",
+      open_map: "View Full Map",
     },
 
     // Walk player
@@ -141,6 +143,17 @@ export const translations = {
       accuracy: "accuracy",
       locating: "Locating...",
       next_prefix: "Next",
+      eta_prefix: "~",
+      eta_min: "min walk",
+      arriving: "Next stop ahead",
+      youre_here: "You're here!",
+      route_distance: "along route",
+      follow_me: "Follow me",
+      map_hidden: "Show map",
+      map_half: "Expand map",
+      map_full: "Hide map",
+      start_walking: "Start walking",
+      start_walking_desc: "Enable GPS to get turn-by-turn guidance and auto-play audio at each stop.",
     },
 
     // Events
@@ -667,6 +680,8 @@ export const translations = {
       free: "Gratis",
       people_taken: "personas han tomado esta caminata.",
       not_found: "Caminata no encontrada",
+      route_preview: "Vista de Ruta",
+      open_map: "Ver Mapa Completo",
     },
 
     player: {
@@ -691,6 +706,17 @@ export const translations = {
       accuracy: "precision",
       locating: "Localizando...",
       next_prefix: "Siguiente",
+      eta_prefix: "~",
+      eta_min: "min caminando",
+      arriving: "Siguiente parada cerca",
+      youre_here: "Llegaste!",
+      route_distance: "por la ruta",
+      follow_me: "Seguirme",
+      map_hidden: "Ver mapa",
+      map_half: "Expandir mapa",
+      map_full: "Ocultar mapa",
+      start_walking: "Comenzar a caminar",
+      start_walking_desc: "Activa el GPS para recibir guia paso a paso y reproducir audio automaticamente en cada parada.",
     },
 
     events: {
