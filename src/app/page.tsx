@@ -12,8 +12,6 @@ import type { ArtWalk } from "@/types";
 export default function Home() {
   const { t } = useI18n();
   const [featuredWalks, setFeaturedWalks] = useState<ArtWalk[]>([]);
-  const [artistCount, setArtistCount] = useState<number | null>(null);
-  const [walkCount, setWalkCount] = useState<number | null>(null);
 
   useEffect(() => {
     async function fetchFeatured() {
@@ -27,21 +25,7 @@ export default function Home() {
         // API unavailable
       }
     }
-    async function fetchCounts() {
-      try {
-        const res = await fetch("/api/walks?limit=1000");
-        const data = await res.json();
-        if (data.walks) {
-          setWalkCount(data.walks.length);
-          const uniqueArtists = new Set(data.walks.map((w: ArtWalk) => w.artist_id));
-          setArtistCount(uniqueArtists.size);
-        }
-      } catch {
-        // API unavailable — leave counts as null
-      }
-    }
     fetchFeatured();
-    fetchCounts();
   }, []);
 
   const steps = [
@@ -105,21 +89,24 @@ export default function Home() {
         <div className="mx-auto grid max-w-4xl grid-cols-3 divide-x divide-bembe-night/5 px-4 py-10 sm:py-14">
           {[
             {
-              value: artistCount !== null ? String(artistCount) : t.landing.stats_artists_growing,
               label: t.landing.stats_artists,
+              sub: t.landing.stats_artists_sub,
             },
             {
-              value: walkCount !== null ? String(walkCount) : t.landing.stats_walks_new,
               label: t.landing.stats_walks,
+              sub: t.landing.stats_walks_sub,
             },
-            { value: "13", label: t.landing.stats_neighborhoods },
+            {
+              label: "12 " + t.landing.stats_neighborhoods,
+              sub: t.landing.stats_neighborhoods_sub,
+            },
           ].map((stat) => (
             <div key={stat.label} className="flex flex-col items-center gap-1">
-              <span className="text-2xl font-extrabold text-bembe-teal sm:text-3xl md:text-4xl">
-                {stat.value}
-              </span>
-              <span className="text-xs font-medium tracking-wide text-bembe-night/50 uppercase sm:text-sm">
+              <span className="text-lg font-bold text-bembe-teal sm:text-xl">
                 {stat.label}
+              </span>
+              <span className="text-xs font-medium text-bembe-night/40 sm:text-sm">
+                {stat.sub}
               </span>
             </div>
           ))}
@@ -127,38 +114,58 @@ export default function Home() {
       </section>
 
       {/* Featured Walks */}
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
-        <div className="mb-10 flex items-end justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-bembe-night sm:text-3xl">
-              {t.landing.featured_title}
-            </h2>
+      {featuredWalks.length > 0 ? (
+        <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+          <div className="mb-10 flex items-end justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-bembe-night sm:text-3xl">
+                {t.landing.featured_title}
+              </h2>
+            </div>
+            <Link
+              href="/discover"
+              className="hidden items-center gap-1 text-sm font-semibold text-bembe-teal transition-colors hover:text-bembe-teal/80 sm:inline-flex"
+            >
+              {t.landing.featured_view_all}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
-          <Link
-            href="/discover"
-            className="hidden items-center gap-1 text-sm font-semibold text-bembe-teal transition-colors hover:text-bembe-teal/80 sm:inline-flex"
-          >
-            {t.landing.featured_view_all}
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {featuredWalks.map((walk) => (
-            <WalkCard key={walk.id} walk={walk} />
-          ))}
-        </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {featuredWalks.map((walk) => (
+              <WalkCard key={walk.id} walk={walk} />
+            ))}
+          </div>
 
-        <div className="mt-8 text-center sm:hidden">
-          <Link
-            href="/discover"
-            className="inline-flex items-center gap-1 text-sm font-semibold text-bembe-teal"
-          >
-            {t.landing.featured_view_all}
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-      </section>
+          <div className="mt-8 text-center sm:hidden">
+            <Link
+              href="/discover"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-bembe-teal"
+            >
+              {t.landing.featured_view_all}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </section>
+      ) : (
+        <section className="py-16 px-6">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-bold text-bembe-night sm:text-4xl">
+              {t.landing.featured_empty_title}
+            </h2>
+            <p className="mt-4 text-bembe-night/50">
+              {t.landing.featured_empty_desc}
+            </p>
+            <Link
+              href="/signup?role=artist"
+              className="mt-8 inline-flex items-center gap-2 rounded-full bg-bembe-teal px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-bembe-teal/25 transition-all hover:bg-bembe-teal/90"
+            >
+              {t.landing.featured_empty_cta}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* How It Works */}
       <section className="bg-white/60">

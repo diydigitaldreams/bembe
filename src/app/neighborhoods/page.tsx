@@ -10,7 +10,6 @@ interface Neighborhood {
   name: string;
   municipality: string;
   gradient: string;
-  walks: number;
   descEn: string;
   descEs: string;
   vibeEn: string;
@@ -25,7 +24,6 @@ const NEIGHBORHOODS: Neighborhood[] = [
     name: "Santurce",
     municipality: "San Juan",
     gradient: "from-bembe-coral to-orange-400",
-    walks: 12,
     descEn:
       "Once a neglected urban zone, Santurce is now Puerto Rico's creative heartbeat. Every wall is a canvas — massive murals by local and international artists line Calle Cerra and Calle Loiza. The neighborhood pulses with galleries, studios, La Placita's legendary nightlife, and a food scene that ranges from street-side alcapurrias to chef-driven restaurants.",
     descEs:
@@ -40,7 +38,6 @@ const NEIGHBORHOODS: Neighborhood[] = [
     name: "Viejo San Juan",
     municipality: "San Juan",
     gradient: "from-bembe-teal to-emerald-400",
-    walks: 8,
     descEn:
       "Five centuries of history live in these blue cobblestone streets. Founded in 1521, Old San Juan is one of the oldest European-established settlements in the Americas. Walk past El Morro and San Cristobal fortresses, through pastel-colored colonial buildings, hidden plazas, and churches that have watched empires rise and fall. Every adoquin has a story.",
     descEs:
@@ -55,7 +52,6 @@ const NEIGHBORHOODS: Neighborhood[] = [
     name: "Condado",
     municipality: "San Juan",
     gradient: "from-purple-500 to-bembe-coral",
-    walks: 5,
     descEn:
       "San Juan's beachside strip where Art Deco meets Caribbean cool. Condado is the island's luxury corridor — boutique hotels, upscale restaurants, and designer shops line Ashford Avenue. But look past the glossy surface and you'll find hidden murals in alleys, local art in hotel lobbies, and a fascinating architectural story from the 1950s tourism boom.",
     descEs:
@@ -70,7 +66,6 @@ const NEIGHBORHOODS: Neighborhood[] = [
     name: "Ponce Centro",
     municipality: "Ponce",
     gradient: "from-bembe-gold to-yellow-400",
-    walks: 6,
     descEn:
       "The Pearl of the South. Ponce is Puerto Rico's second city and its cultural rival to San Juan. The historic center is a masterclass in architecture — neoclassical, Art Deco, and Creole styles stand side by side around Plaza Las Delicias. Home to the Museo de Arte de Ponce (one of the Caribbean's best), the iconic Parque de Bombas firehouse, and a fiercely proud local identity.",
     descEs:
@@ -85,7 +80,6 @@ const NEIGHBORHOODS: Neighborhood[] = [
     name: "Loiza",
     municipality: "Loiza",
     gradient: "from-red-500 to-bembe-coral",
-    walks: 4,
     descEn:
       "The heart of Afro-Caribbean culture in Puerto Rico. Loiza is where bomba and plena were born — the rhythms that define Puerto Rican music. This coastal town preserves traditions brought by enslaved Africans centuries ago. The Festival de Santiago Apostol (vejigante masks, bomba dancing) is one of the most authentic cultural celebrations on the island. The food — especially the coconut-based dishes — is unmatched.",
     descEs:
@@ -100,7 +94,6 @@ const NEIGHBORHOODS: Neighborhood[] = [
     name: "Rincon",
     municipality: "Rincon",
     gradient: "from-blue-400 to-bembe-teal",
-    walks: 4,
     descEn:
       "Puerto Rico's surf capital and sunset paradise. Rincon sits on the island's western tip where the Caribbean meets the Atlantic. World-class surf breaks, whale watching in winter, and a laid-back community of artists, surfers, and expats. The sunsets here are legendary — locals literally stop what they're doing to watch. The art scene is organic and growing, with galleries in converted beach houses.",
     descEs:
@@ -115,7 +108,6 @@ const NEIGHBORHOODS: Neighborhood[] = [
     name: "Caguas",
     municipality: "Caguas",
     gradient: "from-emerald-500 to-bembe-teal",
-    walks: 3,
     descEn:
       "The Heart of the Valley — Caguas is the cultural center of Puerto Rico's mountainous interior. Known for its botanical garden, the Criollo Art Museum, and a thriving public art program that has turned the downtown into an open-air gallery. The surrounding mountains offer a completely different Puerto Rico from the coast — cooler, greener, with coffee fincas and haciendas dating back centuries.",
     descEs:
@@ -130,7 +122,6 @@ const NEIGHBORHOODS: Neighborhood[] = [
     name: "Rio Piedras",
     municipality: "San Juan",
     gradient: "from-amber-500 to-bembe-gold",
-    walks: 3,
     descEn:
       "The university district and Puerto Rico's intellectual center. Home to the University of Puerto Rico's main campus, Rio Piedras has the energy of a college town — bookstores, debate cafes, protest art, and one of the most authentic public markets on the island (Plaza del Mercado). The botanical garden within the UPR campus is a hidden jewel of tropical flora.",
     descEs:
@@ -145,7 +136,6 @@ const NEIGHBORHOODS: Neighborhood[] = [
     name: "Ocean Park",
     municipality: "San Juan",
     gradient: "from-sky-400 to-blue-500",
-    walks: 2,
     descEn:
       "San Juan's best-kept secret beach neighborhood. Tucked between Condado and Isla Verde, Ocean Park has the most beautiful urban beach in Puerto Rico — wide, uncrowded, with kite surfers and locals playing volleyball at sunset. The residential streets are lined with mid-century homes, local cafes, and a growing community of artists and young professionals who chose this pocket of calm over the tourist strips.",
     descEs:
@@ -160,7 +150,6 @@ const NEIGHBORHOODS: Neighborhood[] = [
     name: "Mayaguez",
     municipality: "Mayaguez",
     gradient: "from-lime-500 to-emerald-500",
-    walks: 2,
     descEn:
       "The Sultan of the West. Mayaguez is a university city (home to UPR Mayaguez, the island's top engineering school) on the western coast with a rich cultural heritage. The tropical agricultural research station is one of the oldest in the Western Hemisphere. The city's Plaza Colon features a massive Columbus statue, and the surrounding streets hold centuries of mercantile history, from the sugarcane era to the pharmaceutical boom.",
     descEs:
@@ -175,7 +164,6 @@ const NEIGHBORHOODS: Neighborhood[] = [
     name: "Vieques",
     municipality: "Vieques",
     gradient: "from-cyan-400 to-blue-500",
-    walks: 2,
     descEn:
       "An island off the island — Vieques is Puerto Rico's most magical escape. Home to Mosquito Bay, one of the brightest bioluminescent bays in the world, and wild horses that roam freely through pristine beaches. The former US Navy bombing range is now a wildlife refuge with some of the most untouched coastline in the Caribbean. Art here is survival — the community's resilience after decades of military occupation is visible everywhere.",
     descEs:
@@ -190,7 +178,6 @@ const NEIGHBORHOODS: Neighborhood[] = [
     name: "Cabo Rojo",
     municipality: "Cabo Rojo",
     gradient: "from-rose-400 to-red-500",
-    walks: 2,
     descEn:
       "Puerto Rico's southwestern corner where the salt flats paint the landscape pink. The Cabo Rojo Salt Flats are a natural wonder — the water turns bright pink from microorganisms, creating an otherworldly landscape. Los Morrillos Lighthouse stands on dramatic cliffs overlooking the Caribbean. The area is also famous for its fishing villages and some of the freshest seafood on the island.",
     descEs:
@@ -203,7 +190,7 @@ const NEIGHBORHOODS: Neighborhood[] = [
 ];
 
 export default function NeighborhoodsPage() {
-  const { locale } = useI18n();
+  const { locale, t } = useI18n();
   const es = locale === "es";
 
   return (
@@ -276,7 +263,7 @@ export default function NeighborhoodsPage() {
                     <div className="flex items-center gap-4">
                       <span className="inline-flex items-center gap-1.5 text-sm text-bembe-night/50">
                         <Headphones className="w-4 h-4" />
-                        {hood.walks} {es ? "caminatas" : "walks"}
+                        {t.neighborhoods.coming_soon}
                       </span>
                       <Link
                         href={`/discover?neighborhood=${encodeURIComponent(hood.name)}`}

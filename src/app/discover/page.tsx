@@ -193,9 +193,11 @@ export default function DiscoverPage() {
         </div>
 
         {/* Results count */}
-        <p className="mb-6 text-sm text-bembe-night/40">
-          {filteredWalks.length} {t.discover.walks_found}
-        </p>
+        {filteredWalks.length > 0 && (
+          <p className="mb-6 text-sm text-bembe-night/40">
+            {filteredWalks.length} {t.discover.walks_found}
+          </p>
+        )}
 
         {/* Walk grid */}
         {loading ? (
@@ -231,18 +233,26 @@ export default function DiscoverPage() {
             <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-bembe-teal/10">
               <Headphones className="h-8 w-8 text-bembe-teal" />
             </div>
-            <h3 className="text-lg font-semibold text-bembe-night/70">
+            <h3 className="text-2xl font-bold text-bembe-night">
               {t.discover.no_walks_title}
             </h3>
-            <p className="mt-1 max-w-sm text-sm text-bembe-night/40">
+            <p className="mt-2 max-w-md text-bembe-night/50">
               {t.discover.no_walks_subtitle}
             </p>
-            <Link
-              href="/for-artists"
-              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-bembe-teal px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-bembe-teal/90"
-            >
-              {t.discover.empty_cta}
-            </Link>
+            <div className="mt-8 flex gap-4">
+              <Link
+                href="/neighborhoods"
+                className="inline-flex items-center gap-2 rounded-xl bg-bembe-teal px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-bembe-teal/90"
+              >
+                {t.discover.no_walks_cta_explore}
+              </Link>
+              <Link
+                href="/signup?role=artist"
+                className="inline-flex items-center gap-2 rounded-xl border-2 border-bembe-teal px-6 py-3 text-sm font-semibold text-bembe-teal transition-colors hover:bg-bembe-teal/5"
+              >
+                {t.discover.no_walks_cta_create}
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-20 text-center">

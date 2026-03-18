@@ -8,6 +8,21 @@ import { ChevronLeft, MapPin, Clock, Navigation, Star, DollarSign, X } from "luc
 import { useI18n } from "@/lib/i18n/context";
 import type { ArtWalk } from "@/types";
 
+const NEIGHBORHOOD_PINS = [
+  { name: "Santurce", lat: 18.4468, lng: -66.0614 },
+  { name: "Viejo San Juan", lat: 18.4663, lng: -66.1169 },
+  { name: "Condado", lat: 18.4570, lng: -66.0710 },
+  { name: "Ponce Centro", lat: 18.0111, lng: -66.6141 },
+  { name: "Loíza", lat: 18.4313, lng: -65.8801 },
+  { name: "Rincón", lat: 18.3401, lng: -67.2501 },
+  { name: "Caguas", lat: 18.2388, lng: -66.0352 },
+  { name: "Río Piedras", lat: 18.3994, lng: -66.0498 },
+  { name: "Ocean Park", lat: 18.4530, lng: -66.0650 },
+  { name: "Mayagüez", lat: 18.2013, lng: -67.1397 },
+  { name: "Vieques", lat: 18.1263, lng: -65.4401 },
+  { name: "Cabo Rojo", lat: 18.0866, lng: -67.1457 },
+];
+
 export default function MapPage() {
   const { t } = useI18n();
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -90,85 +105,141 @@ export default function MapPage() {
     };
   }, []);
 
-  // Place markers from fetched walks using artist lat/lng
+  // Place markers from fetched walks using artist lat/lng, or neighborhood pins if no walks
   useEffect(() => {
-    if (!mapLoaded || !mapRef.current || walks.length === 0) return;
+    if (!mapLoaded || !mapRef.current) return;
 
     // Clear old markers
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
-    walks.forEach((walk) => {
-      // Use artist coordinates, then first stop, then skip
-      let lat = walk.artist?.lat;
-      let lng = walk.artist?.lng;
-      if (!lat || !lng) {
-        const firstStop = walk.stops?.[0];
-        if (firstStop) {
-          lat = firstStop.lat;
-          lng = firstStop.lng;
+    if (walks.length > 0) {
+      walks.forEach((walk) => {
+        // Use artist coordinates, then first stop, then skip
+        let lat = walk.artist?.lat;
+        let lng = walk.artist?.lng;
+        if (!lat || !lng) {
+          const firstStop = walk.stops?.[0];
+          if (firstStop) {
+            lat = firstStop.lat;
+            lng = firstStop.lng;
+          }
         }
-      }
-      if (!lat || !lng) return;
+        if (!lat || !lng) return;
 
-      const coords: [number, number] = [lng, lat];
+        const coords: [number, number] = [lng, lat];
 
-      // Custom marker element
-      const el = document.createElement("div");
-      el.className = "bembe-marker";
-      el.style.cssText = `
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: #1A7A6D;
-        border: 3px solid white;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: transform 0.2s ease;
-      `;
-      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      svg.setAttribute("width", "18");
-      svg.setAttribute("height", "18");
-      svg.setAttribute("viewBox", "0 0 24 24");
-      svg.setAttribute("fill", "none");
-      svg.setAttribute("stroke", "white");
-      svg.setAttribute("stroke-width", "2");
-      svg.setAttribute("stroke-linecap", "round");
-      svg.setAttribute("stroke-linejoin", "round");
-      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      path.setAttribute("d", "M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z");
-      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-      circle.setAttribute("cx", "12");
-      circle.setAttribute("cy", "10");
-      circle.setAttribute("r", "3");
-      svg.appendChild(path);
-      svg.appendChild(circle);
-      el.appendChild(svg);
-      el.addEventListener("mouseenter", () => {
-        el.style.transform = "scale(1.2)";
-      });
-      el.addEventListener("mouseleave", () => {
-        el.style.transform = "scale(1)";
-      });
-
-      const marker = new mapboxgl.Marker({ element: el })
-        .setLngLat(coords)
-        .addTo(mapRef.current!);
-
-      el.addEventListener("click", () => {
-        handleMarkerClick(walk);
-        mapRef.current?.flyTo({
-          center: coords,
-          zoom: 13,
-          duration: 1000,
+        // Custom marker element
+        const el = document.createElement("div");
+        el.className = "bembe-marker";
+        el.style.cssText = `
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: #1A7A6D;
+          border: 3px solid white;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: transform 0.2s ease;
+        `;
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("width", "18");
+        svg.setAttribute("height", "18");
+        svg.setAttribute("viewBox", "0 0 24 24");
+        svg.setAttribute("fill", "none");
+        svg.setAttribute("stroke", "white");
+        svg.setAttribute("stroke-width", "2");
+        svg.setAttribute("stroke-linecap", "round");
+        svg.setAttribute("stroke-linejoin", "round");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", "M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z");
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", "12");
+        circle.setAttribute("cy", "10");
+        circle.setAttribute("r", "3");
+        svg.appendChild(path);
+        svg.appendChild(circle);
+        el.appendChild(svg);
+        el.addEventListener("mouseenter", () => {
+          el.style.transform = "scale(1.2)";
         });
-      });
+        el.addEventListener("mouseleave", () => {
+          el.style.transform = "scale(1)";
+        });
 
-      markersRef.current.push(marker);
-    });
+        const marker = new mapboxgl.Marker({ element: el })
+          .setLngLat(coords)
+          .addTo(mapRef.current!);
+
+        el.addEventListener("click", () => {
+          handleMarkerClick(walk);
+          mapRef.current?.flyTo({
+            center: coords,
+            zoom: 13,
+            duration: 1000,
+          });
+        });
+
+        markersRef.current.push(marker);
+      });
+    } else {
+      // No walks — show neighborhood pins as fallback
+      NEIGHBORHOOD_PINS.forEach((pin) => {
+        const coords: [number, number] = [pin.lng, pin.lat];
+
+        const el = document.createElement("div");
+        el.style.cssText = `
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          background: #D4A843;
+          border: 3px solid white;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: transform 0.2s ease;
+        `;
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("width", "16");
+        svg.setAttribute("height", "16");
+        svg.setAttribute("viewBox", "0 0 24 24");
+        svg.setAttribute("fill", "none");
+        svg.setAttribute("stroke", "white");
+        svg.setAttribute("stroke-width", "2");
+        svg.setAttribute("stroke-linecap", "round");
+        svg.setAttribute("stroke-linejoin", "round");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", "M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z");
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", "12");
+        circle.setAttribute("cy", "10");
+        circle.setAttribute("r", "3");
+        svg.appendChild(path);
+        svg.appendChild(circle);
+        el.appendChild(svg);
+        el.addEventListener("mouseenter", () => {
+          el.style.transform = "scale(1.2)";
+        });
+        el.addEventListener("mouseleave", () => {
+          el.style.transform = "scale(1)";
+        });
+
+        const marker = new mapboxgl.Marker({ element: el })
+          .setLngLat(coords)
+          .addTo(mapRef.current!);
+
+        el.addEventListener("click", () => {
+          window.location.href = `/discover?neighborhood=${encodeURIComponent(pin.name)}`;
+        });
+
+        markersRef.current.push(marker);
+      });
+    }
   }, [mapLoaded, walks, handleMarkerClick]);
 
   return (

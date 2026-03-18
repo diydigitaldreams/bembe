@@ -15,7 +15,9 @@ import {
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/context";
 import { SkeletonCard } from "@/components/skeleton";
+import { createClient } from "@/lib/supabase/client";
 import type { Event } from "@/types";
+import type { User } from "@supabase/supabase-js";
 
 const GRADIENTS = [
   "from-bembe-coral to-orange-400",
@@ -34,7 +36,14 @@ export default function EventsPage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [user, setUser] = useState<User | null>(null);
   const PAGE_SIZE = 20;
+
+  useEffect(() => {
+    createClient().auth.getUser().then(({ data }) => {
+      setUser(data.user);
+    });
+  }, []);
 
   useEffect(() => {
     async function fetchEvents() {
@@ -106,13 +115,15 @@ export default function EventsPage() {
               <ChevronLeft className="w-5 h-5" />
             </Link>
             <h1 className="text-xl font-bold">{t.events.title}</h1>
-            <Link
-              href="/artist/events/new"
-              className="ml-auto flex items-center gap-1.5 px-4 py-2 bg-bembe-teal text-white rounded-xl text-sm font-medium hover:bg-bembe-teal/90 transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">{t.events.create_event}</span>
-            </Link>
+            {user && (
+              <Link
+                href="/artist/events/new"
+                className="ml-auto flex items-center gap-1.5 px-4 py-2 bg-bembe-teal text-white rounded-xl text-sm font-medium hover:bg-bembe-teal/90 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                <span className="hidden sm:inline">{t.events.create_event}</span>
+              </Link>
+            )}
           </div>
 
           <div className="relative mb-3">

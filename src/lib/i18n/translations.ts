@@ -25,11 +25,18 @@ export const translations = {
       cta_artist: "I'm an Artist",
       stats_artists: "Artists",
       stats_artists_growing: "Growing",
+      stats_artists_sub: "Join as a creator",
       stats_walks: "Walks",
       stats_walks_new: "New",
+      stats_walks_sub: "Coming soon",
       stats_neighborhoods: "Neighborhoods",
+      stats_neighborhoods_sub: "Coast to coast",
       featured_title: "Featured Walks",
       featured_view_all: "View all",
+      featured_empty_title: "Be the first artist",
+      featured_empty_desc:
+        "Bembe is looking for artists from Puerto Rico to create the first audio walks. You know your neighborhood better than anyone.",
+      featured_empty_cta: "Start Creating",
       how_title: "How It Works",
       how_step1_title: "Browse Walks",
       how_step1_desc:
@@ -79,8 +86,11 @@ export const translations = {
       empty_title: "No walks found",
       empty_subtitle: "Try different filters or search terms",
       empty_cta: "Create a Walk",
-      no_walks_title: "No walks yet",
-      no_walks_subtitle: "Be the first to create an audio art walk in Puerto Rico.",
+      no_walks_title: "First walks arriving soon",
+      no_walks_subtitle:
+        "Local artists are creating immersive audio experiences across the island. Be among the first to discover them.",
+      no_walks_cta_explore: "Explore Neighborhoods",
+      no_walks_cta_create: "Create a Walk",
       duration: "min",
       free: "Free",
       load_more: "Load More",
@@ -555,6 +565,25 @@ export const translations = {
       feature_unlimited: "Unlimited walk sponsorships",
     },
 
+    neighborhoods: {
+      coming_soon: "Coming soon",
+    },
+
+    about: {
+      title: "About Bembe",
+      intro:
+        "Bembe turns Puerto Rico into a living art museum. Local artists create immersive audio walks — GPS-guided experiences that transform streets, plazas, and neighborhoods into open-air galleries.",
+      tagline: "You walk. You listen. You discover the island through the voices of those who live it.",
+      for_artists_title: "For Artists",
+      for_artists_desc:
+        "Create audio walks, reach new audiences, and earn 88% of every sale. No middlemen. No algorithms. Your art, your neighborhood, your voice.",
+      for_patrons_title: "For Patrons",
+      for_patrons_desc:
+        "Discover Puerto Rico like never before — every walk is a unique experience created by someone who knows every corner, every story, every sound.",
+      contact_title: "Contact",
+      back_home: "Back to home",
+    },
+
     common: {
       loading: "Loading...",
       error: "Something went wrong",
@@ -591,11 +620,18 @@ export const translations = {
       cta_artist: "Soy Artista",
       stats_artists: "Artistas",
       stats_artists_growing: "Creciendo",
+      stats_artists_sub: "Únete como creador",
       stats_walks: "Caminatas",
       stats_walks_new: "Nuevas",
+      stats_walks_sub: "Próximamente",
       stats_neighborhoods: "Barrios",
+      stats_neighborhoods_sub: "De costa a costa",
       featured_title: "Caminatas Destacadas",
       featured_view_all: "Ver todas",
+      featured_empty_title: "Sé el primer artista",
+      featured_empty_desc:
+        "Bembe está buscando artistas de Puerto Rico para crear las primeras caminatas de audio. Tú conoces tu barrio mejor que nadie.",
+      featured_empty_cta: "Comenzar a Crear",
       how_title: "Como Funciona",
       how_step1_title: "Explora Caminatas",
       how_step1_desc:
@@ -644,8 +680,11 @@ export const translations = {
       empty_title: "No se encontraron caminatas",
       empty_subtitle: "Intenta con otros filtros o terminos de busqueda",
       empty_cta: "Crear una Caminata",
-      no_walks_title: "No hay caminatas aun",
-      no_walks_subtitle: "Se el primero en crear una caminata de arte en audio en Puerto Rico.",
+      no_walks_title: "Las primeras caminatas llegan pronto",
+      no_walks_subtitle:
+        "Artistas locales están creando experiencias inmersivas de audio por toda la isla. Sé de los primeros en descubrirlas.",
+      no_walks_cta_explore: "Explorar Barrios",
+      no_walks_cta_create: "Crear una Caminata",
       duration: "min",
       free: "Gratis",
       load_more: "Cargar Mas",
@@ -1110,6 +1149,25 @@ export const translations = {
       feature_analytics: "Panel de analiticas en tiempo real",
       feature_priority: "Ubicacion prioritaria en mapa",
       feature_unlimited: "Patrocinios de caminatas ilimitados",
+    },
+
+    neighborhoods: {
+      coming_soon: "Próximamente",
+    },
+
+    about: {
+      title: "Sobre Bembe",
+      intro:
+        "Bembe convierte a Puerto Rico en un museo de arte viviente. Artistas locales crean caminatas inmersivas de audio — experiencias guiadas por GPS que transforman calles, plazas y barrios en galerías al aire libre.",
+      tagline: "Caminas. Escuchas. Descubres la isla a través de las voces de quienes la viven.",
+      for_artists_title: "Para Artistas",
+      for_artists_desc:
+        "Crea caminatas de audio, alcanza nuevas audiencias, y gana el 88% de cada venta. Sin intermediarios. Sin algoritmos. Tu arte, tu barrio, tu voz.",
+      for_patrons_title: "Para Patrones",
+      for_patrons_desc:
+        "Descubre Puerto Rico como nunca antes — cada caminata es una experiencia única creada por alguien que conoce cada esquina, cada historia, cada sonido.",
+      contact_title: "Contacto",
+      back_home: "Volver al inicio",
     },
 
     common: {
