@@ -12,7 +12,6 @@ interface SubscribeButtonProps {
 
 export function SubscribeButton({
   artistId,
-  artistName,
   isSubscribed = false,
 }: SubscribeButtonProps) {
   const { t } = useI18n();
@@ -38,7 +37,8 @@ export function SubscribeButton({
       if (data.url) {
         window.location.href = data.url;
       }
-    } catch {
+    } catch (err) {
+      console.error("Subscription checkout failed:", err);
       setLoading(false);
     }
   }

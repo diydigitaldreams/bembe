@@ -57,7 +57,8 @@ export default function DownloadWalkButton({
       }
 
       setStatus("downloaded");
-    } catch {
+    } catch (err) {
+      console.error("Walk download failed:", err);
       setStatus("idle");
     }
   }

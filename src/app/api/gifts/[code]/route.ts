@@ -35,7 +35,11 @@ export async function GET(
     return NextResponse.json({ error: "Gift not found" }, { status: 404 });
   }
 
-  const walk = gift.walk as unknown as { title: string; neighborhood: string } | null;
+  const walkData = gift.walk as unknown as
+    | { title: string; neighborhood: string }
+    | { title: string; neighborhood: string }[]
+    | null;
+  const walk = Array.isArray(walkData) ? walkData[0] ?? null : walkData;
 
   return NextResponse.json({
     walk_title: walk?.title || "Art Walk",

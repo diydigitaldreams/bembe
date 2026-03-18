@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import { APP_URL } from "@/lib/constants";
 
 function getStripe() {
   if (!process.env.STRIPE_SECRET_KEY) {
@@ -77,7 +78,7 @@ export async function createCheckoutSession(
   artistStripeAccountId: string,
   couponCode?: string
 ): Promise<Stripe.Checkout.Session> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const appUrl = APP_URL;
   const platformFee = Math.round(priceCents * (PLATFORM_FEE_PERCENT / 100));
 
   const sessionParams: Stripe.Checkout.SessionCreateParams = {
@@ -173,7 +174,7 @@ export async function createSubscriptionCheckout(
   plan: "artist_pro" | "patron_premium",
   customerId: string
 ): Promise<Stripe.Checkout.Session> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const appUrl = APP_URL;
 
   const priceIds: Record<string, string> = {
     artist_pro: process.env.STRIPE_PRICE_ARTIST_PRO!,

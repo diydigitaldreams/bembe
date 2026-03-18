@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe/client";
 import { createClient } from "@/lib/supabase/server";
+import { APP_URL } from "@/lib/constants";
 
 const SUBSCRIPTION_PRICE_CENTS = 500; // $5/month
 const APPLICATION_FEE_PERCENT = 12;
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const appUrl = APP_URL;
 
     // Create a Stripe Price for the $5/month subscription dynamically
     const price = await stripe.prices.create({

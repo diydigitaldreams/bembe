@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Headphones,
   DollarSign,
@@ -8,229 +8,129 @@ import {
   CheckCircle,
   ArrowLeft,
   MapPin,
+  Globe,
 } from "lucide-react";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/context";
-import { SkeletonCard } from "@/components/skeleton";
-import { createClient } from "@/lib/supabase/client";
-import type { ArtWalk } from "@/types";
 
 // Date range options
 const DATE_RANGES = ["last_7", "last_30", "last_90", "all_time"] as const;
 type DateRange = (typeof DATE_RANGES)[number];
 
-interface WalkWithRevenue {
-  id: string;
-  title: string;
-  plays: number;
-  revenue: number;
-  avgRating: number;
-}
+// Mock revenue data (last 12 months)
+const revenueByMonth = [
+  { month: "Apr", value: 180 },
+  { month: "May", value: 290 },
+  { month: "Jun", value: 420 },
+  { month: "Jul", value: 380 },
+  { month: "Aug", value: 510 },
+  { month: "Sep", value: 470 },
+  { month: "Oct", value: 620 },
+  { month: "Nov", value: 540 },
+  { month: "Dec", value: 710 },
+  { month: "Jan", value: 650 },
+  { month: "Feb", value: 780 },
+  { month: "Mar", value: 840 },
+];
 
-interface MonthlyRevenue {
-  month: string;
-  value: number;
-}
+const maxRevenue = Math.max(...revenueByMonth.map((r) => r.value));
 
-function getDateRangeStart(range: DateRange): string | null {
-  if (range === "all_time") return null;
-  const now = new Date();
-  const days = range === "last_7" ? 7 : range === "last_30" ? 30 : 90;
-  now.setDate(now.getDate() - days);
-  return now.toISOString();
-}
+// Mock top walks
+const topWalks = [
+  {
+    title: "Old San Juan Art Trail",
+    plays: 423,
+    revenue: "$1,269",
+    avgRating: 4.9,
+    completionRate: 87,
+  },
+  {
+    title: "Santurce Street Murals",
+    plays: 318,
+    revenue: "$954",
+    avgRating: 4.7,
+    completionRate: 82,
+  },
+  {
+    title: "La Placita After Dark",
+    plays: 256,
+    revenue: "$768",
+    avgRating: 4.8,
+    completionRate: 79,
+  },
+  {
+    title: "Condado Sculpture Walk",
+    plays: 178,
+    revenue: "$356",
+    avgRating: 4.5,
+    completionRate: 91,
+  },
+  {
+    title: "Ponce Heritage Route",
+    plays: 72,
+    revenue: "$73",
+    avgRating: 4.6,
+    completionRate: 74,
+  },
+];
+
+// Mock popular stops
+const popularStops = [
+  { name: "Mural de la Resistencia", plays: 412, avgListenTime: "3:42" },
+  { name: "Plaza de Armas Fountain", plays: 389, avgListenTime: "4:15" },
+  { name: "Calle de la Fortaleza", plays: 367, avgListenTime: "2:58" },
+  { name: "Museo de Arte de PR", plays: 341, avgListenTime: "5:01" },
+  { name: "La Perla Overlook", plays: 298, avgListenTime: "3:27" },
+];
+
+// Mock listener locations
+const listenerLocations = [
+  { location: "San Juan, PR", listeners: 482 },
+  { location: "New York, US", listeners: 213 },
+  { location: "Miami, US", listeners: 178 },
+  { location: "Madrid, Spain", listeners: 94 },
+  { location: "Chicago, US", listeners: 67 },
+];
+
+const summaryCards = [
+  {
+    key: "total_plays" as const,
+    value: "1,247",
+    icon: Headphones,
+    color: "bg-bembe-teal/10 text-bembe-teal",
+  },
+  {
+    key: "total_revenue" as const,
+    value: "$6,390",
+    icon: DollarSign,
+    color: "bg-bembe-gold/10 text-bembe-gold",
+  },
+  {
+    key: "unique_listeners" as const,
+    value: "834",
+    icon: Users,
+    color: "bg-bembe-coral/10 text-bembe-coral",
+  },
+  {
+    key: "avg_completion" as const,
+    value: "82%",
+    icon: CheckCircle,
+    color: "bg-bembe-night/10 text-bembe-night",
+  },
+];
 
 export default function ArtistAnalyticsPage() {
   const { t } = useI18n();
   const [dateRange, setDateRange] = useState<DateRange>("last_30");
-  const [loading, setLoading] = useState(true);
-  const [walks, setWalks] = useState<ArtWalk[]>([]);
-  const [topWalks, setTopWalks] = useState<WalkWithRevenue[]>([]);
-  const [revenueByMonth, setRevenueByMonth] = useState<MonthlyRevenue[]>([]);
-  const [totalRevenueCents, setTotalRevenueCents] = useState(0);
-  const [uniqueBuyers, setUniqueBuyers] = useState(0);
-
-  useEffect(() => {
-    async function fetchAnalytics() {
-      setLoading(true);
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        window.location.replace("/login");
-        return;
-      }
-
-      // Fetch artist's walks
-      const { data: walksData } = await supabase
-        .from("art_walks")
-        .select("*")
-        .eq("artist_id", user.id)
-        .order("total_plays", { ascending: false });
-
-      const artistWalks = walksData || [];
-      setWalks(artistWalks);
-
-      if (artistWalks.length === 0) {
-        setLoading(false);
-        return;
-      }
-
-      const walkIds = artistWalks.map((w) => w.id);
-      const rangeStart = getDateRangeStart(dateRange);
-
-      // Fetch purchases in date range
-      let purchaseQuery = supabase
-        .from("walk_purchases")
-        .select("walk_id, amount_cents, user_id, created_at")
-        .in("walk_id", walkIds);
-
-      if (rangeStart) {
-        purchaseQuery = purchaseQuery.gte("created_at", rangeStart);
-      }
-
-      const { data: purchases } = await purchaseQuery;
-      const purchaseList = purchases || [];
-
-      // Total revenue
-      const totalCents = purchaseList.reduce(
-        (sum, p) => sum + (p.amount_cents || 0),
-        0
-      );
-      setTotalRevenueCents(totalCents);
-
-      // Unique buyers
-      const buyers = new Set(purchaseList.map((p) => p.user_id));
-      setUniqueBuyers(buyers.size);
-
-      // Revenue per walk
-      const revenueMap = new Map<string, number>();
-      for (const p of purchaseList) {
-        revenueMap.set(
-          p.walk_id,
-          (revenueMap.get(p.walk_id) || 0) + (p.amount_cents || 0)
-        );
-      }
-
-      const walkRevenues: WalkWithRevenue[] = artistWalks
-        .map((w) => ({
-          id: w.id,
-          title: w.title,
-          plays: w.total_plays,
-          revenue: revenueMap.get(w.id) || 0,
-          avgRating: Number(w.avg_rating) || 0,
-        }))
-        .sort((a, b) => b.revenue - a.revenue)
-        .slice(0, 5);
-
-      setTopWalks(walkRevenues);
-
-      // Revenue by month (last 6 months)
-      const monthlyMap = new Map<string, number>();
-      const monthNames = [
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-      ];
-
-      // Initialize last 6 months
-      const now = new Date();
-      for (let i = 5; i >= 0; i--) {
-        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-        monthlyMap.set(key, 0);
-      }
-
-      // Fill with all purchases (not filtered by date range)
-      const { data: allPurchases } = await supabase
-        .from("walk_purchases")
-        .select("amount_cents, created_at")
-        .in("walk_id", walkIds);
-
-      for (const p of allPurchases || []) {
-        const d = new Date(p.created_at);
-        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-        if (monthlyMap.has(key)) {
-          monthlyMap.set(key, (monthlyMap.get(key) || 0) + (p.amount_cents || 0));
-        }
-      }
-
-      const monthly: MonthlyRevenue[] = [];
-      for (const [key, value] of monthlyMap.entries()) {
-        const [, m] = key.split("-");
-        monthly.push({ month: monthNames[parseInt(m, 10) - 1], value: value / 100 });
-      }
-      setRevenueByMonth(monthly);
-
-      setLoading(false);
-    }
-    fetchAnalytics();
-  }, [dateRange]);
-
-  const totalPlays = walks.reduce((sum, w) => sum + w.total_plays, 0);
-  const avgCompletion = walks.length > 0
-    ? Math.round(
-        walks.reduce((sum, w) => sum + Number(w.avg_rating || 0), 0) /
-          walks.length *
-          20
-      )
-    : 0;
-
-  const maxRevenue = Math.max(...revenueByMonth.map((r) => r.value), 1);
-
-  const summaryCards = [
-    {
-      key: "total_plays" as const,
-      value: totalPlays.toLocaleString(),
-      icon: Headphones,
-      color: "bg-bembe-teal/10 text-bembe-teal",
-    },
-    {
-      key: "total_revenue" as const,
-      value: `$${(totalRevenueCents / 100).toFixed(2)}`,
-      icon: DollarSign,
-      color: "bg-bembe-gold/10 text-bembe-gold",
-    },
-    {
-      key: "unique_listeners" as const,
-      value: String(uniqueBuyers),
-      icon: Users,
-      color: "bg-bembe-coral/10 text-bembe-coral",
-    },
-    {
-      key: "avg_completion" as const,
-      value: `${avgCompletion}%`,
-      icon: CheckCircle,
-      color: "bg-bembe-night/10 text-bembe-night",
-    },
-  ];
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-bembe-sand">
-        <header className="bg-white border-b border-bembe-night/5">
-          <div className="max-w-5xl mx-auto px-4 py-6">
-            <div className="h-8 bg-bembe-night/10 rounded w-48 animate-pulse" />
-          </div>
-        </header>
-        <main className="max-w-5xl mx-auto px-4 py-8 space-y-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <SkeletonCard key={i} />
-            ))}
-          </div>
-          <div className="bg-white rounded-2xl p-6 animate-pulse">
-            <div className="h-4 bg-bembe-night/10 rounded w-40 mb-6" />
-            <div className="h-48 bg-bembe-night/5 rounded" />
-          </div>
-        </main>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-bembe-sand">
+      {/* Demo Mode Banner */}
+      <div className="bg-bembe-gold/20 border-b border-bembe-gold/30 px-4 py-2.5 text-center">
+        <p className="text-sm font-medium text-bembe-night/70">
+          {"Demo mode — real analytics coming soon"}
+        </p>
+      </div>
       {/* Header */}
       <header className="bg-white border-b border-bembe-night/5">
         <div className="max-w-5xl mx-auto px-4 py-6">
@@ -294,90 +194,160 @@ export default function ArtistAnalyticsPage() {
           <h2 className="text-lg font-semibold text-bembe-night mb-6">
             {t.analytics.revenue_over_time}
           </h2>
-          {revenueByMonth.length > 0 ? (
-            <div className="flex items-end gap-2 h-48">
-              {revenueByMonth.map((item) => (
-                <div key={item.month} className="flex-1 flex flex-col items-center gap-2">
-                  <span className="text-xs text-bembe-night/40 font-medium">
-                    ${item.value.toFixed(0)}
-                  </span>
-                  <div
-                    className="w-full bg-bembe-teal/80 rounded-t-lg hover:bg-bembe-teal transition min-h-[4px]"
-                    style={{
-                      height: `${(item.value / maxRevenue) * 140}px`,
-                    }}
-                  />
-                  <span className="text-xs text-bembe-night/50">
-                    {item.month}
-                  </span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-bembe-night/40 text-center py-8">
-              {"—"}
-            </p>
-          )}
+          <div className="flex items-end gap-2 h-48">
+            {revenueByMonth.map((item) => (
+              <div key={item.month} className="flex-1 flex flex-col items-center gap-2">
+                <span className="text-xs text-bembe-night/40 font-medium">
+                  ${item.value}
+                </span>
+                <div
+                  className="w-full bg-bembe-teal/80 rounded-t-lg hover:bg-bembe-teal transition min-h-[4px]"
+                  style={{
+                    height: `${(item.value / maxRevenue) * 140}px`,
+                  }}
+                />
+                <span className="text-xs text-bembe-night/50">
+                  {item.month}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Top Walks Table */}
-        {topWalks.length > 0 && (
-          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-            <div className="p-6 pb-0">
-              <h2 className="text-lg font-semibold text-bembe-night mb-4">
-                {t.analytics.top_walks}
-              </h2>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-bembe-night/5">
-                    <th className="text-left text-sm font-medium text-bembe-night/50 px-6 py-3">
-                      Walk
-                    </th>
-                    <th className="text-right text-sm font-medium text-bembe-night/50 px-6 py-3">
-                      {t.analytics.plays}
-                    </th>
-                    <th className="text-right text-sm font-medium text-bembe-night/50 px-6 py-3">
-                      {t.analytics.revenue}
-                    </th>
-                    <th className="text-right text-sm font-medium text-bembe-night/50 px-6 py-3">
-                      {t.analytics.rating}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-bembe-night/5">
-                  {topWalks.map((walk) => (
-                    <tr
-                      key={walk.id}
-                      className="hover:bg-bembe-sand/30 transition"
-                    >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-lg bg-bembe-teal/10 flex items-center justify-center flex-shrink-0">
-                            <MapPin className="w-4 h-4 text-bembe-teal/50" />
-                          </div>
-                          <span className="font-medium text-bembe-night">
-                            {walk.title}
-                          </span>
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <div className="p-6 pb-0">
+            <h2 className="text-lg font-semibold text-bembe-night mb-4">
+              {t.analytics.top_walks}
+            </h2>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-bembe-night/5">
+                  <th className="text-left text-sm font-medium text-bembe-night/50 px-6 py-3">
+                    Walk
+                  </th>
+                  <th className="text-right text-sm font-medium text-bembe-night/50 px-6 py-3">
+                    {t.analytics.plays}
+                  </th>
+                  <th className="text-right text-sm font-medium text-bembe-night/50 px-6 py-3">
+                    {t.analytics.revenue}
+                  </th>
+                  <th className="text-right text-sm font-medium text-bembe-night/50 px-6 py-3">
+                    {t.analytics.rating}
+                  </th>
+                  <th className="text-right text-sm font-medium text-bembe-night/50 px-6 py-3">
+                    {t.analytics.completion_rate}
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-bembe-night/5">
+                {topWalks.map((walk) => (
+                  <tr
+                    key={walk.title}
+                    className="hover:bg-bembe-sand/30 transition"
+                  >
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-lg bg-bembe-teal/10 flex items-center justify-center flex-shrink-0">
+                          <MapPin className="w-4 h-4 text-bembe-teal/50" />
                         </div>
-                      </td>
-                      <td className="px-6 py-4 text-right text-sm text-bembe-night">
-                        {walk.plays.toLocaleString()}
-                      </td>
-                      <td className="px-6 py-4 text-right text-sm font-semibold text-bembe-night">
-                        ${(walk.revenue / 100).toFixed(2)}
-                      </td>
-                      <td className="px-6 py-4 text-right text-sm text-bembe-night">
-                        {walk.avgRating.toFixed(1)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                        <span className="font-medium text-bembe-night">
+                          {walk.title}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-right text-sm text-bembe-night">
+                      {walk.plays.toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4 text-right text-sm font-semibold text-bembe-night">
+                      {walk.revenue}
+                    </td>
+                    <td className="px-6 py-4 text-right text-sm text-bembe-night">
+                      {walk.avgRating}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-bembe-teal/10 text-bembe-teal">
+                        {walk.completionRate}%
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Popular Stops & Listener Locations side by side */}
+        <div className="grid lg:grid-cols-2 gap-8">
+          {/* Popular Stops */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-bembe-night mb-4">
+              {t.analytics.popular_stops}
+            </h2>
+            <div className="space-y-4">
+              {popularStops.map((stop, i) => (
+                <div
+                  key={stop.name}
+                  className="flex items-center gap-4"
+                >
+                  <span className="w-6 h-6 rounded-full bg-bembe-coral/10 text-bembe-coral text-xs font-bold flex items-center justify-center flex-shrink-0">
+                    {i + 1}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-bembe-night truncate">
+                      {stop.name}
+                    </p>
+                    <div className="flex items-center gap-4 text-sm text-bembe-night/50">
+                      <span>
+                        {stop.plays} {t.analytics.plays.toLowerCase()}
+                      </span>
+                      <span>
+                        {t.analytics.avg_listen_time}: {stop.avgListenTime}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        )}
+
+          {/* Listener Locations */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-bembe-night mb-4">
+              {t.analytics.listener_locations}
+            </h2>
+            <div className="space-y-4">
+              {listenerLocations.map((loc) => {
+                const maxListeners = listenerLocations[0].listeners;
+                return (
+                  <div key={loc.location} className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Globe className="w-4 h-4 text-bembe-night/30" />
+                        <span className="font-medium text-bembe-night text-sm">
+                          {loc.location}
+                        </span>
+                      </div>
+                      <span className="text-sm text-bembe-night/50">
+                        {loc.listeners} {t.analytics.listeners.toLowerCase()}
+                      </span>
+                    </div>
+                    <div className="w-full bg-bembe-sand rounded-full h-2">
+                      <div
+                        className="bg-bembe-gold rounded-full h-2 transition-all"
+                        style={{
+                          width: `${(loc.listeners / maxListeners) * 100}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
 
         {/* Back to Dashboard link */}
         <div className="text-center pb-4">

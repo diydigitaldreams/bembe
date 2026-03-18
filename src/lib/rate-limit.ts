@@ -3,22 +3,34 @@ interface RateLimitEntry {
   resetAt: number;
 }
 
-const store = new Map<string, RateLimitEntry>();
+// Use a global symbol so the store survives hot-reload in development
+// but is still scoped to a single process. For multi-server deployments,
+// swap this with a Redis-backed store.
+const GLOBAL_KEY = Symbol.for("bembe.rateLimitStore");
 
-// Clean up expired entries every 60 seconds
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, entry] of store) {
-    if (now >= entry.resetAt) {
-      store.delete(key);
-    }
+function getStore(): Map<string, RateLimitEntry> {
+  const g = globalThis as unknown as Record<symbol, Map<string, RateLimitEntry>>;
+  if (!g[GLOBAL_KEY]) {
+    g[GLOBAL_KEY] = new Map();
+
+    // Clean up expired entries every 60 seconds
+    setInterval(() => {
+      const now = Date.now();
+      for (const [key, entry] of g[GLOBAL_KEY]) {
+        if (now >= entry.resetAt) {
+          g[GLOBAL_KEY].delete(key);
+        }
+      }
+    }, 60_000).unref?.();
   }
-}, 60_000);
+  return g[GLOBAL_KEY];
+}
 
 export function rateLimit(
   userId: string,
   { maxRequests = 10, windowMs = 60_000 } = {}
 ): { success: boolean; remaining: number } {
+  const store = getStore();
   const now = Date.now();
   const key = userId;
   const entry = store.get(key);

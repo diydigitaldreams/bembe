@@ -184,8 +184,9 @@ async function handleSubscription(
   let periodEnd: string | null = null;
   if (subscriptionId) {
     const sub = await stripe.subscriptions.retrieve(subscriptionId);
-    const subData = sub as unknown as { current_period_end: number };
-    periodEnd = new Date(subData.current_period_end * 1000).toISOString();
+    // Stripe's type definition wraps the response; access the underlying data
+    const periodEndUnix = (sub as unknown as { current_period_end: number }).current_period_end;
+    periodEnd = new Date(periodEndUnix * 1000).toISOString();
   }
 
   const dbPlan = plan === "artist_pro" ? "pro" : "free";
