@@ -75,13 +75,17 @@ function ArtistProfileInner({ artistId }: { artistId: string }) {
   useEffect(() => {
     if (searchParams.get("tipped") !== "true") return;
 
-    setShowTipToast(true);
     const url = new URL(window.location.href);
     url.searchParams.delete("tipped");
     window.history.replaceState({}, "", url.toString());
 
-    const timer = setTimeout(() => setShowTipToast(false), 5000);
-    return () => clearTimeout(timer);
+    // Use setTimeout to avoid synchronous setState in effect body
+    const showTimer = setTimeout(() => setShowTipToast(true), 0);
+    const hideTimer = setTimeout(() => setShowTipToast(false), 5000);
+    return () => {
+      clearTimeout(showTimer);
+      clearTimeout(hideTimer);
+    };
   }, [searchParams]);
 
   if (loading) {

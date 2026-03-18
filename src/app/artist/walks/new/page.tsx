@@ -78,7 +78,7 @@ export default function CreateWalkPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [neighborhood, setNeighborhood] = useState("");
-  const [_coverImage, setCoverImage] = useState<File | null>(null);
+  const [coverImage, setCoverImage] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
 
   // Step 2: Stops

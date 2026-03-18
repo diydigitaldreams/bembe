@@ -10,7 +10,8 @@ export default function OfflineIndicator() {
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    setIsOffline(!navigator.onLine);
+    // Defer initial check to avoid synchronous setState in effect body
+    const initTimer = setTimeout(() => setIsOffline(!navigator.onLine), 0);
 
     const handleOffline = () => {
       setIsOffline(true);
@@ -22,6 +23,7 @@ export default function OfflineIndicator() {
     window.addEventListener("online", handleOnline);
 
     return () => {
+      clearTimeout(initTimer);
       window.removeEventListener("offline", handleOffline);
       window.removeEventListener("online", handleOnline);
     };

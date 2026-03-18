@@ -12,7 +12,6 @@ interface SubscribeButtonProps {
 
 export function SubscribeButton({
   artistId,
-  artistName: _artistName,
   isSubscribed = false,
 }: SubscribeButtonProps) {
   const { t } = useI18n();
