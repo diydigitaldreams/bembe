@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Bembe — Puerto Rico's Living Art Museum
+
+A Next.js web application for curating and consuming immersive, GPS-guided audio art walks across Puerto Rico. Artists create multi-stop walking experiences with audio narration, and patrons discover, play, and support them.
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router) + React 19 + TypeScript 5
+- **Database & Auth**: Supabase (PostgreSQL + Row-Level Security + OAuth)
+- **Payments**: Stripe Connect (walk purchases, tips, subscriptions, gift codes)
+- **Maps**: Mapbox GL for interactive walk maps
+- **State**: Zustand + TanStack React Query
+- **Styling**: Tailwind CSS 4
+- **i18n**: English & Spanish via React Context
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# Install dependencies
+pnpm install
+
+# Copy environment variables and fill in your keys
+cp .env.example .env.local
+
+# Run the development server
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+See `.env.example` for the full list. Required keys:
 
-## Learn More
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (server-side only) |
+| `STRIPE_SECRET_KEY` | Stripe secret key |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret |
+| `NEXT_PUBLIC_MAPBOX_TOKEN` | Mapbox GL access token |
+| `OPENAI_API_KEY` | OpenAI API key (for AI stop generation) |
+| `NEXT_PUBLIC_APP_URL` | Public application URL |
+| `BEMBE_ADMIN_KEY` | Admin key for seed endpoint |
 
-To learn more about Next.js, take a look at the following resources:
+## Scripts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Command | Description |
+|---------|-------------|
+| `pnpm dev` | Start development server |
+| `pnpm build` | Production build |
+| `pnpm start` | Start production server |
+| `pnpm lint` | Run ESLint |
+| `pnpm type-check` | Run TypeScript type checking |
+| `pnpm format` | Format code with Prettier |
+| `pnpm format:check` | Check code formatting |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+```
+src/
+├── app/              # Next.js App Router (pages + API routes)
+│   ├── api/          # 15 API endpoints
+│   ├── walk/         # Walk playback (GPS-triggered stops)
+│   ├── artist/       # Artist dashboard, walk/event creation
+│   ├── discover/     # Walk discovery & filtering
+│   ├── map/          # Mapbox-based walk map
+│   └── ...           # Auth, events, gifts, guides, legal pages
+├── components/       # Reusable React components
+├── hooks/            # Custom hooks (geolocation)
+├── lib/              # Utilities
+│   ├── constants.ts  # Shared app constants
+│   ├── supabase/     # Supabase client setup
+│   ├── stripe/       # Stripe integration
+│   ├── i18n/         # Internationalization
+│   ├── offline/      # PWA / IndexedDB
+│   └── rate-limit.ts # API rate limiting
+├── types/            # TypeScript interfaces
+└── scripts/          # Database seed script
+supabase/
+├── migrations/       # SQL migrations
+└── schema.sql        # Full database schema
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Database
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Migrations live in `supabase/migrations/`. The schema includes profiles, art walks, walk stops, purchases, tips, subscriptions, gifts, events, and comments — all with Row-Level Security enabled.
+
+## Deployment
+
+The app is designed for deployment on Vercel. Set all environment variables in your Vercel project settings, and connect your Supabase and Stripe accounts.

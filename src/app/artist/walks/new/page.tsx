@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/context";
+import { DEFAULT_COORDINATES } from "@/lib/constants";
 
 const NEIGHBORHOODS = [
   "Viejo San Juan",
@@ -62,8 +63,8 @@ function createEmptyStop(): WalkStop {
     artistNotes: "",
     aiGenerated: false,
     audioFile: null,
-    lat: 18.4655,
-    lng: -66.1057,
+    lat: DEFAULT_COORDINATES.lat,
+    lng: DEFAULT_COORDINATES.lng,
   };
 }
 
@@ -77,7 +78,7 @@ export default function CreateWalkPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [neighborhood, setNeighborhood] = useState("");
-  const [coverImage, setCoverImage] = useState<File | null>(null);
+  const [_coverImage, setCoverImage] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
 
   // Step 2: Stops

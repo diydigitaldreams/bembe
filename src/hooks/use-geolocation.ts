@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { GEOLOCATION_TIMEOUT_MS } from "@/lib/constants";
 
 interface GeolocationState {
   lat: number | null;
@@ -64,7 +65,7 @@ export function useGeolocation(enabled = true) {
       },
       {
         enableHighAccuracy: true,
-        timeout: 15000,
+        timeout: GEOLOCATION_TIMEOUT_MS,
         maximumAge: 0,
       }
     );

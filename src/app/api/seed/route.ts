@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { timingSafeEqual } from "crypto";
 import { seed } from "@/scripts/seed";
 
 // ---------------------------------------------------------------------------
@@ -7,9 +8,19 @@ import { seed } from "@/scripts/seed";
 // Requires BEMBE_ADMIN_KEY header. Only works if no walks exist yet.
 // ---------------------------------------------------------------------------
 export async function POST(request: NextRequest) {
-  // 1. Auth check
+  // 1. Auth check (timing-safe comparison to prevent timing attacks)
   const adminKey = request.headers.get("x-admin-key") || request.headers.get("bembe_admin_key");
-  if (!adminKey || adminKey !== process.env.BEMBE_ADMIN_KEY) {
+  const expectedKey = process.env.BEMBE_ADMIN_KEY;
+  if (!adminKey || !expectedKey) {
+    return NextResponse.json(
+      { error: "Unauthorized — invalid or missing BEMBE_ADMIN_KEY header" },
+      { status: 401 }
+    );
+  }
+  const encoder = new TextEncoder();
+  const a = encoder.encode(adminKey);
+  const b = encoder.encode(expectedKey);
+  if (a.byteLength !== b.byteLength || !timingSafeEqual(a, b)) {
     return NextResponse.json(
       { error: "Unauthorized — invalid or missing BEMBE_ADMIN_KEY header" },
       { status: 401 }

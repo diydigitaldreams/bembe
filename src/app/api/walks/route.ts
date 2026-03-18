@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { DEFAULT_COORDINATES } from "@/lib/constants";
 
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 100;
@@ -138,8 +139,8 @@ export async function POST(request: NextRequest) {
       order_index: i,
       title: s.title || `Stop ${i + 1}`,
       description: s.description || "",
-      lat: s.lat ?? 18.4655,
-      lng: s.lng ?? -66.1057,
+      lat: s.lat ?? DEFAULT_COORDINATES.lat,
+      lng: s.lng ?? DEFAULT_COORDINATES.lng,
       duration_seconds: s.duration_seconds ?? 0,
       audio_url: s.audio_url ?? null,
       image_urls: s.image_urls ?? [],

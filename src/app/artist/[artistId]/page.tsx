@@ -13,7 +13,6 @@ import {
   MapPin,
   Star,
   Headphones,
-  ExternalLink,
   Heart,
   Share2,
   Clock,
@@ -74,15 +73,15 @@ function ArtistProfileInner({ artistId }: { artistId: string }) {
 
   // Show success toast when redirected back from Stripe after tipping
   useEffect(() => {
-    if (searchParams.get("tipped") === "true") {
-      setShowTipToast(true);
-      const url = new URL(window.location.href);
-      url.searchParams.delete("tipped");
-      window.history.replaceState({}, "", url.toString());
+    if (searchParams.get("tipped") !== "true") return;
 
-      const timer = setTimeout(() => setShowTipToast(false), 5000);
-      return () => clearTimeout(timer);
-    }
+    setShowTipToast(true);
+    const url = new URL(window.location.href);
+    url.searchParams.delete("tipped");
+    window.history.replaceState({}, "", url.toString());
+
+    const timer = setTimeout(() => setShowTipToast(false), 5000);
+    return () => clearTimeout(timer);
   }, [searchParams]);
 
   if (loading) {

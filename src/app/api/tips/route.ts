@@ -1,48 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { stripe } from "@/lib/stripe/client";
+import { APP_URL } from "@/lib/constants";
+import { z } from "zod";
 
 const PLATFORM_FEE_PERCENT = 12;
 const MIN_TIP_CENTS = 200; // $2 minimum
 const MAX_TIP_CENTS = 50000; // $500 maximum
 
+const tipSchema = z.object({
+  artistId: z.string().uuid(),
+  amount: z.number().int().min(MIN_TIP_CENTS).max(MAX_TIP_CENTS),
+  message: z.string().max(200).optional(),
+});
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { artistId, amount, message } = body as {
-      artistId: string;
-      amount: number;
-      message?: string;
-    };
+    const parsed = tipSchema.safeParse(body);
 
-    // Validate required fields
-    if (!artistId || !amount) {
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: "artistId and amount are required" },
+        { error: parsed.error.issues[0]?.message || "Invalid request body" },
         { status: 400 }
       );
     }
 
-    // Validate amount
-    if (
-      typeof amount !== "number" ||
-      !Number.isInteger(amount) ||
-      amount < MIN_TIP_CENTS ||
-      amount > MAX_TIP_CENTS
-    ) {
-      return NextResponse.json(
-        { error: `Amount must be an integer between ${MIN_TIP_CENTS} and ${MAX_TIP_CENTS} cents` },
-        { status: 400 }
-      );
-    }
-
-    // Validate message length
-    if (message && message.length > 200) {
-      return NextResponse.json(
-        { error: "Message must be 200 characters or fewer" },
-        { status: 400 }
-      );
-    }
+    const { artistId, amount, message } = parsed.data;
 
     // Look up the artist's Stripe connected account
     const supabase = await createClient();
@@ -66,7 +50,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const appUrl = APP_URL;
     const platformFee = Math.round(amount * (PLATFORM_FEE_PERCENT / 100));
 
     const session = await stripe.checkout.sessions.create({

@@ -1,31 +1,37 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { stripe } from "@/lib/stripe/client";
+import { APP_URL } from "@/lib/constants";
+import { z } from "zod";
 
 const PLATFORM_FEE_PERCENT = 12;
+
+const giftSchema = z.object({
+  walkId: z.string().uuid(),
+  senderName: z.string().min(1).max(100),
+  recipientEmail: z.string().email().optional(),
+  message: z.string().max(300).optional(),
+});
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
 
-  let body: Record<string, unknown>;
+  let body: unknown;
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
-  const { walkId, senderName, recipientEmail, message } = body as {
-    walkId: string;
-    senderName: string;
-    recipientEmail?: string;
-    message?: string;
-  };
 
-  if (!walkId || !senderName) {
+  const parsed = giftSchema.safeParse(body);
+  if (!parsed.success) {
     return NextResponse.json(
-      { error: "walkId and senderName are required" },
+      { error: parsed.error.issues[0]?.message || "Invalid request body" },
       { status: 400 }
     );
   }
+
+  const { walkId, senderName, recipientEmail, message } = parsed.data;
 
   // Fetch the walk details
   const { data: walk, error: walkError } = await supabase
@@ -68,7 +74,7 @@ export async function POST(request: NextRequest) {
   // Generate a unique gift code
   const giftCode = crypto.randomUUID().replace(/-/g, "").slice(0, 16);
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const appUrl = APP_URL;
   const platformFee = Math.round(walk.price_cents * (PLATFORM_FEE_PERCENT / 100));
 
   // Create Stripe Checkout session

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { DEFAULT_COORDINATES } from "@/lib/constants";
 
 /**
  * GET /api/events
@@ -107,8 +108,8 @@ export async function POST(request: NextRequest) {
         cover_image_url: "",
         location_name,
         neighborhood: neighborhood || "",
-        lat: lat || 18.4655,
-        lng: lng || -66.1057,
+        lat: lat || DEFAULT_COORDINATES.lat,
+        lng: lng || DEFAULT_COORDINATES.lng,
         starts_at,
         ends_at,
         ticket_price_cents,

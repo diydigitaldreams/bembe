@@ -14,6 +14,7 @@ import {
   Check,
 } from "lucide-react";
 import { useI18n } from "@/lib/i18n/context";
+import { DEFAULT_COORDINATES } from "@/lib/constants";
 
 const NEIGHBORHOODS = [
   "Viejo San Juan", "Santurce", "Condado", "Ocean Park", "Isla Verde",
@@ -60,8 +61,8 @@ export default function CreateEventPage() {
           description: description.trim(),
           location_name: locationName.trim(),
           neighborhood,
-          lat: 18.4655,
-          lng: -66.1057,
+          lat: DEFAULT_COORDINATES.lat,
+          lng: DEFAULT_COORDINATES.lng,
           starts_at: new Date(startsAt).toISOString(),
           ends_at: new Date(endsAt).toISOString(),
           ticket_price_cents: pricingType === "paid" ? Math.round(parseFloat(price || "0") * 100) : 0,
