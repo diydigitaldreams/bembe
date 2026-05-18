@@ -156,28 +156,30 @@ export default function WaveformComments({
     if (durationMs === 0) return;
 
     const now = Date.now();
-    let dirty = false;
-    const next = new Map(revealed);
+    setRevealed((prev) => {
+      let dirty = false;
+      const next = new Map(prev);
 
-    for (const c of comments) {
-      if (
-        Math.abs(elapsedMs - c.timestamp_ms) <= VOICE_TRIGGER_MS &&
-        !next.has(c.id)
-      ) {
-        next.set(c.id, now);
-        dirty = true;
+      for (const c of comments) {
+        if (
+          Math.abs(elapsedMs - c.timestamp_ms) <= VOICE_TRIGGER_MS &&
+          !next.has(c.id)
+        ) {
+          next.set(c.id, now);
+          dirty = true;
+        }
       }
-    }
 
-    // Fade out after linger period
-    for (const [id, ts] of next) {
-      if (now - ts > VOICE_LINGER_MS) {
-        next.delete(id);
-        dirty = true;
+      // Fade out after linger period
+      for (const [id, ts] of next) {
+        if (now - ts > VOICE_LINGER_MS) {
+          next.delete(id);
+          dirty = true;
+        }
       }
-    }
 
-    if (dirty) setRevealed(next);
+      return dirty ? next : prev;
+    });
   }, [elapsedMs, comments, durationMs]);
 
   // ---- Seek by clicking on the waveform bars ----
